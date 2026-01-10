@@ -15,9 +15,11 @@ def health_check():
 @router.post("/predict", response_model=PredictionResponse)
 def predict(data: PredictionRequest):
     result = predict_race(
-        track=data.track,
-        weather=data.weather,
-        laps=data.laps
+        grid=data.grid,
+        driverId=data.driverId,
+        constructorId=data.constructorId,
+        circuitId=data.circuitId,
+        year=data.year
     )
     return result
 

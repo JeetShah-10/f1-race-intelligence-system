@@ -3,12 +3,14 @@ from typing import List
 
 # Schema for the prediction endpoint
 class PredictionRequest(BaseModel):
-    track: str
-    weather: str
-    laps: int
+    grid: int
+    driverId: int
+    constructorId: int
+    circuitId: int
+    year: int
 
 class PredictionResponse(BaseModel):
-    winner: str
+    top3_prediction: bool
     confidence: float
 
 # Schema for the drivers endpoint
