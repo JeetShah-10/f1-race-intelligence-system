@@ -1,0 +1,8 @@
+fastapi
+uvicorn
+
+# ML libraries
+numpy
+pandas
+scikit-learn
+fastf1
