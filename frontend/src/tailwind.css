@@ -1,3 +1,446 @@
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
+@import "tailwindcss";
+
+/* Racing Fonts */
+@font-face {
+  font-family: 'NeoSpeed';
+  src: url('/assets/fonts/NeoSpeed/Neospeed-Demo.otf') format('opentype');
+  font-weight: normal;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'NeoSpeed';
+  src: url('/assets/fonts/NeoSpeed/Neospeed-ObliqueDemo.otf') format('opentype');
+  font-weight: normal;
+  font-style: oblique;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Raceline';
+  src: url('/assets/fonts/raceline/Raceline Demo.otf') format('opentype');
+  font-weight: normal;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Raceburst';
+  src: url('/assets/fonts/lastcar/Raceburst Free Trial.otf') format('opentype');
+  font-weight: normal;
+  font-style: normal;
+  font-display: swap;
+}
+
+@theme {
+  /* ═══════════════════════════════════════════════════════════════════════════
+     (A) Heritage — Brand & Emotional Layer
+     ═══════════════════════════════════════════════════════════════════════════ */
+  --color-ferrari-red: #CF2C28;
+  --color-alpine-blue: #004BFF;
+  --color-silver-arrow: #9FA4A8;
+  --color-carbon-black: #0B0D10;
+  --color-asphalt: #15171C;
+
+  /* ═══════════════════════════════════════════════════════════════════════════
+     (B) Tech — UI Surface / Engineering Layer
+     ═══════════════════════════════════════════════════════════════════════════ */
+  --color-turbine-blue: #1A9FFF;
+  --color-signal-orange: #FF6A00;
+  --color-industrial-amber: #FFAE00;
+  --color-bg-neutral: #2C323C;
+  --color-bg-steel: #3B424F;
+
+  /* ═══════════════════════════════════════════════════════════════════════════
+     (C) Motorsport Semantics — Telemetry Layer
+     ═══════════════════════════════════════════════════════════════════════════ */
+  --color-sector-purple: #A020F0;
+  --color-sector-green: #00E676;
+  --color-sector-yellow: #F9E300;
+  --color-status-danger: #E32636;
+  --color-status-ers: #008CFF;
+  --color-status-neutral: #FFFFFF;
+
+  /* ═══════════════════════════════════════════════════════════════════════════
+     (D) Las Vegas GP — Spectacle Layer
+     Vibrant accents for hero moments, CTAs, and premium highlights
+     ═══════════════════════════════════════════════════════════════════════════ */
+  --color-vegas-neon: #FF00FF;
+  --color-electric-cyan: #00FFFF;
+  --color-sunset-gold: #FFD700;
+  --color-hot-pink: #FF1493;
+  --color-strip-purple: #8B00FF;
+  --color-desert-orange: #FF4500;
+  --color-midnight-blue: #0A0A1A;
+
+  /* Tire Compounds */
+  --color-tire-c1: #F2F2F2;
+  --color-tire-c2: #E2DD47;
+  --color-tire-c3: #F74141;
+  --color-tire-inter: #1EB53A;
+  --color-tire-wet: #0064E0;
+
+  /* Typography */
+  --font-square: "Rajdhani", sans-serif;
+  --font-modern: "Inter", sans-serif;
+  --font-racing: "NeoSpeed", "Rajdhani", sans-serif;
+  --font-raceline: "Raceline", "Rajdhani", sans-serif;
+  --font-display: "Raceburst", "Rajdhani", sans-serif;
+
+  /* F1 Team Colors */
+  --color-team-redbull: #3671C6;
+  --color-team-ferrari: #DC0000;
+  --color-team-mclaren: #FF8700;
+  --color-team-mercedes: #00D2BE;
+  --color-team-astonmartin: #006F62;
+  --color-team-alpine: #0090FF;
+  --color-team-williams: #005AFF;
+  --color-team-haas: #B6BABD;
+  --color-team-racingbulls: #2B4562;
+  --color-team-kicksauber: #52E252;
+  --color-team-cadillac: #C4A747;
+  --color-team-audi: #FF0000;
+
+  /* Motion */
+  --animate-reveal: reveal 1s cubic-bezier(0.17, 0.84, 0.44, 1) forwards;
+  --animate-neon-pulse: neon-pulse 2s ease-in-out infinite;
+  --animate-data-stream: data-stream 0.5s ease-out;
+  --default-transition-timing-function: cubic-bezier(0.17, 0.84, 0.44, 1);
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════════
+   UTILITY CLASSES
+   ═══════════════════════════════════════════════════════════════════════════════ */
+
+@layer utilities {
+
+  /* Glass Panel - Standard */
+  .glass-panel {
+    @apply bg-white/5 backdrop-blur-xl border border-white/10 rounded-lg shadow-2xl;
+  }
+
+  /* HUD Panel - Premium with subtle neon glow */
+  .hud-panel {
+    @apply bg-black/40 backdrop-blur-2xl border border-white/10 rounded-lg;
+    box-shadow:
+      0 0 30px rgba(0, 0, 0, 0.5),
+      inset 0 1px 0 rgba(255, 255, 255, 0.1),
+      0 0 60px rgba(255, 0, 255, 0.05);
+  }
+
+  .hud-panel:hover {
+    box-shadow:
+      0 0 30px rgba(0, 0, 0, 0.5),
+      inset 0 1px 0 rgba(255, 255, 255, 0.15),
+      0 0 80px rgba(255, 0, 255, 0.1),
+      0 0 120px rgba(0, 255, 255, 0.05);
+  }
+
+  /* Monospace Data Display */
+  .mono-data {
+    @apply font-square tracking-tighter uppercase;
+    font-variant-numeric: tabular-nums;
+  }
+
+  /* Neon Glow Effect */
+  .neon-glow {
+    text-shadow:
+      0 0 10px currentColor,
+      0 0 20px currentColor,
+      0 0 40px currentColor;
+  }
+
+  /* Vegas Gradient Text */
+  .vegas-gradient {
+    background: linear-gradient(135deg, #FF00FF 0%, #00FFFF 50%, #FFD700 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+
+  /* Sunset Gradient */
+  .sunset-gradient {
+    background: linear-gradient(90deg, #FF4500 0%, #FFD700 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+
+  /* Strip Gradient Background */
+  .bg-strip-gradient {
+    background: linear-gradient(180deg, #8B00FF 0%, #FF1493 100%);
+  }
+
+  /* Data Stream Animation */
+  .data-stream {
+    @apply font-square tracking-tight;
+    animation: var(--animate-data-stream);
+  }
+
+  /* Sector Marker Chip */
+  .sector-marker {
+    @apply px-2 py-0.5 rounded text-xs font-bold uppercase;
+    box-shadow: 0 0 10px currentColor;
+  }
+
+  .sector-purple {
+    @apply bg-sector-purple/20 text-sector-purple;
+  }
+
+  .sector-green {
+    @apply bg-sector-green/20 text-sector-green;
+  }
+
+  .sector-yellow {
+    @apply bg-sector-yellow/20 text-sector-yellow;
+  }
+
+  /* Tire Compound Indicator */
+  .tire-indicator {
+    @apply w-4 h-4 rounded-full border-2 border-white/20;
+    box-shadow: 0 0 8px currentColor;
+  }
+
+  .tire-c1 {
+    @apply bg-tire-c1;
+  }
+
+  .tire-c2 {
+    @apply bg-tire-c2;
+  }
+
+  .tire-c3 {
+    @apply bg-tire-c3;
+  }
+
+  .tire-inter {
+    @apply bg-tire-inter;
+  }
+
+  .tire-wet {
+    @apply bg-tire-wet;
+  }
+
+  /* Text Shadow Glow */
+  .text-shadow-glow {
+    text-shadow: 0 0 20px currentColor;
+  }
+
+  /* Scroll Progress Bar */
+  .scroll-progress {
+    background: linear-gradient(90deg, #FF00FF 0%, #00FFFF 50%, #FFD700 100%);
+  }
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════════
+   GPU-ACCELERATED UTILITIES (60fps Performance)
+   ═══════════════════════════════════════════════════════════════════════════════ */
+
+@layer utilities {
+
+  /* GPU-accelerated transforms only */
+  .gpu-accelerated {
+    transform: translateZ(0);
+    will-change: transform, opacity;
+    backface-visibility: hidden;
+  }
+
+  /* Reduced blur for better performance */
+  .glass-card {
+    background: rgba(15, 17, 21, 0.7);
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    box-shadow:
+      0 4px 24px rgba(0, 0, 0, 0.4),
+      inset 0 1px 0 rgba(255, 255, 255, 0.05);
+  }
+
+  /* Premium glass with subtle glow */
+  .glass-card-glow {
+    background: rgba(15, 17, 21, 0.75);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    box-shadow:
+      0 8px 32px rgba(0, 0, 0, 0.5),
+      inset 0 1px 0 rgba(255, 255, 255, 0.08),
+      0 0 40px rgba(207, 44, 40, 0.05);
+  }
+
+  /* Hover transition - GPU only */
+  .hover-lift {
+    transition: transform 0.2s cubic-bezier(0.17, 0.84, 0.44, 1);
+  }
+
+  .hover-lift:hover {
+    transform: translateY(-4px) translateZ(0);
+  }
+
+  /* Scale on hover - GPU only */
+  .hover-scale {
+    transition: transform 0.2s cubic-bezier(0.17, 0.84, 0.44, 1);
+  }
+
+  .hover-scale:hover {
+    transform: scale(1.02) translateZ(0);
+  }
+
+  /* Fade in animation */
+  .animate-fade-in {
+    animation: fade-in 0.3s ease-out forwards;
+  }
+
+  /* Slide up animation */
+  .animate-slide-up {
+    animation: slide-up 0.4s cubic-bezier(0.17, 0.84, 0.44, 1) forwards;
+  }
+
+  /* Progress bar fill */
+  .progress-fill {
+    transition: width 0.8s cubic-bezier(0.17, 0.84, 0.44, 1);
+  }
+
+  /* Tyre compound bars */
+  .tyre-bar {
+    height: 6px;
+    border-radius: 3px;
+    transition: width 0.6s cubic-bezier(0.17, 0.84, 0.44, 1);
+  }
+
+  .tyre-bar-soft {
+    background: linear-gradient(90deg, #FF3333 0%, #FF6666 100%);
+  }
+
+  .tyre-bar-medium {
+    background: linear-gradient(90deg, #FFD700 0%, #FFE44D 100%);
+  }
+
+  .tyre-bar-hard {
+    background: linear-gradient(90deg, #FFFFFF 0%, #E0E0E0 100%);
+  }
+}
+
+/* Reduced motion for accessibility and performance */
+@media (prefers-reduced-motion: reduce) {
+
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
+@keyframes fade-in {
+  from {
+    opacity: 0;
+  }
+
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes slide-up {
+  from {
+    opacity: 0;
+    transform: translateY(12px) translateZ(0);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0) translateZ(0);
+  }
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════════
+   KEYFRAME ANIMATIONS
+   ═══════════════════════════════════════════════════════════════════════════════ */
+
+@keyframes reveal {
+  0% {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes neon-pulse {
+
+  0%,
+  100% {
+    opacity: 1;
+    filter: brightness(1);
+  }
+
+  50% {
+    opacity: 0.8;
+    filter: brightness(1.2);
+  }
+}
+
+@keyframes data-stream {
+  0% {
+    opacity: 0;
+    transform: translateY(-5px);
+  }
+
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes glow-pulse {
+
+  0%,
+  100% {
+    box-shadow: 0 0 20px rgba(255, 0, 255, 0.3);
+  }
+
+  50% {
+    box-shadow: 0 0 40px rgba(255, 0, 255, 0.6);
+  }
+}
+
+@keyframes loading-sweep {
+  0% {
+    transform: translateX(-100%);
+  }
+
+  100% {
+    transform: translateX(100%);
+  }
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════════
+   SMOOTH SCROLL (Lenis Integration)
+   ═══════════════════════════════════════════════════════════════════════════════ */
+
+html.lenis,
+html.lenis body {
+  height: auto;
+}
+
+.lenis.lenis-smooth {
+  scroll-behavior: auto !important;
+}
+
+.lenis.lenis-smooth [data-lenis-prevent] {
+  overscroll-behavior: contain;
+}
+
+.lenis.lenis-stopped {
+  overflow: hidden;
+}
+
+.lenis.lenis-smooth iframe {
+  pointer-events: none;
+}

@@ -1,22 +1,13 @@
-import { Canvas } from "@react-three/fiber"
+import './tailwind.css';
+import { ScrollProvider } from './context/ScrollContext';
+import { AppRouter } from './router';
 
-function Scene() {
+function App() {
   return (
-    <mesh>
-      <boxGeometry args={[1,1,1]} />
-      <meshStandardMaterial color="red" />
-    </mesh>
+    <ScrollProvider>
+      <AppRouter />
+    </ScrollProvider>
   );
 }
 
-export default function App() {
-  return (
-    <div className="h-screen w-screen">
-      <Canvas>
-        <ambientLight />
-        <Scene />
-      </Canvas>
-    </div>
-  );
-}
-
+export default App;

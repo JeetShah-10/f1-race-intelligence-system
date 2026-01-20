@@ -1,140 +1,143 @@
-# System Architecture Overview
+# Architecture Overview — F1 Race Intelligence System
 
-This document provides a high‑level blueprint for the F1 Race Intelligence System.
+## 1. Purpose
+This document describes the system-level architecture for the F1 Race Intelligence Platform.  
+The platform enables:
 
-It is designed for:
-- engineers (backend + frontend)
-- multi‑agent code execution (Claude + Antigravity)
-- contributors
-- product leadership
+- Race analysis (post‑event)
+- Strategy simulation (pre‑event & in‑event)
+- ML‑driven performance modeling
+- Telemetry visualization
+- Real-time exploration of driver/stint/tyre behaviors
 
----
+The architecture follows a **Hybrid Modular Model**:
 
-## 1. System Goals
-
-The system must:
-
-1. simulate F1 race behavior
-2. learn performance patterns (ML)
-3. visualize race progression
-4. stream simulation events
-5. enable replay & analysis
-6. allow parallel backend + frontend development
+- UI/UX operated independently (Jeet)
+- Simulation & ML operated independently (Dev)
+- Backend orchestrates communication
+- Shared data artifacts unify the pipeline
 
 ---
 
-## 2. Core Subsystems
+## 2. High‑Level System Diagram (ASCII)
 
-The system consists of 6 major components:
+         ┌────────────────────────────┐
+         │       Frontend UI          │
+         │  (React / Vite / ECharts)  │
+         └──────────────┬─────────────┘
+                        │  WebSocket + REST
+                        ▼
+         ┌────────────────────────────┐
+         │     Backend API Layer      │
+         │       (FastAPI + WS)       │
+         └─────────┬────────┬─────────┘
+                   │        │
+     ┌─────────────┘        └──────────────┐
+     ▼                                     ▼
+┌──────────────────────┐ ┌────────────────────────┐
+│ ML Runtime Engine │ │ Simulation/Strategy │
+│ (Python + FastF1 ML)│ │ Runtime (Python) │
+└──────────────────────┘ └────────────────────────┘
+│ │
+└──────────┬────────┘
+▼
+┌────────────────────────────┐
+│ Data Layer / Artifacts │
+│ (Parquet / Feather / CSV) │
+└────────────────────────────┘
+---
 
-1. **Input Layer**
-2. **ML Intelligence Layer**
-3. **Simulation Engine**
-4. **Event Stream Layer**
-5. **Visualization & UI Layer**
-6. **Data & Persistence Layer**
+## 3. Core Subsystems
+
+| Subsystem | Owner | Purpose |
+|---|---|---|
+| Frontend UI | Jeet | Visualization + Analyst Tools |
+| Backend API | Shared | Routing, Orchestration, Data Contracts |
+| ML Runtime | Dev | Pace Modeling, Tyre Deg, Classification |
+| Simulation Runtime | Dev | Strategy Monte Carlo, Race Scenarios |
+| Data Layer | Shared | Exchange between ML ↔ Sim ↔ Frontend |
 
 ---
 
-### 2.1 Input Layer
+## 4. Architectural Principles
 
-Collects user inputs such as:
+1. **Decoupled Intelligence Layer**
+   ML & Simulation operate independently from UI.
 
-- circuit
-- weather
-- season
-- driver selection
-- simulation mode
+2. **Artifact‑Based Handoffs**
+   Data exchanged via `.parquet`/`.feather` files ensures reproducibility.
 
----
+3. **Real‑Time Compatible**
+   WebSockets support streaming deltas, telemetry, stints, predictions.
 
-### 2.2 ML Intelligence Layer
+4. **Frontends Never Execute ML**
+   UI consumes ML results — does not compute them.
 
-Predicts baseline performance (not final race behavior).
-
-Outputs include:
-
-- baseline pace
-- qualifying performance
-- predicted delta bands
-- strategy hints (future)
+5. **Stateless Backend**
+   Backend delegates heavy physics/ML to runtimes.
 
 ---
 
-### 2.3 Simulation Engine (Deterministic)
+## 5. Deployment View
 
-Converts ML baselines → race behavior via:
+Current MVP target deployment:
 
-- overtakes
-- pit stops
-- DNFs
-- tire wear
-- safety car
-- gaps
-- sector performance
+- **Colab / Local** → ML + Sim
+- **Local machine** → UI + Backend
 
-This engine is **not ML**.
+Future scalable deployment:
 
----
-
-### 2.4 Event Stream Layer (WS)
-
-Produces:
-
-(A) **Events**  
-(B) **Lap Snapshots**
-
-For consumption by visualization layer.
+- ML → GPU optimized
+- Simulation → Multithreaded cluster
+- UI → Web deployed
+- Backend → Cloud API
 
 ---
 
-### 2.5 Visualization & UI Layer
+## 6. Supported Use Cases
 
-Responsible for:
-
-- timing tower
-- sector timing
-- deltas
-- HUD overlays
-- replay
-- results
-- analytics
-
-UI is cinematic & motorsport accurate.
+| Use Case | Flow |
+|---|---|
+| Stint Analysis | Data → ML → Visualization |
+| Undercut Strategy | ML → Sim → UI |
+| Degradation Forecast | Telemetry → ML |
+| Quali vs Race Comparison | Data → UI |
+| Race Simulation | ML → Sim → Monte Carlo → UI |
 
 ---
 
-### 2.6 Data & Persistence
+## 7. Non‑Goals (Important)
 
-Stores:
+The system **does not** attempt to:
 
-- model weights
-- results
-- inputs
-- replay data
-- comparison runs
+- Control hardware (real cars)
+- Perform CFD/aero simulations
+- Replace full FIA race models
 
----
-
-## 3. Transport & Protocols
-
-- `REST` for initiation & configuration
-- `WebSocket` for streaming simulation data
+The system **does** mimic professional strategy rooms.
 
 ---
 
-## 4. Execution Modes
+## 8. MVP Scope
 
-- realtime
-- accelerated
-- instant
+MVP will include:
+
+- Pace model (per stint)
+- Degradation curves
+- Pit window simulation
+- Delta traces
+- Tyre strategy recommendations
+- Circuit/driver analytics dashboard
 
 ---
 
-## 5. Build Strategy
+## 9. Future Scope
 
-Parallel development between backend & frontend with API contracts ensuring non-blocking progress.
+Future enhancements may add:
 
----
-
-End of Document
+- Safety car probability models
+- Weather impact adjustments
+- Tyre thermal state modeling
+- Fuel consumption modeling
+- Real‑time telemetry streaming
+- Driver style embeddings
