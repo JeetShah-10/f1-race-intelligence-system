@@ -1,3 +1,4 @@
+@import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;600;700;800;900&display=swap');
 @import "tailwindcss";
 
 /* Racing Fonts */
@@ -37,6 +38,28 @@
   /* ═══════════════════════════════════════════════════════════════════════════
      (A) Heritage — Brand & Emotional Layer
      ═══════════════════════════════════════════════════════════════════════════ */
+  /* ═══════════════════════════════════════════════════════════════════════════
+     (A) Heritage — Brand & Emotional Layer
+     ═══════════════════════════════════════════════════════════════════════════ */
+  --color-void: #000000;
+  --color-void-elevated: #0A0A0B;
+  --color-surface-primary: #0F1115;
+  --color-surface-secondary: #111112;
+  --color-surface-tertiary: #15171C;
+  --color-surface-quaternary: #1A1D24;
+
+  --color-f1-red: #E10600;
+  --color-f1-red-hover: #FF1A1A;
+  --color-f1-red-glow: rgba(225, 6, 0, 0.5);
+
+  --color-neon-orange: #FF8700;
+  --color-neon-orange-hover: #FF9A2E;
+  --color-neon-orange-glow: rgba(255, 135, 0, 0.4);
+  --color-neon-orange-subtle: rgba(255, 135, 0, 0.15);
+
+  --color-electric-cyan: #00FFFF;
+  --color-electric-cyan-glow: rgba(0, 255, 255, 0.3);
+
   --color-ferrari-red: #CF2C28;
   --color-alpine-blue: #004BFF;
   --color-silver-arrow: #9FA4A8;
@@ -87,6 +110,7 @@
   --font-racing: "NeoSpeed", "Rajdhani", sans-serif;
   --font-raceline: "Raceline", "Rajdhani", sans-serif;
   --font-display: "Raceburst", "Rajdhani", sans-serif;
+  --font-stats: "Orbitron", "JetBrains Mono", monospace;
 
   /* F1 Team Colors */
   --color-team-redbull: #3671C6;
@@ -230,6 +254,75 @@
   /* Scroll Progress Bar */
   .scroll-progress {
     background: linear-gradient(90deg, #FF00FF 0%, #00FFFF 50%, #FFD700 100%);
+  }
+
+  /* Stats Typography - Orbitron for numbers */
+  .font-stats {
+    font-family: var(--font-stats);
+    font-feature-settings: "tnum";
+    letter-spacing: 0.05em;
+  }
+
+  /* F1 Movie Poster Style Mesh Gradients */
+  .gradient-mesh-hero {
+    background:
+      radial-gradient(ellipse 80% 50% at 20% 100%, rgba(207, 44, 40, 0.2) 0%, transparent 50%),
+      radial-gradient(ellipse 60% 40% at 80% 80%, rgba(255, 149, 0, 0.15) 0%, transparent 40%),
+      radial-gradient(ellipse 40% 30% at 10% 20%, rgba(0, 210, 190, 0.08) 0%, transparent 30%),
+      linear-gradient(to bottom, #0a0a0a 0%, #050505 100%);
+  }
+
+  .gradient-mesh-features {
+    background:
+      radial-gradient(ellipse 50% 50% at 50% 100%, rgba(0, 210, 190, 0.1) 0%, transparent 50%),
+      radial-gradient(ellipse 60% 40% at 0% 50%, rgba(207, 44, 40, 0.08) 0%, transparent 40%),
+      radial-gradient(ellipse 60% 40% at 100% 50%, rgba(255, 149, 0, 0.08) 0%, transparent 40%);
+  }
+
+  .gradient-sunset {
+    background: linear-gradient(135deg, #0a0a0a 0%, #1a0a05 30%, #2a1510 50%, #1a0a05 70%, #0a0a0a 100%);
+  }
+
+  /* Glow Blobs - Positioned decorative elements */
+  .glow-blob-red {
+    position: absolute;
+    width: 400px;
+    height: 400px;
+    background: radial-gradient(circle, rgba(207, 44, 40, 0.25) 0%, transparent 70%);
+    filter: blur(80px);
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  .glow-blob-cyan {
+    position: absolute;
+    width: 350px;
+    height: 350px;
+    background: radial-gradient(circle, rgba(0, 210, 190, 0.2) 0%, transparent 70%);
+    filter: blur(80px);
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  .glow-blob-orange {
+    position: absolute;
+    width: 300px;
+    height: 300px;
+    background: radial-gradient(circle, rgba(255, 149, 0, 0.2) 0%, transparent 70%);
+    filter: blur(80px);
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  /* Section Divider Gradient */
+  .section-divider {
+    background: linear-gradient(90deg, transparent 0%, rgba(207, 44, 40, 0.3) 50%, transparent 100%);
+    height: 1px;
+  }
+
+  /* Neon Cyan Accent */
+  .neon-cyan-accent {
+    box-shadow: 0 0 20px rgba(0, 210, 190, 0.4), 0 0 40px rgba(0, 210, 190, 0.2);
   }
 }
 

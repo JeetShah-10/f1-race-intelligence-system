@@ -8,7 +8,6 @@ export function AdminPage() {
 
     return (
         <div className="min-h-screen bg-[#0B0D10] text-white">
-            {/* Header */}
             <header className="fixed top-0 left-0 right-0 z-50 h-16 bg-[#CF2C28]/20 border-b border-[#CF2C28]/50">
                 <div className="max-w-7xl mx-auto h-full px-6 flex items-center justify-between">
                     <div className="flex items-center gap-4">
@@ -27,7 +26,6 @@ export function AdminPage() {
             </header>
 
             <div className="pt-16 flex min-h-screen">
-                {/* Sidebar */}
                 <aside className="w-56 bg-black/40 border-r border-white/10">
                     <nav className="p-4 space-y-1">
                         <Link
@@ -47,7 +45,6 @@ export function AdminPage() {
                     </nav>
                 </aside>
 
-                {/* Main Content */}
                 <main className="flex-1 p-8">
                     {currentTab === 'data' && (
                         <div>

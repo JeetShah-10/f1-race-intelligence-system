@@ -1,19 +1,53 @@
 import { createBrowserRouter, RouterProvider, Navigate, Outlet } from 'react-router-dom';
-import { LandingPage } from './pages/LandingPage';
-import { LoginPage } from './pages/LoginPage';
-import { SignupPage } from './pages/SignupPage';
-import { DashboardPage } from './pages/DashboardPage';
-import { PredictPage } from './pages/PredictPage';
-import { SimulatePage } from './pages/SimulatePage';
-import { AnalyzePage } from './pages/AnalyzePage';
-import { TelemetryPage } from './pages/analyze/TelemetryPage';
-import { LapTimesPage } from './pages/analyze/LapTimesPage';
-import { StrategyPage } from './pages/analyze/StrategyPage';
-import { SeasonPage } from './pages/analyze/SeasonPage';
-import { DriverVsPage } from './pages/analyze/DriverVsPage';
-import { ConstructorVsPage } from './pages/analyze/ConstructorVsPage';
-import { AdminPage } from './pages/AdminPage';
+import { lazy, Suspense } from 'react';
 import { useAppStore } from './store';
+
+// Loading fallback component
+const PageLoader = () => (
+    <div className="min-h-screen bg-[#0B0D10] flex items-center justify-center">
+        <div className="flex flex-col items-center gap-4">
+            <div className="w-12 h-12 border-2 border-[#CF2C28] border-t-transparent rounded-full animate-spin" />
+            <span className="text-white/50 text-sm">Loading...</span>
+        </div>
+    </div>
+);
+
+// Lazy load all pages for code splitting
+const LandingPage = lazy(() => import('./pages/LandingPage').then(m => ({ default: m.LandingPage })));
+const LoginPage = lazy(() => import('./pages/LoginPage').then(m => ({ default: m.LoginPage })));
+const SignupPage = lazy(() => import('./pages/SignupPage').then(m => ({ default: m.SignupPage })));
+const PricingPage = lazy(() => import('./pages/PricingPage').then(m => ({ default: m.PricingPage })));
+const DashboardPage = lazy(() => import('./pages/DashboardPage').then(m => ({ default: m.DashboardPage })));
+const PredictPage = lazy(() => import('./pages/PredictPage').then(m => ({ default: m.PredictPage })));
+const SimulatePage = lazy(() => import('./pages/SimulatePage').then(m => ({ default: m.SimulatePage })));
+const AnalyzePage = lazy(() => import('./pages/AnalyzePage').then(m => ({ default: m.AnalyzePage })));
+const TelemetryPage = lazy(() => import('./pages/analyze/TelemetryPage').then(m => ({ default: m.TelemetryPage })));
+const LapTimesPage = lazy(() => import('./pages/analyze/LapTimesPage').then(m => ({ default: m.LapTimesPage })));
+const StrategyPage = lazy(() => import('./pages/analyze/StrategyPage').then(m => ({ default: m.StrategyPage })));
+const SeasonPage = lazy(() => import('./pages/analyze/SeasonPage').then(m => ({ default: m.SeasonPage })));
+const DriverVsPage = lazy(() => import('./pages/analyze/DriverVsPage').then(m => ({ default: m.DriverVsPage })));
+const ConstructorVsPage = lazy(() => import('./pages/analyze/ConstructorVsPage').then(m => ({ default: m.ConstructorVsPage })));
+const AdminPage = lazy(() => import('./pages/AdminPage').then(m => ({ default: m.AdminPage })));
+const DriversPage = lazy(() => import('./pages/DriversPage').then(m => ({ default: m.DriversPage })));
+const TechnologyPage = lazy(() => import('./pages/TechnologyPage').then(m => ({ default: m.TechnologyPage })));
+
+// Suspense wrapper for lazy routes
+const SuspenseWrapper = ({ children }: { children: React.ReactNode }) => (
+    <Suspense fallback={<PageLoader />}>
+        {children}
+    </Suspense>
+);
+
+// Route guard for authenticated users - redirects to login if not authenticated
+function AuthGuard() {
+    const isAuthenticated = useAppStore((state) => state.isAuthenticated);
+
+    if (!isAuthenticated) {
+        return <Navigate to="/login" replace />;
+    }
+
+    return <Outlet />;
+}
 
 // Route guard for admin pages - rendered inside router context
 function AdminGuard() {
@@ -33,31 +67,37 @@ function AdminGuard() {
 
 const router = createBrowserRouter([
     // Public routes
-    { path: '/', element: <LandingPage /> },
-    { path: '/login', element: <LoginPage /> },
-    { path: '/signup', element: <SignupPage /> },
+    { path: '/', element: <SuspenseWrapper><LandingPage /></SuspenseWrapper> },
+    { path: '/login', element: <SuspenseWrapper><LoginPage /></SuspenseWrapper> },
+    { path: '/signup', element: <SuspenseWrapper><SignupPage /></SuspenseWrapper> },
+    { path: '/pricing', element: <SuspenseWrapper><PricingPage /></SuspenseWrapper> },
+    { path: '/drivers', element: <SuspenseWrapper><DriversPage /></SuspenseWrapper> },
+    { path: '/technology', element: <SuspenseWrapper><TechnologyPage /></SuspenseWrapper> },
 
-    // Main platform routes
-    { path: '/dashboard', element: <DashboardPage /> },
-    { path: '/predict', element: <PredictPage /> },
-    { path: '/simulate', element: <SimulatePage /> },
+    // Protected platform routes (require authentication)
+    {
+        element: <AuthGuard />,
+        children: [
+            { path: '/dashboard', element: <SuspenseWrapper><DashboardPage /></SuspenseWrapper> },
+            { path: '/predict', element: <SuspenseWrapper><PredictPage /></SuspenseWrapper> },
+            { path: '/simulate', element: <SuspenseWrapper><SimulatePage /></SuspenseWrapper> },
+            { path: '/analyze', element: <SuspenseWrapper><AnalyzePage /></SuspenseWrapper> },
+            { path: '/analyze/telemetry', element: <SuspenseWrapper><TelemetryPage /></SuspenseWrapper> },
+            { path: '/analyze/laptimes', element: <SuspenseWrapper><LapTimesPage /></SuspenseWrapper> },
+            { path: '/analyze/strategy', element: <SuspenseWrapper><StrategyPage /></SuspenseWrapper> },
+            { path: '/analyze/season', element: <SuspenseWrapper><SeasonPage /></SuspenseWrapper> },
+            { path: '/analyze/driver', element: <SuspenseWrapper><DriverVsPage /></SuspenseWrapper> },
+            { path: '/analyze/constructor', element: <SuspenseWrapper><ConstructorVsPage /></SuspenseWrapper> },
+        ],
+    },
 
-    // Analyze routes
-    { path: '/analyze', element: <AnalyzePage /> },
-    { path: '/analyze/telemetry', element: <TelemetryPage /> },
-    { path: '/analyze/laptimes', element: <LapTimesPage /> },
-    { path: '/analyze/strategy', element: <StrategyPage /> },
-    { path: '/analyze/season', element: <SeasonPage /> },
-    { path: '/analyze/driver', element: <DriverVsPage /> },
-    { path: '/analyze/constructor', element: <ConstructorVsPage /> },
-
-    // Admin routes (guarded with layout pattern)
+    // Admin routes (guarded with admin role check)
     {
         element: <AdminGuard />,
         children: [
-            { path: '/admin', element: <AdminPage /> },
-            { path: '/admin/data', element: <AdminPage /> },
-            { path: '/admin/system', element: <AdminPage /> },
+            { path: '/admin', element: <SuspenseWrapper><AdminPage /></SuspenseWrapper> },
+            { path: '/admin/data', element: <SuspenseWrapper><AdminPage /></SuspenseWrapper> },
+            { path: '/admin/system', element: <SuspenseWrapper><AdminPage /></SuspenseWrapper> },
         ],
     },
 
