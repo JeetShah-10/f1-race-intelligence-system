@@ -25,9 +25,6 @@ export default defineConfig({
           'state': ['zustand'],
           // Animation library (used heavily in landing page)
           'framer': ['framer-motion'],
-          // Three.js ecosystem (heavy, load separately)
-          'three': ['three'],
-          'react-three': ['@react-three/fiber', '@react-three/drei'],
         },
       },
     },
