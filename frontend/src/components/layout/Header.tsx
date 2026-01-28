@@ -8,8 +8,6 @@ interface HeaderProps {
 }
 
 const navLinks = [
-    { label: 'Technology', href: '/technology' },
-    { label: 'Drivers', href: '/drivers' },
     { label: 'Pricing', href: '/pricing' },
 ];
 

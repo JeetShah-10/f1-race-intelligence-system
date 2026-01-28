@@ -28,8 +28,6 @@ const SeasonPage = lazy(() => import('./pages/analyze/SeasonPage').then(m => ({ 
 const DriverVsPage = lazy(() => import('./pages/analyze/DriverVsPage').then(m => ({ default: m.DriverVsPage })));
 const ConstructorVsPage = lazy(() => import('./pages/analyze/ConstructorVsPage').then(m => ({ default: m.ConstructorVsPage })));
 const AdminPage = lazy(() => import('./pages/AdminPage').then(m => ({ default: m.AdminPage })));
-const DriversPage = lazy(() => import('./pages/DriversPage').then(m => ({ default: m.DriversPage })));
-const TechnologyPage = lazy(() => import('./pages/TechnologyPage').then(m => ({ default: m.TechnologyPage })));
 
 // Suspense wrapper for lazy routes
 const SuspenseWrapper = ({ children }: { children: React.ReactNode }) => (
@@ -71,8 +69,6 @@ const router = createBrowserRouter([
     { path: '/login', element: <SuspenseWrapper><LoginPage /></SuspenseWrapper> },
     { path: '/signup', element: <SuspenseWrapper><SignupPage /></SuspenseWrapper> },
     { path: '/pricing', element: <SuspenseWrapper><PricingPage /></SuspenseWrapper> },
-    { path: '/drivers', element: <SuspenseWrapper><DriversPage /></SuspenseWrapper> },
-    { path: '/technology', element: <SuspenseWrapper><TechnologyPage /></SuspenseWrapper> },
 
     // Protected platform routes (require authentication)
     {
