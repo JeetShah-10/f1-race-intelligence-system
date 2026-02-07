@@ -1,31 +1,8 @@
-# Agent-specific (private)
-.agent/
-.antigravity/
-.context/
-.vscode/
 
-# Reference files (too large for regular git)
-3D-model-and-references/
-
-# Python
-venv/
+# Backend Cache
+backend/cache/
 __pycache__/
 *.pyc
-*.pyo
 .env
-.env.local
-
-# Node
-node_modules/
-
-# OS
-.DS_Store
-Thumbs.db
-
-# IDE
-*.swp
-*.swo
-*.idea/
-
-# Build artifacts
-*.local
+.clauderc.json
+.vscode/
