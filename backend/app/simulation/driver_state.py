@@ -11,11 +11,17 @@ class DriverState:
         driver_id: str,
         team: str,
         grid_position: int,
-        base_pace: float
+        base_pace: float,
+        consistency: float = 0.95,
+        reliability: float = 0.95
     ):
         # Identity
         self.driver_id = driver_id
         self.team = team
+
+        # Skills & Reliability
+        self.consistency = consistency
+        self.reliability = reliability
 
         # Race position
         self.grid_position = grid_position
