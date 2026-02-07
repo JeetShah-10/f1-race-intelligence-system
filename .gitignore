@@ -1,0 +1,8 @@
+
+# Backend Cache
+backend/cache/
+__pycache__/
+*.pyc
+.env
+.clauderc.json
+.vscode/

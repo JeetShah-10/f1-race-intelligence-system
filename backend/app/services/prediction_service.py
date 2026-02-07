@@ -54,12 +54,19 @@ class PredictionService:
                 driver=driver.driver,
                 compound=driver.compound,
                 tyre_life=driver.tyre_life,
+<<<<<<< HEAD
                 track_temp=request.track_temp,
                 air_temp=request.air_temp,
                 team=driver.team,
                 speed_st=request.speed_st or 0, # Use 0 if not provided
                 speed_fl=request.speed_fl or 0, # Use 0 if not provided
                 session_type=request.session_type
+=======
+                team=driver.team,
+                speed_st=request.speed_st or 0,
+                speed_fl=request.speed_fl or 0,
+                lap_number=1 # Baseline at start of race
+>>>>>>> 5875195 (Recover all stashed backend files - Week 1 API endpoints and services)
             )
             
             degradation_slope = self.pace_model.get_degradation_slope(
