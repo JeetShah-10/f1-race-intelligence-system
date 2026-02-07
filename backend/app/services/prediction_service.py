@@ -1,17 +1,23 @@
 import joblib
 import pandas as pd
 from pathlib import Path
+import numpy as np
+from app.schemas.ml_simulation_handoff import MLHandoff
+from app.ml.pace_model import PaceModel
+from app.schemas.simulation import SimulationRequest
 
 MODEL_PATH = Path(__file__).resolve().parent.parent / "models" / "race_rank_model_v0.pkl"
 
-class RaceRankPredictor:
+class PredictionService:
     def __init__(self):
         try:
-            self.model = joblib.load(MODEL_PATH)
+            self.rank_model = joblib.load(MODEL_PATH)
         except (FileNotFoundError, EOFError, ValueError) as e:
-            print(f"Error loading model: {e}")
-            print("Using a dummy model that returns random predictions.")
-            self.model = None
+            print(f"Error loading rank model: {e}")
+            self.rank_model = None
+
+        self.pace_model = PaceModel()
+        self.pace_model.load_models()
 
         # This MUST match Colab feature contract
         self.feature_columns = [
@@ -22,19 +28,48 @@ class RaceRankPredictor:
             "finished"
         ]
 
-    def predict(self, drivers: list[dict]):
+    def predict_race_rank(self, drivers: list[dict]):
         df = pd.DataFrame(drivers)
 
         # enforce column order
         X = df[self.feature_columns].fillna(df.mean(numeric_only=True))
 
-        if self.model:
-            predictions = self.model.predict(X)
+        if self.rank_model:
+            predictions = self.rank_model.predict(X)
         else:
             # Dummy prediction logic if model loading failed
-            import numpy as np
             predictions = np.random.permutation(len(X)) + 1
             
         df["predicted_position"] = predictions
 
         return df.sort_values("predicted_position")
+
+    def get_simulation_handoff(self, request: SimulationRequest) -> list[MLHandoff]:
+        """
+        Generates a list of MLHandoff objects using the PaceModel.
+        """
+        handoff_data = []
+        for driver in request.drivers:
+            baseline_lap_time = self.pace_model.predict_baseline_pace(
+                driver=driver.driver,
+                compound=driver.compound,
+                tyre_life=driver.tyre_life,
+                team=driver.team,
+                speed_st=request.speed_st or 0,
+                speed_fl=request.speed_fl or 0,
+                lap_number=1 # Baseline at start of race
+            )
+            
+            degradation_slope = self.pace_model.get_degradation_slope(
+                driver=driver.driver,
+                compound=driver.compound
+            )
+
+            handoff = MLHandoff(
+                driver_id=driver.driver,
+                baseline_lap_time=baseline_lap_time,
+                tyre_degradation_slope=degradation_slope
+            )
+            handoff_data.append(handoff)
+        
+        return handoff_data
