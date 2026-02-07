@@ -33,7 +33,6 @@ export default defineConfig({
     // Minify with esbuild (faster than terser)
     minify: 'esbuild',
   },
-  // Optimize dependency pre-bundling
   optimizeDeps: {
     include: [
       'react',
@@ -42,5 +41,8 @@ export default defineConfig({
       'zustand',
       'framer-motion',
     ],
+  },
+  server: {
+    host: true,
   },
 })

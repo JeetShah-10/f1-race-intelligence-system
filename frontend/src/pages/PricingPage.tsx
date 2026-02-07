@@ -3,10 +3,11 @@ import { motion } from 'framer-motion';
 import { Link } from 'react-router-dom';
 import { Header } from '@/components/layout/Header';
 import { Footer } from '@/components/layout/Footer';
-import { GlassCard } from '@/components/ui/GlassCard';
+import { Check, Zap, Trophy, Building2, ChevronDown } from 'lucide-react';
 
 interface PricingTier {
     name: string;
+    icon: React.ReactNode;
     description: string;
     monthlyPrice: number;
     annualPrice: number;
@@ -14,84 +15,81 @@ interface PricingTier {
     highlighted?: boolean;
     ctaText: string;
     ctaLink: string;
+    accentColor: string;
 }
 
 const pricingTiers: PricingTier[] = [
     {
         name: 'Starter',
-        description: 'Perfect for casual F1 fans who want to explore race predictions.',
+        icon: <Zap className="w-5 h-5" />,
+        description: 'For casual F1 fans',
         monthlyPrice: 0,
         annualPrice: 0,
         features: [
-            'Race predictions for 5 GPs/season',
-            'Basic qualifying predictions',
+            '5 predictions per season',
+            'Basic qualifying analysis',
             'Driver standings tracker',
-            'Race calendar & notifications',
-            'Community access',
+            'Race calendar alerts',
         ],
         ctaText: 'Get Started Free',
         ctaLink: '/signup',
+        accentColor: '#3B82F6',
     },
     {
         name: 'Pro',
-        description: 'For dedicated fans who want deeper insights and simulations.',
+        icon: <Trophy className="w-5 h-5" />,
+        description: 'For dedicated enthusiasts',
         monthlyPrice: 19,
         annualPrice: 15,
         features: [
-            'Unlimited race predictions',
-            'Advanced qualifying analysis',
-            'Real-time race simulations',
-            'Strategy optimization tools',
-            'Lap time analysis',
-            'Weather impact predictions',
-            'API access (1,000 calls/mo)',
+            'Unlimited predictions',
+            'Real-time simulations',
+            'Strategy optimization',
+            'Weather analysis',
+            'API access (1K/mo)',
             'Priority support',
         ],
         highlighted: true,
-        ctaText: 'Start Pro Trial',
+        ctaText: 'Start Free Trial',
         ctaLink: '/signup?plan=pro',
+        accentColor: '#E10600',
     },
     {
         name: 'Enterprise',
-        description: 'For teams, media, and professionals requiring full platform access.',
+        icon: <Building2 className="w-5 h-5" />,
+        description: 'For teams & pros',
         monthlyPrice: 99,
         annualPrice: 79,
         features: [
             'Everything in Pro',
             'Unlimited simulations',
-            'Historical data access (2014+)',
-            'Team comparison tools',
-            'Custom prediction models',
+            'Historical data (2014+)',
+            'Custom models',
             'Telemetry deep-dive',
-            'API access (unlimited)',
-            'Dedicated account manager',
-            'White-label options',
+            'Unlimited API',
         ],
         ctaText: 'Contact Sales',
         ctaLink: '/signup?plan=enterprise',
+        accentColor: '#8B5CF6',
     },
 ];
 
 const faqs = [
     {
         question: 'How accurate are the predictions?',
-        answer: 'Our AI models achieve 85-92% accuracy on race outcomes and 78-85% on qualifying positions, based on historical validation across 5 seasons of data.',
+        answer: 'Our AI models achieve 85-92% accuracy on race outcomes, validated across 5+ seasons.',
     },
     {
-        question: 'Can I cancel my subscription anytime?',
-        answer: 'Yes, you can cancel anytime. Your access will continue until the end of your billing period with no hidden fees.',
+        question: 'Can I cancel anytime?',
+        answer: 'Yes, cancel anytime with no hidden fees. Access continues until billing period ends.',
     },
     {
-        question: 'What data sources do you use?',
-        answer: 'We integrate official F1 timing data, weather APIs, historical race data, and proprietary telemetry analysis to power our predictions.',
+        question: 'Is there a free trial?',
+        answer: 'Yes! Pro includes a 14-day free trial with full access. No credit card required.',
     },
     {
-        question: 'Is there a free trial for Pro?',
-        answer: 'Yes! Pro comes with a 14-day free trial. No credit card required to start.',
-    },
-    {
-        question: 'Do you offer team or group discounts?',
-        answer: 'Enterprise plans include volume discounts for teams of 5+. Contact sales for custom pricing.',
+        question: 'What data powers predictions?',
+        answer: 'Official F1 timing, weather APIs, historical data from 2014+, and telemetry analysis.',
     },
 ];
 
@@ -100,196 +98,228 @@ export const PricingPage: React.FC = () => {
     const [openFaq, setOpenFaq] = useState<number | null>(null);
 
     return (
-        <div className="min-h-screen bg-[#0a0a0a] text-white">
+        <div className="min-h-screen bg-[#0A0A0A] text-white">
             <Header />
 
-            {/* Hero Section */}
-            <section className="pt-32 pb-16 px-4">
-                <div className="max-w-4xl mx-auto text-center">
-                    <motion.div
-                        initial={{ opacity: 0, y: 20 }}
-                        animate={{ opacity: 1, y: 0 }}
-                        transition={{ duration: 0.6 }}
-                    >
-                        <span className="inline-block px-4 py-1.5 bg-f1-red/10 border border-f1-red/30 rounded-full text-f1-red text-xs font-semibold uppercase tracking-wider mb-6">
-                            Pricing
-                        </span>
-                        <h1 className="text-4xl md:text-5xl lg:text-6xl font-racing text-white mb-4">
-                            Choose Your <span className="text-transparent bg-clip-text bg-gradient-to-r from-f1-red via-neon-orange to-sunset-gold">Grid Position</span>
-                        </h1>
-                        <p className="text-lg text-white/60 max-w-2xl mx-auto">
-                            From casual fans to professional analysts, we have a plan that fits your race intelligence needs.
-                        </p>
-                    </motion.div>
+            {/* Hero + Pricing Cards with Driver Behind */}
+            <section className="relative pt-24 pb-12 overflow-hidden">
+                {/* Background */}
+                <div className="absolute inset-0 bg-gradient-to-b from-f1-red/5 via-transparent to-transparent" />
 
-                    {/* Billing Toggle */}
-                    <motion.div
-                        initial={{ opacity: 0, y: 20 }}
-                        animate={{ opacity: 1, y: 0 }}
-                        transition={{ duration: 0.6, delay: 0.1 }}
-                        className="mt-10 flex items-center justify-center gap-4"
-                    >
-                        <span className={`text-sm ${!isAnnual ? 'text-white' : 'text-white/50'}`}>
-                            Monthly
-                        </span>
-                        <button
-                            onClick={() => setIsAnnual(!isAnnual)}
-                            className={`relative w-14 h-7 rounded-full transition-colors ${isAnnual ? 'bg-f1-red' : 'bg-white/20'}`}
-                        >
-                            <motion.div
-                                className="absolute top-1 w-5 h-5 bg-white rounded-full"
-                                animate={{ left: isAnnual ? '32px' : '4px' }}
-                                transition={{ type: 'spring', stiffness: 500, damping: 30 }}
-                            />
-                        </button>
-                        <span className={`text-sm ${isAnnual ? 'text-white' : 'text-white/50'}`}>
-                            Annual
-                        </span>
-                        {isAnnual && (
-                            <span className="px-2 py-1 bg-green-500/20 border border-green-500/30 text-green-400 text-xs font-semibold rounded-full">
-                                Save 20%
-                            </span>
-                        )}
-                    </motion.div>
+                {/* George Russell - Behind Right Side */}
+                <div className="absolute top-16 -right-8 w-[450px] h-[700px] z-0 pointer-events-none hidden lg:block">
+                    {/* Glow Effect */}
+                    <div className="absolute bottom-16 left-1/2 -translate-x-1/2 w-[250px] h-[250px] bg-teal-500/30 rounded-full blur-[100px]" />
+                    <img
+                        src="/assets/drivers/george-russell-3.webp"
+                        alt="George Russell"
+                        className="absolute bottom-0 right-0 h-[600px] w-auto object-contain opacity-90"
+                        style={{
+                            maskImage: 'linear-gradient(to top, transparent 0%, black 25%)',
+                            WebkitMaskImage: 'linear-gradient(to top, transparent 0%, black 25%)'
+                        }}
+                    />
                 </div>
-            </section>
 
-            {/* Pricing Cards */}
-            <section className="pb-20 px-4">
-                <div className="max-w-6xl mx-auto grid md:grid-cols-3 gap-6 lg:gap-8">
-                    {pricingTiers.map((tier, index) => (
+                <div className="relative max-w-7xl mx-auto px-4 sm:px-6 z-10">
+                    {/* Hero Row - Compact */}
+                    <div className="flex flex-col lg:flex-row items-center lg:items-start justify-between gap-6 mb-10">
+                        {/* Left: Content */}
                         <motion.div
-                            key={tier.name}
-                            initial={{ opacity: 0, y: 30 }}
+                            initial={{ opacity: 0, y: 20 }}
                             animate={{ opacity: 1, y: 0 }}
-                            transition={{ duration: 0.6, delay: 0.2 + index * 0.1 }}
+                            transition={{ duration: 0.5 }}
+                            className="flex-1 text-center lg:text-left"
                         >
-                            <GlassCard
-                                className={`relative h-full flex flex-col ${tier.highlighted
-                                        ? 'border-f1-red/50 shadow-[0_0_40px_rgba(207,44,40,0.15)]'
-                                        : ''
-                                    }`}
-                                padding="lg"
-                                glowColor={tier.highlighted ? 'red' : 'white'}
+                            <h1 className="text-3xl md:text-4xl lg:text-5xl font-racing text-white mb-3">
+                                Choose Your{' '}
+                                <span className="text-transparent bg-clip-text bg-gradient-to-r from-f1-red to-orange-500">
+                                    Plan
+                                </span>
+                            </h1>
+                            <p className="text-white/50 max-w-md mx-auto lg:mx-0 mb-4">
+                                Unlock AI-powered race predictions and analysis
+                            </p>
+
+                            {/* Billing Toggle */}
+                            <div className="flex items-center gap-3 p-1.5 bg-white/5 rounded-full w-fit mx-auto lg:mx-0">
+                                <button
+                                    onClick={() => setIsAnnual(false)}
+                                    className={`px-4 py-2 text-sm font-medium rounded-full transition-all ${!isAnnual ? 'bg-white text-black' : 'text-white/50 hover:text-white'
+                                        }`}
+                                >
+                                    Monthly
+                                </button>
+                                <button
+                                    onClick={() => setIsAnnual(true)}
+                                    className={`px-4 py-2 text-sm font-medium rounded-full transition-all flex items-center gap-2 ${isAnnual ? 'bg-white text-black' : 'text-white/50 hover:text-white'
+                                        }`}
+                                >
+                                    Annual
+                                    <span className="px-1.5 py-0.5 bg-green-500 text-white text-[10px] font-bold rounded">
+                                        -20%
+                                    </span>
+                                </button>
+                            </div>
+                        </motion.div>
+                    </div>
+
+                    {/* Pricing Cards */}
+                    <div className="grid md:grid-cols-3 gap-5 lg:pr-32">
+                        {pricingTiers.map((tier, index) => (
+                            <motion.div
+                                key={tier.name}
+                                initial={{ opacity: 0, y: 20 }}
+                                animate={{ opacity: 1, y: 0 }}
+                                transition={{ duration: 0.4, delay: 0.2 + index * 0.1 }}
+                                className={`
+                                    relative rounded-2xl overflow-hidden backdrop-blur-sm
+                                    ${tier.highlighted
+                                        ? 'bg-gradient-to-b from-white/[0.12] to-white/[0.04] ring-1 ring-f1-red/50'
+                                        : 'bg-white/[0.04] ring-1 ring-white/[0.08]'
+                                    }
+                                `}
                             >
+                                {/* Top Accent */}
+                                <div
+                                    className="h-0.5 w-full"
+                                    style={{ background: `linear-gradient(90deg, ${tier.accentColor}, transparent)` }}
+                                />
+
                                 {tier.highlighted && (
-                                    <div className="absolute -top-3 left-1/2 -translate-x-1/2">
-                                        <span className="px-4 py-1 bg-f1-red text-white text-xs font-bold uppercase tracking-wider rounded-full">
-                                            Most Popular
+                                    <div className="absolute top-3 right-3">
+                                        <span className="px-2 py-0.5 bg-f1-red text-white text-[9px] font-bold uppercase tracking-wider rounded-full">
+                                            Popular
                                         </span>
                                     </div>
                                 )}
 
-                                <div className="mb-6">
-                                    <h3 className="text-xl font-bold text-white mb-2">{tier.name}</h3>
-                                    <p className="text-white/50 text-sm">{tier.description}</p>
-                                </div>
-
-                                <div className="mb-6">
-                                    <div className="flex items-baseline gap-1">
-                                        <span className="text-4xl font-bold text-white">
-                                            ${isAnnual ? tier.annualPrice : tier.monthlyPrice}
-                                        </span>
-                                        <span className="text-white/50">/month</span>
+                                <div className="p-6">
+                                    {/* Header */}
+                                    <div className="flex items-center gap-2.5 mb-2">
+                                        <div
+                                            className="w-8 h-8 rounded-lg flex items-center justify-center"
+                                            style={{ backgroundColor: `${tier.accentColor}20`, color: tier.accentColor }}
+                                        >
+                                            {tier.icon}
+                                        </div>
+                                        <h3 className="text-lg font-semibold text-white">{tier.name}</h3>
                                     </div>
-                                    {tier.monthlyPrice > 0 && isAnnual && (
-                                        <p className="text-green-400 text-sm mt-1">
-                                            Billed ${tier.annualPrice * 12}/year
-                                        </p>
-                                    )}
+                                    <p className="text-white/40 text-sm mb-4">{tier.description}</p>
+
+                                    {/* Price */}
+                                    <div className="mb-5">
+                                        <div className="flex items-baseline gap-1">
+                                            <span className="text-4xl font-bold text-white">
+                                                ${isAnnual ? tier.annualPrice : tier.monthlyPrice}
+                                            </span>
+                                            <span className="text-white/40 text-sm">/mo</span>
+                                        </div>
+                                        {tier.monthlyPrice > 0 && isAnnual && (
+                                            <p className="text-white/30 text-xs mt-0.5">
+                                                ${tier.annualPrice * 12}/year
+                                            </p>
+                                        )}
+                                    </div>
+
+                                    {/* CTA */}
+                                    <Link
+                                        to={tier.ctaLink}
+                                        className={`
+                                            block w-full py-3 text-center text-sm font-semibold rounded-xl transition-all mb-5
+                                            ${tier.highlighted
+                                                ? 'bg-f1-red hover:bg-f1-red/90 text-white'
+                                                : 'bg-white/10 hover:bg-white/15 text-white'
+                                            }
+                                        `}
+                                    >
+                                        {tier.ctaText}
+                                    </Link>
+
+                                    {/* Features */}
+                                    <ul className="space-y-2.5">
+                                        {tier.features.map((feature) => (
+                                            <li key={feature} className="flex items-start gap-2.5">
+                                                <Check
+                                                    className="w-4 h-4 mt-0.5 flex-shrink-0"
+                                                    style={{ color: tier.accentColor }}
+                                                />
+                                                <span className="text-white/60 text-sm">{feature}</span>
+                                            </li>
+                                        ))}
+                                    </ul>
                                 </div>
-
-                                <ul className="space-y-3 mb-8 flex-grow">
-                                    {tier.features.map((feature) => (
-                                        <li key={feature} className="flex items-start gap-3">
-                                            <svg className="w-5 h-5 text-neon-cyan flex-shrink-0 mt-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
-                                            </svg>
-                                            <span className="text-white/70 text-sm">{feature}</span>
-                                        </li>
-                                    ))}
-                                </ul>
-
-                                <Link
-                                    to={tier.ctaLink}
-                                    className={`block w-full py-3 text-center font-semibold rounded-lg transition-all ${tier.highlighted
-                                            ? 'bg-f1-red hover:bg-f1-red/90 text-white hover:shadow-[0_0_30px_rgba(207,44,40,0.4)]'
-                                            : 'bg-white/10 hover:bg-white/15 text-white border border-white/10'
-                                        }`}
-                                >
-                                    {tier.ctaText}
-                                </Link>
-                            </GlassCard>
-                        </motion.div>
-                    ))}
+                            </motion.div>
+                        ))}
+                    </div>
                 </div>
             </section>
 
-            {/* Feature Comparison */}
-            <section className="py-20 px-4 border-t border-white/10">
-                <div className="max-w-4xl mx-auto">
-                    <h2 className="text-2xl md:text-3xl font-racing text-center mb-12">
-                        Compare Features
-                    </h2>
-                    <div className="overflow-x-auto">
-                        <table className="w-full text-left">
-                            <thead>
-                                <tr className="border-b border-white/10">
-                                    <th className="py-4 text-white/50 font-medium">Feature</th>
-                                    <th className="py-4 text-center text-white/50 font-medium">Starter</th>
-                                    <th className="py-4 text-center text-white/50 font-medium">Pro</th>
-                                    <th className="py-4 text-center text-white/50 font-medium">Enterprise</th>
-                                </tr>
-                            </thead>
-                            <tbody className="text-sm">
-                                {[
-                                    ['Race Predictions', '5/season', 'Unlimited', 'Unlimited'],
-                                    ['Simulations', '—', '50/mo', 'Unlimited'],
-                                    ['API Access', '—', '1,000/mo', 'Unlimited'],
-                                    ['Historical Data', 'Current season', '3 years', 'All (2014+)'],
-                                    ['Support', 'Community', 'Priority', 'Dedicated'],
-                                ].map(([feature, starter, pro, enterprise]) => (
-                                    <tr key={feature} className="border-b border-white/5">
-                                        <td className="py-4 text-white">{feature}</td>
-                                        <td className="py-4 text-center text-white/60">{starter}</td>
-                                        <td className="py-4 text-center text-white/60">{pro}</td>
-                                        <td className="py-4 text-center text-white/60">{enterprise}</td>
-                                    </tr>
-                                ))}
-                            </tbody>
-                        </table>
+            {/* Social Proof with Kimi Antonelli */}
+            <section className="relative py-16 overflow-hidden">
+                <div className="max-w-6xl mx-auto px-4 sm:px-6">
+                    <div className="relative rounded-2xl bg-gradient-to-br from-white/[0.05] to-transparent border border-white/[0.08] overflow-hidden">
+                        <div className="grid lg:grid-cols-2 items-center">
+                            {/* Left: Driver */}
+                            <div className="relative h-[280px] lg:h-[320px]">
+                                <div className="absolute bottom-0 left-1/4 w-[200px] h-[200px] bg-teal-500/30 rounded-full blur-[80px]" />
+                                <img
+                                    src="/assets/drivers/kimi-antonelli-3.webp"
+                                    alt="Kimi Antonelli"
+                                    className="absolute bottom-0 left-1/2 lg:left-1/3 -translate-x-1/2 lg:-translate-x-1/3 h-[260px] lg:h-[300px] w-auto object-contain"
+                                />
+                            </div>
+
+                            {/* Right: Content */}
+                            <div className="p-8 lg:p-10">
+                                <h2 className="text-2xl md:text-3xl font-racing text-white mb-3">
+                                    Trusted by{' '}
+                                    <span className="text-transparent bg-clip-text bg-gradient-to-r from-teal-400 to-cyan-400">
+                                        Thousands
+                                    </span>
+                                </h2>
+                                <p className="text-white/50 mb-6 text-sm">
+                                    Join F1 enthusiasts using AI-powered predictions and analysis.
+                                </p>
+                                <div className="grid grid-cols-3 gap-4">
+                                    <div>
+                                        <div className="text-2xl font-bold text-white">92%</div>
+                                        <div className="text-white/40 text-xs">Accuracy</div>
+                                    </div>
+                                    <div>
+                                        <div className="text-2xl font-bold text-white">500+</div>
+                                        <div className="text-white/40 text-xs">Races</div>
+                                    </div>
+                                    <div>
+                                        <div className="text-2xl font-bold text-white">&lt;50ms</div>
+                                        <div className="text-white/40 text-xs">Response</div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </section>
 
             {/* FAQ Section */}
-            <section className="py-20 px-4 border-t border-white/10">
-                <div className="max-w-3xl mx-auto">
-                    <h2 className="text-2xl md:text-3xl font-racing text-center mb-12">
-                        Frequently Asked Questions
-                    </h2>
-                    <div className="space-y-4">
+            <section className="py-12 px-4">
+                <div className="max-w-2xl mx-auto">
+                    <h2 className="text-2xl font-racing text-center mb-8">Questions?</h2>
+                    <div className="space-y-2">
                         {faqs.map((faq, index) => (
-                            <GlassCard
+                            <div
                                 key={index}
-                                padding="none"
-                                className="overflow-hidden"
-                                interactive={false}
+                                className="rounded-xl border border-white/[0.06] bg-white/[0.02] overflow-hidden"
                             >
                                 <button
                                     onClick={() => setOpenFaq(openFaq === index ? null : index)}
-                                    className="w-full px-6 py-4 flex items-center justify-between text-left hover:bg-white/5 transition-colors"
+                                    className="w-full px-5 py-3.5 flex items-center justify-between text-left hover:bg-white/[0.02] transition-colors"
                                 >
-                                    <span className="font-medium text-white">{faq.question}</span>
-                                    <motion.svg
-                                        animate={{ rotate: openFaq === index ? 180 : 0 }}
-                                        className="w-5 h-5 text-white/50 flex-shrink-0"
-                                        fill="none"
-                                        viewBox="0 0 24 24"
-                                        stroke="currentColor"
-                                    >
-                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
-                                    </motion.svg>
+                                    <span className="font-medium text-white text-sm">{faq.question}</span>
+                                    <ChevronDown
+                                        className={`w-4 h-4 text-white/40 transition-transform ${openFaq === index ? 'rotate-180' : ''
+                                            }`}
+                                    />
                                 </button>
                                 <motion.div
                                     initial={false}
@@ -297,41 +327,60 @@ export const PricingPage: React.FC = () => {
                                         height: openFaq === index ? 'auto' : 0,
                                         opacity: openFaq === index ? 1 : 0,
                                     }}
-                                    transition={{ duration: 0.3 }}
+                                    transition={{ duration: 0.2 }}
                                     className="overflow-hidden"
                                 >
-                                    <p className="px-6 pb-4 text-white/60">
-                                        {faq.answer}
-                                    </p>
+                                    <p className="px-5 pb-4 text-white/50 text-sm">{faq.answer}</p>
                                 </motion.div>
-                            </GlassCard>
+                            </div>
                         ))}
                     </div>
                 </div>
             </section>
 
-            {/* CTA Section */}
-            <section className="py-20 px-4 border-t border-white/10 bg-gradient-to-b from-transparent to-f1-red/5">
-                <div className="max-w-2xl mx-auto text-center">
-                    <h2 className="text-2xl md:text-3xl font-racing mb-4">
-                        Ready to Predict the Race?
-                    </h2>
-                    <p className="text-white/60 mb-8">
-                        Join thousands of F1 fans using AI-powered predictions to enhance their race experience.
-                    </p>
-                    <div className="flex flex-col sm:flex-row gap-4 justify-center">
-                        <Link
-                            to="/signup"
-                            className="px-8 py-3 bg-f1-red hover:bg-f1-red/90 text-white font-semibold rounded-lg transition-all hover:shadow-[0_0_30px_rgba(207,44,40,0.4)]"
-                        >
-                            Start Free Trial
-                        </Link>
-                        <Link
-                            to="/"
-                            className="px-8 py-3 bg-white/10 hover:bg-white/15 text-white font-semibold rounded-lg border border-white/10 transition-all"
-                        >
-                            Back to Home
-                        </Link>
+            {/* Final CTA with Isack Hadjar */}
+            <section className="relative py-16 px-4 overflow-hidden">
+                <div className="max-w-4xl mx-auto">
+                    <div className="relative rounded-2xl bg-gradient-to-r from-f1-red/15 to-blue-500/15 border border-white/[0.08] overflow-hidden">
+                        <div className="grid lg:grid-cols-2 items-center min-h-[280px]">
+                            {/* Left: Content */}
+                            <div className="p-8 lg:p-10">
+                                <h2 className="text-2xl md:text-3xl font-racing mb-3">
+                                    Ready to Start?
+                                </h2>
+                                <p className="text-white/50 mb-6 text-sm">
+                                    Join the next generation of F1 analysis today.
+                                </p>
+                                <div className="flex flex-wrap gap-3">
+                                    <Link
+                                        to="/signup"
+                                        className="px-5 py-2.5 bg-f1-red hover:bg-f1-red/90 text-white text-sm font-semibold rounded-xl transition-all"
+                                    >
+                                        Start Free Trial
+                                    </Link>
+                                    <Link
+                                        to="/"
+                                        className="px-5 py-2.5 bg-white/5 hover:bg-white/10 text-white text-sm font-medium rounded-xl border border-white/10"
+                                    >
+                                        Back to Home
+                                    </Link>
+                                </div>
+                            </div>
+
+                            {/* Right: Driver - Arvid Lindblad */}
+                            <div className="absolute inset-0 hidden lg:block pointer-events-none overflow-hidden">
+                                <div className="absolute bottom-0 right-0 w-[400px] h-[400px] bg-blue-500/20 rounded-full blur-[120px]" />
+                                <img
+                                    src="/assets/drivers/arvid-lindblad-2.webp"
+                                    alt="Arvid Lindblad"
+                                    className="absolute bottom-0 right-0 h-full w-auto object-contain object-right-bottom"
+                                    style={{
+                                        maskImage: 'linear-gradient(to left, black 50%, transparent 95%)',
+                                        WebkitMaskImage: 'linear-gradient(to left, black 50%, transparent 95%)'
+                                    }}
+                                />
+                            </div>
+                        </div>
                     </div>
                 </div>
             </section>

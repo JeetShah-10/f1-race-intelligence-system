@@ -1,5 +1,5 @@
-import { createBrowserRouter, RouterProvider, Navigate, Outlet } from 'react-router-dom';
-import { lazy, Suspense } from 'react';
+import { createBrowserRouter, RouterProvider, Navigate, Outlet, useLocation } from 'react-router-dom';
+import { lazy, Suspense, useEffect } from 'react';
 import { useAppStore } from './store';
 
 // Loading fallback component
@@ -28,6 +28,8 @@ const SeasonPage = lazy(() => import('./pages/analyze/SeasonPage').then(m => ({ 
 const DriverVsPage = lazy(() => import('./pages/analyze/DriverVsPage').then(m => ({ default: m.DriverVsPage })));
 const ConstructorVsPage = lazy(() => import('./pages/analyze/ConstructorVsPage').then(m => ({ default: m.ConstructorVsPage })));
 const AdminPage = lazy(() => import('./pages/AdminPage').then(m => ({ default: m.AdminPage })));
+const Season2026Page = lazy(() => import('./pages/Season2026Page'));
+const NotFoundPage = lazy(() => import('./pages/NotFoundPage'));
 
 // Suspense wrapper for lazy routes
 const SuspenseWrapper = ({ children }: { children: React.ReactNode }) => (
@@ -35,6 +37,17 @@ const SuspenseWrapper = ({ children }: { children: React.ReactNode }) => (
         {children}
     </Suspense>
 );
+
+// ScrollToTop wrapper - resets scroll on route change
+function ScrollToTopWrapper() {
+    const { pathname } = useLocation();
+
+    useEffect(() => {
+        window.scrollTo(0, 0);
+    }, [pathname]);
+
+    return <Outlet />;
+}
 
 // Route guard for authenticated users - redirects to login if not authenticated
 function AuthGuard() {
@@ -64,43 +77,52 @@ function AdminGuard() {
 }
 
 const router = createBrowserRouter([
-    // Public routes
-    { path: '/', element: <SuspenseWrapper><LandingPage /></SuspenseWrapper> },
-    { path: '/login', element: <SuspenseWrapper><LoginPage /></SuspenseWrapper> },
-    { path: '/signup', element: <SuspenseWrapper><SignupPage /></SuspenseWrapper> },
-    { path: '/pricing', element: <SuspenseWrapper><PricingPage /></SuspenseWrapper> },
-
-    // Protected platform routes (require authentication)
     {
-        element: <AuthGuard />,
+        element: <ScrollToTopWrapper />,
         children: [
-            { path: '/dashboard', element: <SuspenseWrapper><DashboardPage /></SuspenseWrapper> },
-            { path: '/predict', element: <SuspenseWrapper><PredictPage /></SuspenseWrapper> },
-            { path: '/simulate', element: <SuspenseWrapper><SimulatePage /></SuspenseWrapper> },
-            { path: '/analyze', element: <SuspenseWrapper><AnalyzePage /></SuspenseWrapper> },
-            { path: '/analyze/telemetry', element: <SuspenseWrapper><TelemetryPage /></SuspenseWrapper> },
-            { path: '/analyze/laptimes', element: <SuspenseWrapper><LapTimesPage /></SuspenseWrapper> },
-            { path: '/analyze/strategy', element: <SuspenseWrapper><StrategyPage /></SuspenseWrapper> },
-            { path: '/analyze/season', element: <SuspenseWrapper><SeasonPage /></SuspenseWrapper> },
-            { path: '/analyze/driver', element: <SuspenseWrapper><DriverVsPage /></SuspenseWrapper> },
-            { path: '/analyze/constructor', element: <SuspenseWrapper><ConstructorVsPage /></SuspenseWrapper> },
+            // Public routes
+            { path: '/', element: <SuspenseWrapper><LandingPage /></SuspenseWrapper> },
+            { path: '/login', element: <SuspenseWrapper><LoginPage /></SuspenseWrapper> },
+            { path: '/signup', element: <SuspenseWrapper><SignupPage /></SuspenseWrapper> },
+            { path: '/pricing', element: <SuspenseWrapper><PricingPage /></SuspenseWrapper> },
+            { path: '/season-2026', element: <SuspenseWrapper><Season2026Page /></SuspenseWrapper> },
+
+            // Protected platform routes (require authentication)
+            {
+                element: <AuthGuard />,
+                children: [
+                    { path: '/dashboard', element: <SuspenseWrapper><DashboardPage /></SuspenseWrapper> },
+                    { path: '/predict', element: <SuspenseWrapper><PredictPage /></SuspenseWrapper> },
+                    { path: '/simulate', element: <SuspenseWrapper><SimulatePage /></SuspenseWrapper> },
+                    { path: '/analyze', element: <SuspenseWrapper><AnalyzePage /></SuspenseWrapper> },
+                    { path: '/analyze/telemetry', element: <SuspenseWrapper><TelemetryPage /></SuspenseWrapper> },
+                    { path: '/analyze/laptimes', element: <SuspenseWrapper><LapTimesPage /></SuspenseWrapper> },
+                    { path: '/analyze/strategy', element: <SuspenseWrapper><StrategyPage /></SuspenseWrapper> },
+                    { path: '/analyze/season', element: <SuspenseWrapper><SeasonPage /></SuspenseWrapper> },
+                    { path: '/analyze/driver', element: <SuspenseWrapper><DriverVsPage /></SuspenseWrapper> },
+                    { path: '/analyze/constructor', element: <SuspenseWrapper><ConstructorVsPage /></SuspenseWrapper> },
+                ],
+            },
+
+            // Admin routes (guarded with admin role check)
+            {
+                element: <AdminGuard />,
+                children: [
+                    { path: '/admin', element: <SuspenseWrapper><AdminPage /></SuspenseWrapper> },
+                    { path: '/admin/data', element: <SuspenseWrapper><AdminPage /></SuspenseWrapper> },
+                    { path: '/admin/system', element: <SuspenseWrapper><AdminPage /></SuspenseWrapper> },
+                ],
+            },
+
+            // Legacy redirects
+            { path: '/dashboard/view', element: <Navigate to="/dashboard" replace /> },
+            { path: '/dashboard/simulate', element: <Navigate to="/simulate" replace /> },
+            { path: '/dashboard/compare', element: <Navigate to="/analyze" replace /> },
+
+            // 404 Catch-all
+            { path: '*', element: <SuspenseWrapper><NotFoundPage /></SuspenseWrapper> },
         ],
     },
-
-    // Admin routes (guarded with admin role check)
-    {
-        element: <AdminGuard />,
-        children: [
-            { path: '/admin', element: <SuspenseWrapper><AdminPage /></SuspenseWrapper> },
-            { path: '/admin/data', element: <SuspenseWrapper><AdminPage /></SuspenseWrapper> },
-            { path: '/admin/system', element: <SuspenseWrapper><AdminPage /></SuspenseWrapper> },
-        ],
-    },
-
-    // Legacy redirects
-    { path: '/dashboard/view', element: <Navigate to="/dashboard" replace /> },
-    { path: '/dashboard/simulate', element: <Navigate to="/simulate" replace /> },
-    { path: '/dashboard/compare', element: <Navigate to="/analyze" replace /> },
 ]);
 
 export function AppRouter() {
