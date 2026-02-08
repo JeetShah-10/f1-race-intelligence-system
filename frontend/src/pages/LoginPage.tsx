@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Link, useNavigate } from 'react-router-dom';
 import { useAppStore } from '../store';
+import { authService } from '../services/auth';
 
 const PREMIUM_EASING = [0.17, 0.84, 0.44, 1] as const;
 
@@ -43,15 +44,32 @@ export function LoginPage() {
     const [showPassword, setShowPassword] = useState(false);
     const [rememberMe, setRememberMe] = useState(false);
     const [isLoading, setIsLoading] = useState(false);
+    const [error, setError] = useState<string | null>(null);
     const [focusedField, setFocusedField] = useState<string | null>(null);
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
         setIsLoading(true);
-        await new Promise(resolve => setTimeout(resolve, 1000));
-        login(email, email.split('@')[0]);
-        setIsLoading(false);
-        navigate('/dashboard');
+        setError(null);
+
+        try {
+            const { user, error: authError } = await authService.signIn(email, password);
+
+            if (authError) {
+                setError(authError.message);
+                return;
+            }
+
+            if (user) {
+                login(user.email || email, user.user_metadata?.name || email.split('@')[0]);
+                navigate('/dashboard');
+            }
+        } catch (err: unknown) {
+            const errorMessage = err instanceof Error ? err.message : 'Failed to sign in';
+            setError(errorMessage);
+        } finally {
+            setIsLoading(false);
+        }
     };
 
     return (
@@ -188,6 +206,16 @@ export function LoginPage() {
                                 </div>
 
                                 <form onSubmit={handleSubmit} className="space-y-4">
+                                    {/* Error Display */}
+                                    {error && (
+                                        <motion.div
+                                            initial={{ opacity: 0, y: -10 }}
+                                            animate={{ opacity: 1, y: 0 }}
+                                            className="p-3 bg-red-500/10 border border-red-500/30 rounded-xl text-red-400 text-sm"
+                                        >
+                                            {error}
+                                        </motion.div>
+                                    )}
                                     {/* Email */}
                                     <div>
                                         <label className="block text-xs text-white/40 mb-1.5 font-medium uppercase tracking-wider">Email</label>
