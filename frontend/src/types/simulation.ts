@@ -1,9 +1,10 @@
-export type TireCompound = 'C1' | 'C2' | 'C3' | 'INTER' | 'WET';
+export type TireCompound = 'SOFT' | 'MEDIUM' | 'HARD' | 'INTER' | 'WET';
+export type TyreCompound = TireCompound; // Alias for compatibility
 
 export const TIRE_COLORS: Record<TireCompound, string> = {
-    C1: '#F2F2F2',
-    C2: '#E2DD47',
-    C3: '#F74141',
+    SOFT: '#FF3333',
+    MEDIUM: '#FFC906',
+    HARD: '#FFFFFF',
     INTER: '#1EB53A',
     WET: '#0064E0',
 };
@@ -141,4 +142,23 @@ export interface Circuit {
         driver: string;
         year: number;
     };
+}
+
+export type SimulationStatus = 'IDLE' | 'RUNNING' | 'PAUSED' | 'FINISHED' | 'ERROR';
+
+export interface ScenarioConfig {
+    circuit_id: string;
+    year: number;
+    lap_count: number;
+    drivers: any[]; // refine as needed
+    events: any[];
+}
+
+export interface SimulationResult {
+    id: string;
+    date: string;
+    circuit: string;
+    winner: string;
+    fastestLap: string;
+    totalTime: string;
 }

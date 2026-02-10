@@ -2,7 +2,7 @@ import { createBrowserRouter, RouterProvider, Navigate, Outlet, useLocation } fr
 import { lazy, Suspense, useEffect } from 'react';
 import { useAppStore } from './store';
 
-// Loading fallback component
+
 const PageLoader = () => (
     <div className="min-h-screen bg-[#0B0D10] flex items-center justify-center">
         <div className="flex flex-col items-center gap-4">
@@ -12,12 +12,12 @@ const PageLoader = () => (
     </div>
 );
 
-// Lazy load all pages for code splitting
+
 const LandingPage = lazy(() => import('./pages/LandingPage').then(m => ({ default: m.LandingPage })));
 const LoginPage = lazy(() => import('./pages/LoginPage').then(m => ({ default: m.LoginPage })));
 const SignupPage = lazy(() => import('./pages/SignupPage').then(m => ({ default: m.SignupPage })));
 const PricingPage = lazy(() => import('./pages/PricingPage').then(m => ({ default: m.PricingPage })));
-const DashboardPage = lazy(() => import('./pages/DashboardPage').then(m => ({ default: m.DashboardPage })));
+const DashboardPage = lazy(() => import('./pages/DashboardPage'));
 const PredictPage = lazy(() => import('./pages/PredictPage').then(m => ({ default: m.PredictPage })));
 const SimulatePage = lazy(() => import('./pages/SimulatePage').then(m => ({ default: m.SimulatePage })));
 const AnalyzePage = lazy(() => import('./pages/AnalyzePage').then(m => ({ default: m.AnalyzePage })));
@@ -27,18 +27,24 @@ const StrategyPage = lazy(() => import('./pages/analyze/StrategyPage').then(m =>
 const SeasonPage = lazy(() => import('./pages/analyze/SeasonPage').then(m => ({ default: m.SeasonPage })));
 const DriverVsPage = lazy(() => import('./pages/analyze/DriverVsPage').then(m => ({ default: m.DriverVsPage })));
 const ConstructorVsPage = lazy(() => import('./pages/analyze/ConstructorVsPage').then(m => ({ default: m.ConstructorVsPage })));
+const InsightsPage = lazy(() => import('./pages/InsightsPage'));
 const AdminPage = lazy(() => import('./pages/AdminPage').then(m => ({ default: m.AdminPage })));
+const ProfilePage = lazy(() => import('./pages/ProfilePage'));
 const Season2026Page = lazy(() => import('./pages/Season2026Page'));
+
+const DriversStandingsPage = lazy(() => import('./pages/standings/DriversStandingsPage'));
+const ConstructorsStandingsPage = lazy(() => import('./pages/standings/ConstructorsStandingsPage'));
+const CalendarPage = lazy(() => import('./pages/calendar/CalendarPage'));
 const NotFoundPage = lazy(() => import('./pages/NotFoundPage'));
 
-// Suspense wrapper for lazy routes
+
 const SuspenseWrapper = ({ children }: { children: React.ReactNode }) => (
     <Suspense fallback={<PageLoader />}>
         {children}
     </Suspense>
 );
 
-// ScrollToTop wrapper - resets scroll on route change
+
 function ScrollToTopWrapper() {
     const { pathname } = useLocation();
 
@@ -49,7 +55,7 @@ function ScrollToTopWrapper() {
     return <Outlet />;
 }
 
-// Route guard for authenticated users - redirects to login if not authenticated
+
 function AuthGuard() {
     const isAuthenticated = useAppStore((state) => state.isAuthenticated);
 
@@ -60,7 +66,7 @@ function AuthGuard() {
     return <Outlet />;
 }
 
-// Route guard for admin pages - rendered inside router context
+
 function AdminGuard() {
     const user = useAppStore((state) => state.user);
     const isAuthenticated = useAppStore((state) => state.isAuthenticated);
@@ -80,14 +86,17 @@ const router = createBrowserRouter([
     {
         element: <ScrollToTopWrapper />,
         children: [
-            // Public routes
+
             { path: '/', element: <SuspenseWrapper><LandingPage /></SuspenseWrapper> },
             { path: '/login', element: <SuspenseWrapper><LoginPage /></SuspenseWrapper> },
             { path: '/signup', element: <SuspenseWrapper><SignupPage /></SuspenseWrapper> },
             { path: '/pricing', element: <SuspenseWrapper><PricingPage /></SuspenseWrapper> },
             { path: '/season-2026', element: <SuspenseWrapper><Season2026Page /></SuspenseWrapper> },
+            { path: '/standings/drivers', element: <SuspenseWrapper><DriversStandingsPage /></SuspenseWrapper> },
+            { path: '/standings/constructors', element: <SuspenseWrapper><ConstructorsStandingsPage /></SuspenseWrapper> },
+            { path: '/calendar', element: <SuspenseWrapper><CalendarPage /></SuspenseWrapper> },
 
-            // Protected platform routes (require authentication)
+
             {
                 element: <AuthGuard />,
                 children: [
@@ -101,10 +110,12 @@ const router = createBrowserRouter([
                     { path: '/analyze/season', element: <SuspenseWrapper><SeasonPage /></SuspenseWrapper> },
                     { path: '/analyze/driver', element: <SuspenseWrapper><DriverVsPage /></SuspenseWrapper> },
                     { path: '/analyze/constructor', element: <SuspenseWrapper><ConstructorVsPage /></SuspenseWrapper> },
+                    { path: '/insights', element: <SuspenseWrapper><InsightsPage /></SuspenseWrapper> },
+                    { path: '/profile', element: <SuspenseWrapper><ProfilePage /></SuspenseWrapper> },
                 ],
             },
 
-            // Admin routes (guarded with admin role check)
+
             {
                 element: <AdminGuard />,
                 children: [
@@ -114,12 +125,12 @@ const router = createBrowserRouter([
                 ],
             },
 
-            // Legacy redirects
+
             { path: '/dashboard/view', element: <Navigate to="/dashboard" replace /> },
             { path: '/dashboard/simulate', element: <Navigate to="/simulate" replace /> },
             { path: '/dashboard/compare', element: <Navigate to="/analyze" replace /> },
 
-            // 404 Catch-all
+
             { path: '*', element: <SuspenseWrapper><NotFoundPage /></SuspenseWrapper> },
         ],
     },

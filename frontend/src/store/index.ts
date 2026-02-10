@@ -4,12 +4,12 @@ export type { DashboardMode, UserTier } from './useAppStore';
 export { useSimulationStore } from './useSimulationStore';
 export type {
     WeatherCondition,
-    TyreCompound,
     SimulationStatus,
     Circuit as SimulationCircuit,
     ScenarioConfig,
     SimulationResult
-} from './useSimulationStore';
+} from '../types/simulation';
+export type { TyreCompound } from '../types/f1';
 
 export { useDriverStore } from './useDriverStore';
 export type { Driver, DriverMomentum } from './useDriverStore';

@@ -1,8 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Link, useNavigate, useLocation } from 'react-router-dom';
-import { useAppStore } from '@/store';
-import { Gauge } from 'lucide-react';
 
 interface HeaderProps {
     transparent?: boolean;
@@ -20,9 +18,7 @@ export const Header: React.FC<HeaderProps> = ({ transparent = true }) => {
     const navigate = useNavigate();
     const location = useLocation();
 
-    const isAuthenticated = useAppStore((state) => state.isAuthenticated);
-    const user = useAppStore((state) => state.user);
-    const logout = useAppStore((state) => state.logout);
+
 
     useEffect(() => {
         const handleScroll = () => {
@@ -32,10 +28,7 @@ export const Header: React.FC<HeaderProps> = ({ transparent = true }) => {
         return () => window.removeEventListener('scroll', handleScroll);
     }, []);
 
-    const handleLogout = () => {
-        logout();
-        navigate('/');
-    };
+
 
     const handleNavClick = (href: string) => {
         setIsMobileMenuOpen(false);
@@ -115,43 +108,18 @@ export const Header: React.FC<HeaderProps> = ({ transparent = true }) => {
 
                         {/* Desktop Actions */}
                         <div className="hidden md:flex items-center gap-3">
-                            {isAuthenticated ? (
-                                <div className="flex items-center gap-3">
-                                    <Link
-                                        to="/dashboard"
-                                        className="flex items-center gap-2 px-3 py-2 text-sm text-white/60 hover:text-white transition-colors"
-                                    >
-                                        <Gauge className="w-4 h-4" />
-                                        Dashboard
-                                    </Link>
-                                    <div className="w-8 h-8 rounded-full bg-gradient-to-br from-f1-red to-orange-500 flex items-center justify-center">
-                                        <span className="text-white text-xs font-bold">
-                                            {user?.name?.charAt(0)?.toUpperCase() || 'U'}
-                                        </span>
-                                    </div>
-                                    <button
-                                        onClick={handleLogout}
-                                        className="text-white/40 hover:text-white text-sm transition-colors"
-                                    >
-                                        Exit
-                                    </button>
-                                </div>
-                            ) : (
-                                <>
-                                    <Link
-                                        to="/login"
-                                        className="px-4 py-2 text-sm text-white/60 hover:text-white transition-colors"
-                                    >
-                                        Sign In
-                                    </Link>
-                                    <Link
-                                        to="/signup"
-                                        className="px-4 py-2 bg-f1-red hover:bg-f1-red/90 text-white text-sm font-medium rounded-lg transition-all hover:shadow-[0_0_20px_rgba(225,6,0,0.3)]"
-                                    >
-                                        Get Started
-                                    </Link>
-                                </>
-                            )}
+                            <Link
+                                to="/login"
+                                className="px-4 py-2 text-sm text-white/60 hover:text-white transition-colors"
+                            >
+                                Sign In
+                            </Link>
+                            <Link
+                                to="/signup"
+                                className="px-4 py-2 bg-f1-red hover:bg-f1-red/90 text-white text-sm font-medium rounded-lg transition-all hover:shadow-[0_0_20px_rgba(225,6,0,0.3)]"
+                            >
+                                Get Started
+                            </Link>
                         </div>
 
                         {/* Mobile Menu Button */}
@@ -217,40 +185,20 @@ export const Header: React.FC<HeaderProps> = ({ transparent = true }) => {
                                 ))}
 
                                 <div className="mt-6 pt-6 border-t border-white/10 space-y-2">
-                                    {isAuthenticated ? (
-                                        <>
-                                            <Link
-                                                to="/dashboard"
-                                                className="block w-full py-3 px-4 text-center bg-white/5 text-white rounded-lg"
-                                                onClick={() => setIsMobileMenuOpen(false)}
-                                            >
-                                                Dashboard
-                                            </Link>
-                                            <button
-                                                onClick={handleLogout}
-                                                className="block w-full py-3 text-center text-white/50 hover:text-white"
-                                            >
-                                                Logout
-                                            </button>
-                                        </>
-                                    ) : (
-                                        <>
-                                            <Link
-                                                to="/login"
-                                                className="block w-full py-3 px-4 text-center bg-white/5 text-white rounded-lg"
-                                                onClick={() => setIsMobileMenuOpen(false)}
-                                            >
-                                                Sign In
-                                            </Link>
-                                            <Link
-                                                to="/signup"
-                                                className="block w-full py-3 px-4 text-center bg-f1-red text-white font-medium rounded-lg"
-                                                onClick={() => setIsMobileMenuOpen(false)}
-                                            >
-                                                Get Started
-                                            </Link>
-                                        </>
-                                    )}
+                                    <Link
+                                        to="/login"
+                                        className="block w-full py-3 px-4 text-center bg-white/5 text-white rounded-lg"
+                                        onClick={() => setIsMobileMenuOpen(false)}
+                                    >
+                                        Sign In
+                                    </Link>
+                                    <Link
+                                        to="/signup"
+                                        className="block w-full py-3 px-4 text-center bg-f1-red text-white font-medium rounded-lg"
+                                        onClick={() => setIsMobileMenuOpen(false)}
+                                    >
+                                        Get Started
+                                    </Link>
                                 </div>
                             </nav>
                         </motion.div>

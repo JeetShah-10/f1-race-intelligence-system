@@ -3,6 +3,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { Link, useNavigate } from 'react-router-dom';
 import { useAppStore } from '../store';
 import { authService } from '../services/auth';
+import { FavoriteSelectionModal } from '../components/onboarding/FavoriteSelectionModal';
 
 const PREMIUM_EASING = [0.17, 0.84, 0.44, 1] as const;
 
@@ -47,6 +48,7 @@ export function SignupPage() {
     const [isLoading, setIsLoading] = useState(false);
     const [error, setError] = useState<string | null>(null);
     const [focusedField, setFocusedField] = useState<string | null>(null);
+    const [showFavoritesModal, setShowFavoritesModal] = useState(false);
 
     const getPasswordStrength = () => {
         if (password.length === 0) return { level: 0, text: '', color: '' };
@@ -71,7 +73,8 @@ export function SignupPage() {
 
             if (user) {
                 login(user.email || email, name || email.split('@')[0]);
-                navigate('/dashboard');
+                // Show favorites selection modal before navigating
+                setShowFavoritesModal(true);
             }
         } catch (err: unknown) {
             const errorMessage = err instanceof Error ? err.message : 'Failed to create account';
@@ -366,6 +369,15 @@ export function SignupPage() {
             {/* Corner Accents */}
             <div className="absolute top-4 right-4 w-16 h-16 border-t border-r border-white/10 pointer-events-none" />
             <div className="absolute bottom-4 left-4 w-16 h-16 border-b border-l border-white/10 pointer-events-none" />
+
+            {/* Favorites Selection Modal */}
+            <FavoriteSelectionModal
+                isOpen={showFavoritesModal}
+                onComplete={() => {
+                    setShowFavoritesModal(false);
+                    navigate('/dashboard');
+                }}
+            />
         </div>
     );
 }

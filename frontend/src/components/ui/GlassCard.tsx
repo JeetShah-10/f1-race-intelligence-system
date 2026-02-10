@@ -74,11 +74,26 @@ export const GlassCard: React.FC<GlassCardProps> = ({
             `.trim().replace(/\s+/g, ' ')}
             {...motionProps}
         >
+            {/* Glint effect */}
+            {interactive && (
+                <motion.div
+                    className="absolute inset-0 rounded-2xl opacity-0 hover:opacity-100 pointer-events-none overflow-hidden"
+                    initial={{ opacity: 0 }}
+                    whileHover={{ opacity: 1 }}
+                >
+                    <motion.div
+                        className="absolute top-0 left-0 w-1/2 h-full bg-gradient-to-r from-transparent via-white/[0.1] to-transparent -skew-x-12"
+                        initial={{ x: '-150%' }}
+                        whileHover={{ x: '250%', transition: { duration: 0.8, ease: "easeInOut" } }}
+                    />
+                </motion.div>
+            )}
+
             {/* Inner glow effect */}
             <div className="absolute inset-0 rounded-2xl bg-gradient-to-br from-white/[0.02] via-transparent to-transparent pointer-events-none" />
 
             {/* Content */}
-            <div className="relative z-10">
+            <div className="relative z-10 h-full">
                 {children}
             </div>
         </motion.div>

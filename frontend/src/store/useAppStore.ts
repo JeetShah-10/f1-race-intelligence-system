@@ -12,6 +12,9 @@ interface User {
     tier: UserTier;
     role: UserRole;
     avatar: string | null;
+    favoriteTeam: string | null;
+    favoriteDriver: string | null;
+    hasCompletedOnboarding: boolean;
 }
 
 interface AppState {
@@ -23,6 +26,8 @@ interface AppState {
     login: (email: string, name: string) => void;
     logout: () => void;
     upgradeToPremium: () => void;
+    setFavorites: (team: string, driver: string) => void;
+    completeOnboarding: () => void;
     isLoading: boolean;
     setLoading: (loading: boolean) => void;
     isSidebarOpen: boolean;
@@ -39,6 +44,9 @@ const defaultUser: User = {
     tier: 'guest',
     role: 'user',
     avatar: null,
+    favoriteTeam: null,
+    favoriteDriver: null,
+    hasCompletedOnboarding: false,
 };
 
 export const useAppStore = create<AppState>()(
@@ -58,12 +66,25 @@ export const useAppStore = create<AppState>()(
                     tier: 'registered',
                     role: 'user',
                     avatar: null,
+                    favoriteTeam: null,
+                    favoriteDriver: null,
+                    hasCompletedOnboarding: false,
                 },
                 isAuthenticated: true,
             }),
-            logout: () => set({ user: defaultUser }),
+            logout: () => set({ user: defaultUser, isAuthenticated: false }),
             upgradeToPremium: () => set((state) => ({
                 user: { ...state.user, tier: 'premium' }
+            })),
+            setFavorites: (team, driver) => set((state) => ({
+                user: {
+                    ...state.user,
+                    favoriteTeam: team,
+                    favoriteDriver: driver,
+                }
+            })),
+            completeOnboarding: () => set((state) => ({
+                user: { ...state.user, hasCompletedOnboarding: true }
             })),
 
             isLoading: false,
@@ -83,6 +104,7 @@ export const useAppStore = create<AppState>()(
             partialize: (state) => ({
                 dashboardMode: state.dashboardMode,
                 user: state.user,
+                isAuthenticated: state.isAuthenticated,
             }),
         }
     )

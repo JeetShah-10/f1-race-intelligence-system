@@ -1,11 +1,11 @@
 /**
- * F1 Intelligence Platform - 2025 Circuit Calendar Mock Data
- * All 24 circuits with complete metadata
+ * F1 Intelligence Platform - 2026 Circuit Calendar Mock Data
+ * All 24 circuits with complete metadata (includes new Madrid circuit)
  */
 
 import type { Circuit, CircuitDetailed } from '../types/f1';
 
-export const CIRCUITS_2025: CircuitDetailed[] = [
+export const CIRCUITS_2026: CircuitDetailed[] = [
     {
         id: 'bahrain',
         name: 'Bahrain International Circuit',
@@ -418,18 +418,21 @@ export const CIRCUITS_2025: CircuitDetailed[] = [
 
 /** Get circuit by ID */
 export function getCircuitById(id: string): CircuitDetailed | undefined {
-    return CIRCUITS_2025.find((c) => c.id === id);
+    return CIRCUITS_2026.find((c) => c.id === id);
 }
 
 /** Get circuits by country */
 export function getCircuitsByCountry(country: string): CircuitDetailed[] {
-    return CIRCUITS_2025.filter((c) => c.country === country);
+    return CIRCUITS_2026.filter((c) => c.country === country);
 }
 
 /** Get all unique countries */
 export function getCountries(): string[] {
-    return [...new Set(CIRCUITS_2025.map((c) => c.country))];
+    return [...new Set(CIRCUITS_2026.map((c) => c.country))];
 }
+
+// Legacy export for backwards compatibility
+export const CIRCUITS_2025 = CIRCUITS_2026;
 
 /** Convert CircuitDetailed to Circuit (simpler version) */
 export function toSimpleCircuit(circuit: CircuitDetailed): Circuit {

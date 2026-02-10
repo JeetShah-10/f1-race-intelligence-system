@@ -18,6 +18,7 @@ export default {
             fontFamily: {
                 "racing": ['"Racing Sans One"', "cursive"],
                 "stats": ['"Orbitron"', "monospace"], // Tech/Data font
+                "mono": ['"Orbitron"', "ui-monospace", "SFMono-Regular", "Menlo", "Monaco", "Consolas", "monospace"], // Override mono to use Orbitron
                 "body": ['"Inter"', "sans-serif"], // Clean readability
             },
             backgroundImage: {

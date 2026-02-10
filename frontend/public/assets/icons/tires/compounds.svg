@@ -1,0 +1,27 @@
+<svg display="none">
+  <symbol id="tire-soft" viewBox="0 0 24 24">
+    <circle cx="12" cy="12" r="10" fill="none" stroke="#FF3B30" stroke-width="4"/>
+    <path d="M12 2a10 10 0 0 1 10 10" stroke="#FF3B30" stroke-width="4" stroke-dasharray="4 2"/>
+    <text x="12" y="16" text-anchor="middle" fill="white" font-family="Arial" font-weight="bold" font-size="10">S</text>
+  </symbol>
+  
+  <symbol id="tire-medium" viewBox="0 0 24 24">
+    <circle cx="12" cy="12" r="10" fill="none" stroke="#FFCC00" stroke-width="4"/>
+    <text x="12" y="16" text-anchor="middle" fill="white" font-family="Arial" font-weight="bold" font-size="10">M</text>
+  </symbol>
+
+  <symbol id="tire-hard" viewBox="0 0 24 24">
+    <circle cx="12" cy="12" r="10" fill="none" stroke="#F0F0F0" stroke-width="4"/>
+    <text x="12" y="16" text-anchor="middle" fill="white" font-family="Arial" font-weight="bold" font-size="10">H</text>
+  </symbol>
+  
+  <symbol id="tire-inter" viewBox="0 0 24 24">
+    <circle cx="12" cy="12" r="10" fill="none" stroke="#34C759" stroke-width="4"/>
+    <text x="12" y="16" text-anchor="middle" fill="white" font-family="Arial" font-weight="bold" font-size="10">I</text>
+  </symbol>
+  
+  <symbol id="tire-wet" viewBox="0 0 24 24">
+    <circle cx="12" cy="12" r="10" fill="none" stroke="#007AFF" stroke-width="4"/>
+    <text x="12" y="16" text-anchor="middle" fill="white" font-family="Arial" font-weight="bold" font-size="10">W</text>
+  </symbol>
+</svg>

@@ -1,11 +1,12 @@
 /**
- * F1 Intelligence Platform - 2025 Driver Grid Mock Data
+ * F1 Intelligence Platform - 2026 Driver Grid Mock Data
  * Complete driver roster with team colors and metadata
+ * Updated for 2026 season with Hamilton at Ferrari, Audi, and Cadillac
  */
 
 import type { Driver } from '../types/f1';
 
-export const DRIVERS_2025: Driver[] = [
+export const DRIVERS_2026: Driver[] = [
     // Red Bull Racing
     {
         code: 'VER',
@@ -18,14 +19,14 @@ export const DRIVERS_2025: Driver[] = [
         fullName: 'Max Verstappen',
     },
     {
-        code: 'LAW',
-        firstName: 'Liam',
-        lastName: 'Lawson',
-        number: 30,
+        code: 'HAD',
+        firstName: 'Isack',
+        lastName: 'Hadjar',
+        number: 6,
         team: 'Red Bull Racing',
         teamColor: '#3671C6',
-        nationality: 'NZL',
-        fullName: 'Liam Lawson',
+        nationality: 'FRA',
+        fullName: 'Isack Hadjar',
     },
 
     // Ferrari
@@ -128,14 +129,14 @@ export const DRIVERS_2025: Driver[] = [
         fullName: 'Pierre Gasly',
     },
     {
-        code: 'DOO',
-        firstName: 'Jack',
-        lastName: 'Doohan',
-        number: 7,
+        code: 'COL',
+        firstName: 'Franco',
+        lastName: 'Colapinto',
+        number: 43,
         team: 'Alpine',
         teamColor: '#0093CC',
-        nationality: 'AUS',
-        fullName: 'Jack Doohan',
+        nationality: 'ARG',
+        fullName: 'Franco Colapinto',
     },
 
     // Williams
@@ -160,36 +161,36 @@ export const DRIVERS_2025: Driver[] = [
         fullName: 'Alex Albon',
     },
 
-    // RB (Visa Cash App RB)
+    // Racing Bulls
     {
-        code: 'TSU',
-        firstName: 'Yuki',
-        lastName: 'Tsunoda',
-        number: 22,
-        team: 'RB',
+        code: 'LAW',
+        firstName: 'Liam',
+        lastName: 'Lawson',
+        number: 30,
+        team: 'Racing Bulls',
         teamColor: '#6692FF',
-        nationality: 'JPN',
-        fullName: 'Yuki Tsunoda',
+        nationality: 'NZL',
+        fullName: 'Liam Lawson',
     },
     {
-        code: 'HAD',
-        firstName: 'Isack',
-        lastName: 'Hadjar',
-        number: 6,
-        team: 'RB',
+        code: 'LIN',
+        firstName: 'Arvid',
+        lastName: 'Lindblad',
+        number: 41,
+        team: 'Racing Bulls',
         teamColor: '#6692FF',
-        nationality: 'FRA',
-        fullName: 'Isack Hadjar',
+        nationality: 'GBR',
+        fullName: 'Arvid Lindblad',
     },
 
-    // Kick Sauber
+    // Audi (formerly Sauber)
     {
         code: 'HUL',
         firstName: 'Nico',
         lastName: 'Hulkenberg',
         number: 27,
-        team: 'Kick Sauber',
-        teamColor: '#52E252',
+        team: 'Audi',
+        teamColor: '#000000',
         nationality: 'GER',
         fullName: 'Nico Hulkenberg',
     },
@@ -198,8 +199,8 @@ export const DRIVERS_2025: Driver[] = [
         firstName: 'Gabriel',
         lastName: 'Bortoleto',
         number: 5,
-        team: 'Kick Sauber',
-        teamColor: '#52E252',
+        team: 'Audi',
+        teamColor: '#000000',
         nationality: 'BRA',
         fullName: 'Gabriel Bortoleto',
     },
@@ -225,20 +226,42 @@ export const DRIVERS_2025: Driver[] = [
         nationality: 'GBR',
         fullName: 'Oliver Bearman',
     },
+
+    // Cadillac (new 11th team)
+    {
+        code: 'PER',
+        firstName: 'Sergio',
+        lastName: 'Perez',
+        number: 11,
+        team: 'Cadillac',
+        teamColor: '#1E3264',
+        nationality: 'MEX',
+        fullName: 'Sergio Perez',
+    },
+    {
+        code: 'BOT',
+        firstName: 'Valtteri',
+        lastName: 'Bottas',
+        number: 77,
+        team: 'Cadillac',
+        teamColor: '#1E3264',
+        nationality: 'FIN',
+        fullName: 'Valtteri Bottas',
+    },
 ];
 
 /** Get driver by code */
 export function getDriverByCode(code: string): Driver | undefined {
-    return DRIVERS_2025.find((d) => d.code === code);
+    return DRIVERS_2026.find((d) => d.code === code);
 }
 
 /** Get all drivers for a team */
 export function getDriversByTeam(team: string): Driver[] {
-    return DRIVERS_2025.filter((d) => d.team === team);
+    return DRIVERS_2026.filter((d) => d.team === team);
 }
 
-/** All team names */
-export const TEAMS_2025 = [
+/** All team names for 2026 */
+export const TEAMS_2026 = [
     'Red Bull Racing',
     'Ferrari',
     'McLaren',
@@ -246,13 +269,14 @@ export const TEAMS_2025 = [
     'Aston Martin',
     'Alpine',
     'Williams',
-    'RB',
-    'Kick Sauber',
+    'Racing Bulls',
+    'Audi',
     'Haas',
+    'Cadillac',
 ] as const;
 
-/** Team color map */
-export const TEAM_COLORS: Record<string, string> = {
+/** Team color map for 2026 */
+export const TEAM_COLORS_2026: Record<string, string> = {
     'Red Bull Racing': '#3671C6',
     'Ferrari': '#E8002D',
     'McLaren': '#FF8000',
@@ -260,7 +284,13 @@ export const TEAM_COLORS: Record<string, string> = {
     'Aston Martin': '#229971',
     'Alpine': '#0093CC',
     'Williams': '#64C4FF',
-    'RB': '#6692FF',
-    'Kick Sauber': '#52E252',
+    'Racing Bulls': '#6692FF',
+    'Audi': '#000000',
     'Haas': '#B6BABD',
+    'Cadillac': '#1E3264',
 };
+
+// Legacy export for backwards compatibility
+export const DRIVERS_2025 = DRIVERS_2026;
+export const TEAMS_2025 = TEAMS_2026;
+export const TEAM_COLORS = TEAM_COLORS_2026;
