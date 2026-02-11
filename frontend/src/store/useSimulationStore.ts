@@ -113,20 +113,7 @@ function clearQualiTimer() {
     if (qualiTimer) { clearInterval(qualiTimer); qualiTimer = null; }
 }
 
-// ─── Phase → Legacy Status Mapping ──────────────────────────────────────
-function phaseToStatus(phase: SimulationPhase): 'IDLE' | 'LOADING' | 'READY' | 'PLAYING' | 'PAUSED' | 'FINISHED' {
-    switch (phase) {
-        case 'CIRCUIT_SELECT': return 'IDLE';
-        case 'WEEKEND_INTRO': return 'IDLE';
-        case 'QUALIFYING': return 'PLAYING';
-        case 'QUALI_RESULTS': return 'PAUSED';
-        case 'GRID_FORMATION': return 'READY';
-        case 'RACE_READY': return 'READY';
-        case 'RACE_PLAYING': return 'PLAYING';
-        case 'RACE_PAUSED': return 'PAUSED';
-        case 'RACE_FINISHED': return 'FINISHED';
-    }
-}
+
 
 // ─── Store ────────────────────────────────────────────────────────────────
 export const useSimulationStore = create<SimulationStore>((set, get) => ({
@@ -196,6 +183,7 @@ export const useSimulationStore = create<SimulationStore>((set, get) => ({
                 // Move to Q2 after brief pause
                 setTimeout(() => {
                     const s = get();
+                    if (s.phase !== 'QUALIFYING') return;
                     if (s.qualifyingSession === 'Q1') {
                         set({ qualifyingSession: 'Q2', qualifyingRevealIndex: 0 });
                         // Continue revealing Q2
@@ -206,6 +194,7 @@ export const useSimulationStore = create<SimulationStore>((set, get) => ({
                                 clearQualiTimer();
                                 setTimeout(() => {
                                     const s2 = get();
+                                    if (s2.phase !== 'QUALIFYING') return;
                                     if (s2.qualifyingSession === 'Q2') {
                                         set({ qualifyingSession: 'Q3', qualifyingRevealIndex: 0 });
                                         // Q3
