@@ -6,8 +6,6 @@ export type {
     WeatherCondition,
     SimulationStatus,
     Circuit as SimulationCircuit,
-    ScenarioConfig,
-    SimulationResult
 } from '../types/simulation';
 export type { TyreCompound } from '../types/f1';
 

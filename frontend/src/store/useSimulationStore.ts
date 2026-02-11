@@ -1,169 +1,471 @@
 import { create } from 'zustand';
-import type { TimingEntry, RaceEvent } from '../types/simulation';
+import type {
+    RaceLap,
+    RaceConfig,
+    DriverStanding,
+    RaceEvent,
+    RaceFlag,
+    FullRaceData,
+    SimulationPhase,
+    QualifyingData,
+    QualifyingResult,
+    GridPosition,
+} from '../types/simulation';
+import { generateMockRace, generateMockQualifying, generateGrid } from '../data/simulationMockData';
 
-interface SimulationState {
-    // Connection State
-    isConnected: boolean;
-    isConnecting: boolean;
-    error: string | null;
+// ─── Adaptive Speed Config ────────────────────────────────────────────────
+const SPEED = {
+    NORMAL: 800,
+    SC: 2200,
+    VSC: 1800,
+    EVENT: 1500,
+    FIRST_LAP: 1400,
+    LAST_3_LAPS: 1200,
+} as const;
 
-    // Race State
-    isRunning: boolean;
-    currentLap: number;
-    totalLaps: number;
-    weather: string;
-    trackTemp: number;
-    airTemp: number;
-
-    // Data
-    standings: TimingEntry[];
-    events: RaceEvent[];
-    // Telemetry history for charts (key: driverId)
-    telemetryHistory: Record<string, { lap: number; time: number }[]>;
-
-    // Actions
-    connect: (url: string) => void;
-    disconnect: () => void;
-    startSimulation: (config: any) => void;
-    stopSimulation: () => void;
-
-    // Internal Actions (called by WS)
-    updateRaceState: (data: any) => void;
-    addEvent: (event: RaceEvent) => void;
+function getAdaptiveInterval(lap: RaceLap, totalLaps: number): number {
+    if (lap.lap === 1) return SPEED.FIRST_LAP;
+    if (lap.lap >= totalLaps - 2) return SPEED.LAST_3_LAPS;
+    if (lap.flag === 'SC') return SPEED.SC;
+    if (lap.flag === 'VSC') return SPEED.VSC;
+    if (lap.events.length > 0) return SPEED.EVENT;
+    return SPEED.NORMAL;
 }
 
-export const useSimulationStore = create<SimulationState>((set, get) => {
-    let socket: WebSocket | null = null;
+// ─── Store Interface ──────────────────────────────────────────────────────
+interface SimulationStore {
+    // Phase state machine
+    phase: SimulationPhase;
 
-    return {
-        isConnected: false,
-        isConnecting: false,
-        error: null,
-        isRunning: false,
-        currentLap: 0,
-        totalLaps: 57,
-        weather: 'Sunny',
-        trackTemp: 35,
-        airTemp: 25,
-        standings: [],
-        events: [],
-        telemetryHistory: {},
+    // Circuit
+    selectedCircuitId: string | null;
 
-        connect: (url: string) => {
-            if (socket) return;
+    // Qualifying data
+    qualifyingData: QualifyingData | null;
+    qualifyingSession: 'Q1' | 'Q2' | 'Q3' | null;
+    qualifyingRevealIndex: number;  // how many drivers' times have been revealed
+    isQualifyingRunning: boolean;
 
-            set({ isConnecting: true, error: null });
+    // Grid
+    gridOrder: GridPosition[];
 
-            try {
-                socket = new WebSocket(url);
+    // Race data (full pre-computed race)
+    fullRaceData: FullRaceData | null;
+    raceConfig: RaceConfig | null;
 
-                socket.onopen = () => {
-                    set({ isConnected: true, isConnecting: false });
-                    console.log('✅ WS Connected');
-                };
+    // Current playback state
+    currentLap: number;
+    currentStandings: DriverStanding[];
+    currentFlag: RaceFlag;
+    currentEvents: RaceEvent[];
+    allPastEvents: RaceEvent[];
 
-                socket.onclose = () => {
-                    set({ isConnected: false, isConnecting: false, isRunning: false });
-                    console.log('❌ WS Disconnected');
-                    socket = null;
-                };
+    // Playback control
+    isPlaying: boolean;
+    playbackSpeed: number;
+    adaptiveInterval: number;
 
-                socket.onerror = (err) => {
-                    set({ error: 'Connection Failed', isConnecting: false });
-                    console.error('WS Error', err);
-                };
+    // Selected driver for detail panel
+    selectedDriver: string | null;
 
-                socket.onmessage = (event) => {
-                    try {
-                        const msg = JSON.parse(event.data);
-                        if (msg.type === 'LAP_UPDATE') {
-                            get().updateRaceState(msg.data);
-                        } else if (msg.type === 'RACE_COMPLETE') {
-                            set({ isRunning: false });
-                        } else if (msg.type === 'EVENT') {
-                            get().addEvent(msg.data);
-                        }
-                    } catch (e) {
-                        console.error('Failed to parse WS msg', e);
+    // ────── Actions ──────
+
+    // Phase navigation
+    selectCircuit: (circuitId: string) => void;
+    goToWeekendIntro: () => void;
+
+    // Qualifying
+    startQualifying: () => void;
+    advanceQualiSession: () => void;
+    revealNextQualiDriver: () => void;
+    finishQualifying: () => void;
+
+    // Grid
+    showGrid: () => void;
+
+    // Race
+    startRace: () => void;
+    play: () => void;
+    pause: () => void;
+    togglePlayPause: () => void;
+    seekToLap: (lap: number) => void;
+    setPlaybackSpeed: (speed: number) => void;
+    setSelectedDriver: (code: string | null) => void;
+    tick: () => void;
+
+    // Navigation
+    backToCircuits: () => void;
+    reset: () => void;
+
+    // Legacy compat
+    status: 'IDLE' | 'LOADING' | 'READY' | 'PLAYING' | 'PAUSED' | 'FINISHED';
+    loadRace: (circuitId: string) => void;
+}
+
+// ─── Playback Timer ──────────────────────────────────────────────────────
+let playbackTimer: ReturnType<typeof setTimeout> | null = null;
+let qualiTimer: ReturnType<typeof setInterval> | null = null;
+
+function clearTimer() {
+    if (playbackTimer) { clearTimeout(playbackTimer); playbackTimer = null; }
+}
+function clearQualiTimer() {
+    if (qualiTimer) { clearInterval(qualiTimer); qualiTimer = null; }
+}
+
+// ─── Phase → Legacy Status Mapping ──────────────────────────────────────
+function phaseToStatus(phase: SimulationPhase): 'IDLE' | 'LOADING' | 'READY' | 'PLAYING' | 'PAUSED' | 'FINISHED' {
+    switch (phase) {
+        case 'CIRCUIT_SELECT': return 'IDLE';
+        case 'WEEKEND_INTRO': return 'IDLE';
+        case 'QUALIFYING': return 'PLAYING';
+        case 'QUALI_RESULTS': return 'PAUSED';
+        case 'GRID_FORMATION': return 'READY';
+        case 'RACE_READY': return 'READY';
+        case 'RACE_PLAYING': return 'PLAYING';
+        case 'RACE_PAUSED': return 'PAUSED';
+        case 'RACE_FINISHED': return 'FINISHED';
+    }
+}
+
+// ─── Store ────────────────────────────────────────────────────────────────
+export const useSimulationStore = create<SimulationStore>((set, get) => ({
+    // Initial state
+    phase: 'CIRCUIT_SELECT',
+    selectedCircuitId: null,
+    qualifyingData: null,
+    qualifyingSession: null,
+    qualifyingRevealIndex: 0,
+    isQualifyingRunning: false,
+    gridOrder: [],
+    fullRaceData: null,
+    raceConfig: null,
+    currentLap: 0,
+    currentStandings: [],
+    currentFlag: 'GREEN',
+    currentEvents: [],
+    allPastEvents: [],
+    isPlaying: false,
+    playbackSpeed: 1,
+    adaptiveInterval: SPEED.NORMAL,
+    selectedDriver: null,
+    status: 'IDLE',
+
+    // ────── Phase Navigation ──────
+
+    selectCircuit: (circuitId: string) => {
+        set({
+            selectedCircuitId: circuitId,
+            phase: 'WEEKEND_INTRO',
+            status: 'IDLE',
+        });
+    },
+
+    goToWeekendIntro: () => {
+        set({ phase: 'WEEKEND_INTRO' });
+    },
+
+    // ────── Qualifying ──────
+
+    startQualifying: () => {
+        const { selectedCircuitId } = get();
+        if (!selectedCircuitId) return;
+
+        const qualData = generateMockQualifying(selectedCircuitId);
+
+        set({
+            phase: 'QUALIFYING',
+            qualifyingData: qualData,
+            qualifyingSession: 'Q1',
+            qualifyingRevealIndex: 0,
+            isQualifyingRunning: true,
+            status: 'PLAYING',
+        });
+
+        // Auto-reveal drivers one by one
+        clearQualiTimer();
+        let revealCount = 0;
+        const totalDrivers = qualData.results.length;
+
+        qualiTimer = setInterval(() => {
+            revealCount++;
+            const state = get();
+
+            if (revealCount >= totalDrivers) {
+                clearQualiTimer();
+                // Move to Q2 after brief pause
+                setTimeout(() => {
+                    const s = get();
+                    if (s.qualifyingSession === 'Q1') {
+                        set({ qualifyingSession: 'Q2', qualifyingRevealIndex: 0 });
+                        // Continue revealing Q2
+                        let q2Count = 0;
+                        qualiTimer = setInterval(() => {
+                            q2Count++;
+                            if (q2Count >= 17) {
+                                clearQualiTimer();
+                                setTimeout(() => {
+                                    const s2 = get();
+                                    if (s2.qualifyingSession === 'Q2') {
+                                        set({ qualifyingSession: 'Q3', qualifyingRevealIndex: 0 });
+                                        // Q3
+                                        let q3Count = 0;
+                                        qualiTimer = setInterval(() => {
+                                            q3Count++;
+                                            if (q3Count >= 10) {
+                                                clearQualiTimer();
+                                                setTimeout(() => get().finishQualifying(), 1500);
+                                                return;
+                                            }
+                                            set({ qualifyingRevealIndex: q3Count });
+                                        }, 400);
+                                    }
+                                }, 2000);
+                                return;
+                            }
+                            set({ qualifyingRevealIndex: q2Count });
+                        }, 450);
                     }
-                };
-
-            } catch (e) {
-                set({ error: 'Failed to create WebSocket', isConnecting: false });
+                }, 2000);
+                return;
             }
-        },
 
-        disconnect: () => {
-            if (socket) {
-                socket.close();
-                socket = null;
-            }
-            set({ isConnected: false, isRunning: false });
-        },
+            set({ qualifyingRevealIndex: revealCount });
+        }, 350);
+    },
 
-        startSimulation: (config) => {
-            if (socket && socket.readyState === WebSocket.OPEN) {
-                set({ isRunning: true, standings: [], events: [], currentLap: 0, telemetryHistory: {} });
-                socket.send(JSON.stringify(config));
-            } else {
-                console.error("Socket not connected");
-            }
-        },
+    advanceQualiSession: () => {
+        const { qualifyingSession } = get();
+        if (qualifyingSession === 'Q1') set({ qualifyingSession: 'Q2', qualifyingRevealIndex: 0 });
+        else if (qualifyingSession === 'Q2') set({ qualifyingSession: 'Q3', qualifyingRevealIndex: 0 });
+        else get().finishQualifying();
+    },
 
-        stopSimulation: () => {
-            // Optional: Send stop command
-            set({ isRunning: false });
-        },
+    revealNextQualiDriver: () => {
+        set(state => ({ qualifyingRevealIndex: state.qualifyingRevealIndex + 1 }));
+    },
 
-        updateRaceState: (data) => {
-            set((state) => {
-                // Transform backend data to frontend types if needed
-                // Assuming data.positions contains { driver_id, gap, time, ... }
+    finishQualifying: () => {
+        clearQualiTimer();
+        set({
+            phase: 'QUALI_RESULTS',
+            isQualifyingRunning: false,
+            status: 'PAUSED',
+        });
+    },
 
-                // We need to map the raw positions to TimingEntry[]
-                // This mapping depends on the exact backend payload from race_engine.py
-                // For now, we assume the backend sends a structure we can map.
+    // ────── Grid ──────
 
-                // Mock mapping for now till backend spec is strictly followed
-                const newStandings: TimingEntry[] = (data.positions || []).map((p: any, index: number) => ({
-                    position: index + 1,
-                    driver: {
-                        id: p, // p is currently just driver_id in existing backend
-                        code: p,
-                        firstName: '',
-                        lastName: '',
-                        number: 0,
-                        constructor: { id: 'unk', name: 'Unknown', shortName: 'UNK', color: '#888' },
-                        nationality: ''
-                    },
-                    gap: data.gaps[p] ? `+${data.gaps[p].toFixed(3)}` : 'LEADER',
-                    interval: '',
-                    lastLap: { lap: data.lap, total: data.times[p], sectors: [], isPersonalBest: false, isSessionBest: false },
-                    bestLap: null,
-                    currentTire: 'SOFT', // Placeholder
-                    tireAge: 0,
-                    pitStops: 0,
-                    status: 'RUNNING'
-                }));
+    showGrid: () => {
+        const { qualifyingData } = get();
+        if (!qualifyingData) return;
 
-                // Update Telemetry History (Lap Times)
-                const newHistory = { ...state.telemetryHistory };
-                newStandings.forEach(driver => {
-                    const code = driver.driver.code;
-                    if (!newHistory[code]) newHistory[code] = [];
-                    newHistory[code].push({ lap: data.lap, time: data.times[code] || 0 });
-                });
+        const grid = generateGrid(qualifyingData);
+        set({
+            phase: 'GRID_FORMATION',
+            gridOrder: grid,
+            status: 'READY',
+        });
+    },
 
-                return {
-                    currentLap: data.lap,
-                    standings: newStandings,
-                    telemetryHistory: newHistory
-                };
+    // ────── Race ──────
+
+    startRace: () => {
+        const { selectedCircuitId, gridOrder } = get();
+        if (!selectedCircuitId) return;
+
+        set({ phase: 'RACE_READY', status: 'LOADING' });
+
+        setTimeout(() => {
+            const data = generateMockRace(selectedCircuitId, gridOrder.length > 0 ? gridOrder : undefined);
+            const firstLap = data.laps[0];
+
+            set({
+                phase: 'RACE_READY',
+                fullRaceData: data,
+                raceConfig: data.config,
+                currentLap: 0,
+                currentStandings: firstLap?.standings || [],
+                currentFlag: 'GREEN',
+                currentEvents: [],
+                allPastEvents: [],
+                isPlaying: false,
+                selectedDriver: null,
+                status: 'READY',
             });
-        },
+        }, 600);
+    },
 
-        addEvent: (event) => set((state) => ({
-            events: [event, ...state.events]
-        }))
-    };
-});
+    play: () => {
+        const state = get();
+        if (!state.fullRaceData) return;
+        if (state.phase === 'RACE_FINISHED') return;
+
+        clearTimer();
+        set({ isPlaying: true, phase: 'RACE_PLAYING', status: 'PLAYING' });
+
+        const scheduleNext = () => {
+            const s = get();
+            if (!s.isPlaying || !s.fullRaceData) return;
+
+            const nextLap = s.currentLap + 1;
+            if (nextLap > s.fullRaceData.config.totalLaps) {
+                set({ isPlaying: false, phase: 'RACE_FINISHED', status: 'FINISHED' });
+                clearTimer();
+                return;
+            }
+
+            const lapData = s.fullRaceData.laps[nextLap - 1];
+            if (!lapData) return;
+
+            const interval = getAdaptiveInterval(lapData, s.fullRaceData.config.totalLaps);
+            set({ adaptiveInterval: interval });
+
+            playbackTimer = setTimeout(() => {
+                get().tick();
+                scheduleNext();
+            }, interval / s.playbackSpeed);
+        };
+
+        scheduleNext();
+    },
+
+    pause: () => {
+        clearTimer();
+        set({ isPlaying: false, phase: 'RACE_PAUSED', status: 'PAUSED' });
+    },
+
+    togglePlayPause: () => {
+        const state = get();
+        if (state.isPlaying) {
+            get().pause();
+        } else {
+            if (state.phase === 'RACE_FINISHED') {
+                get().seekToLap(0);
+                setTimeout(() => get().play(), 100);
+            } else {
+                get().play();
+            }
+        }
+    },
+
+    seekToLap: (lap: number) => {
+        const state = get();
+        if (!state.fullRaceData) return;
+
+        const wasPlaying = state.isPlaying;
+        clearTimer();
+
+        const clampedLap = Math.max(0, Math.min(lap, state.fullRaceData.config.totalLaps));
+
+        if (clampedLap === 0) {
+            const firstLap = state.fullRaceData.laps[0];
+            set({
+                currentLap: 0,
+                currentStandings: firstLap?.standings || [],
+                currentFlag: 'GREEN',
+                currentEvents: [],
+                allPastEvents: [],
+                isPlaying: false,
+                phase: 'RACE_READY',
+                status: 'READY',
+            });
+            return;
+        }
+
+        const lapData = state.fullRaceData.laps[clampedLap - 1];
+        if (!lapData) return;
+
+        const pastEvents: RaceEvent[] = [];
+        for (let i = 0; i < clampedLap; i++) {
+            pastEvents.push(...state.fullRaceData.laps[i].events);
+        }
+
+        set({
+            currentLap: clampedLap,
+            currentStandings: lapData.standings,
+            currentFlag: lapData.flag,
+            currentEvents: lapData.events,
+            allPastEvents: pastEvents,
+            phase: clampedLap >= state.fullRaceData.config.totalLaps ? 'RACE_FINISHED' : 'RACE_PAUSED',
+            status: clampedLap >= state.fullRaceData.config.totalLaps ? 'FINISHED' : 'PAUSED',
+            isPlaying: false,
+        });
+
+        if (wasPlaying && clampedLap < state.fullRaceData.config.totalLaps) {
+            setTimeout(() => get().play(), 50);
+        }
+    },
+
+    setPlaybackSpeed: (speed: number) => {
+        set({ playbackSpeed: speed });
+        // Restart playback with new speed if playing
+        const state = get();
+        if (state.isPlaying) {
+            get().pause();
+            setTimeout(() => get().play(), 50);
+        }
+    },
+
+    setSelectedDriver: (code: string | null) => {
+        set({ selectedDriver: code });
+    },
+
+    tick: () => {
+        const state = get();
+        if (!state.fullRaceData) return;
+
+        const nextLap = state.currentLap + 1;
+        if (nextLap > state.fullRaceData.config.totalLaps) {
+            clearTimer();
+            set({ isPlaying: false, phase: 'RACE_FINISHED', status: 'FINISHED' });
+            return;
+        }
+
+        const lapData = state.fullRaceData.laps[nextLap - 1];
+        if (!lapData) return;
+
+        set({
+            currentLap: nextLap,
+            currentStandings: lapData.standings,
+            currentFlag: lapData.flag,
+            currentEvents: lapData.events,
+            allPastEvents: [...state.allPastEvents, ...lapData.events],
+        });
+    },
+
+    // ────── Navigation ──────
+
+    backToCircuits: () => {
+        clearTimer();
+        clearQualiTimer();
+        set({
+            phase: 'CIRCUIT_SELECT',
+            selectedCircuitId: null,
+            qualifyingData: null,
+            qualifyingSession: null,
+            qualifyingRevealIndex: 0,
+            isQualifyingRunning: false,
+            gridOrder: [],
+            fullRaceData: null,
+            raceConfig: null,
+            currentLap: 0,
+            currentStandings: [],
+            currentFlag: 'GREEN',
+            currentEvents: [],
+            allPastEvents: [],
+            isPlaying: false,
+            selectedDriver: null,
+            status: 'IDLE',
+        });
+    },
+
+    reset: () => {
+        get().backToCircuits();
+    },
+
+    // ────── Legacy compat ──────
+    loadRace: (circuitId: string) => {
+        get().selectCircuit(circuitId);
+    },
+}));

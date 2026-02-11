@@ -7,19 +7,35 @@ export default {
     theme: {
         extend: {
             colors: {
-                // Neon Night Palette (Concept: Saudi GP Night)
                 "f1-red": "#E10600",
-                "f1-dark": "#0A0A0A", // Obsidian
-                "f1-carbon": "#151515", // Forged Base
-                "neon-cyan": "#00F0FF", // Petronas/Tech
-                "neon-purple": "#bc13fe", // Sector 3
-                "neon-yellow": "#FFE600", // Soft Tire
+                "f1-dark": "#0A0A0A",
+                "f1-carbon": "#151515",
+                "neon-cyan": "#00F0FF",
+                "neon-purple": "#bc13fe",
+                "neon-yellow": "#FFE600",
+                "flag-green": "#00E676",
+                "flag-yellow": "#FFC107",
+                "flag-red": "#FF1744",
+                "flag-sc": "#FF9800",
+                "tyre-soft": "#FF3333",
+                "tyre-medium": "#FFC906",
+                "tyre-hard": "#FFFFFF",
+                "tyre-inter": "#1EB53A",
+                "tyre-wet": "#0064E0",
+                "sector-purple": "#A020F0",
+                "sector-green": "#00E676",
+                "sector-yellow": "#F9E300",
+                "sim-bg": "#0B0D10",
+                "sim-panel": "#111318",
+                "sim-border": "rgba(255,255,255,0.08)",
             },
             fontFamily: {
                 "racing": ['"Racing Sans One"', "cursive"],
-                "stats": ['"Orbitron"', "monospace"], // Tech/Data font
-                "mono": ['"Orbitron"', "ui-monospace", "SFMono-Regular", "Menlo", "Monaco", "Consolas", "monospace"], // Override mono to use Orbitron
-                "body": ['"Inter"', "sans-serif"], // Clean readability
+                "stats": ['"Orbitron"', "monospace"],
+                "timing": ['"Rajdhani"', "sans-serif"],
+                "ui": ['"Outfit"', "sans-serif"],
+                "mono": ['"JetBrains Mono"', "ui-monospace", "SFMono-Regular", "Menlo", "Monaco", "Consolas", "monospace"],
+                "body": ['"Inter"', "sans-serif"],
             },
             backgroundImage: {
                 "carbon-forged": "url('/assets/textures/carbon-forged.png')",

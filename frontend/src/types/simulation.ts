@@ -1,5 +1,6 @@
+// ─── Tyre & Sector Enums ──────────────────────────────────────────────────
 export type TireCompound = 'SOFT' | 'MEDIUM' | 'HARD' | 'INTER' | 'WET';
-export type TyreCompound = TireCompound; // Alias for compatibility
+export type TyreCompound = TireCompound;
 
 export const TIRE_COLORS: Record<TireCompound, string> = {
     SOFT: '#FF3333',
@@ -18,147 +19,168 @@ export const SECTOR_COLORS: Record<SectorStatus, string> = {
     NONE: '#FFFFFF',
 };
 
-export type WeatherCondition = 'DRY' | 'LIGHT_RAIN' | 'WET';
+// ─── Race Flag ────────────────────────────────────────────────────────────
+export type RaceFlag = 'GREEN' | 'YELLOW' | 'SC' | 'VSC' | 'RED';
 
+export const FLAG_COLORS: Record<RaceFlag, string> = {
+    GREEN: '#00E676',
+    YELLOW: '#FFC107',
+    SC: '#FF9800',
+    VSC: '#FF9800',
+    RED: '#FF1744',
+};
+
+// ─── Race Event Types ─────────────────────────────────────────────────────
 export type RaceEventType =
     | 'OVERTAKE'
     | 'PIT_STOP'
-    | 'SAFETY_CAR'
-    | 'VIRTUAL_SC'
+    | 'SC_DEPLOY'
+    | 'SC_END'
+    | 'VSC_DEPLOY'
+    | 'VSC_END'
     | 'DNF'
-    | 'YELLOW_FLAG';
+    | 'FASTEST_LAP'
+    | 'DRS_ENABLED'
+    | 'YELLOW_FLAG'
+    | 'PENALTY'
+    | 'CRASH';
 
-export interface Constructor {
-    id: string;
-    name: string;
-    shortName: string;
-    color: string;
+export type WeatherCondition = 'DRY' | 'LIGHT_RAIN' | 'WET';
+export type DriverStatus = 'RUNNING' | 'PIT' | 'OUT';
+
+// ─── Penalty Types ────────────────────────────────────────────────────────
+export type PenaltyType =
+    | '5_SEC'
+    | '10_SEC'
+    | 'DRIVE_THROUGH'
+    | 'TRACK_LIMITS'
+    | 'UNSAFE_RELEASE';
+
+export interface Penalty {
+    type: PenaltyType;
+    description: string;
+    seconds: number;
 }
 
-export interface Driver {
-    id: string;
-    code: string;
-    firstName: string;
-    lastName: string;
-    number: number;
-    constructor: Constructor;
-    nationality: string;
-}
-
-export interface SectorTime {
-    sector: 1 | 2 | 3;
-    time: number;
-    status: SectorStatus;
-}
-
-export interface LapTime {
-    lap: number;
-    sectors: SectorTime[];
-    total: number;
-    isPersonalBest: boolean;
-    isSessionBest: boolean;
-}
-
-export interface TimingEntry {
+// ─── Core Data Structures ─────────────────────────────────────────────────
+export interface DriverStanding {
     position: number;
-    driver: Driver;
-    gap: string;
+    driverCode: string;
+    driverName: string;
+    driverNumber: number;
+    teamId: string;
+    teamName: string;
+    teamColor: string;
+    gapToLeader: string;
     interval: string;
-    lastLap: LapTime | null;
-    bestLap: LapTime | null;
-    currentTire: TireCompound;
-    tireAge: number;
-    pitStops: number;
-    status: 'RUNNING' | 'PIT' | 'OUT' | 'DNF';
-}
-
-export interface StrategyStint {
+    lastLapTime: number;
+    bestLapTime: number;
+    isFastestLap: boolean;
     compound: TireCompound;
-    startLap: number;
-    endLap: number | null;
-    laps: number;
-}
-
-export interface PitStop {
-    lap: number;
-    duration: number;
-    compoundBefore: TireCompound;
-    compoundAfter: TireCompound;
+    tyreAge: number;
+    pitStops: number;
+    status: DriverStatus;
+    speed: number;
+    sectors: [number, number, number];
+    sectorStatus: [SectorStatus, SectorStatus, SectorStatus];
+    positionChange: number;
+    driverPhoto?: string;
 }
 
 export interface RaceEvent {
     type: RaceEventType;
     lap: number;
-    timestamp: number;
-    drivers: string[];
     description: string;
+    drivers: string[];
+    penalty?: Penalty;
 }
 
-export interface OvertakeEvent extends RaceEvent {
-    type: 'OVERTAKE';
-    attacker: string;
-    defender: string;
-    corner: number;
-}
-
-export interface TelemetryPoint {
-    distance: number;
-    speed: number;
-    throttle: number;
-    brake: number;
-    gear: number;
-    rpm: number;
-    ers: number;
-    drs: boolean;
-}
-
-export interface TelemetryData {
-    driver: Driver;
+export interface RaceLap {
     lap: number;
-    points: TelemetryPoint[];
-}
-
-export interface SimulationState {
-    mode: 'IDLE' | 'QUALIFYING' | 'RACE' | 'RESULTS';
-    currentLap: number;
-    totalLaps: number;
-    timing: TimingEntry[];
+    flag: RaceFlag;
+    standings: DriverStanding[];
     events: RaceEvent[];
-    weather: WeatherCondition;
-    safetyCarActive: boolean;
-    virtualSCActive: boolean;
 }
 
+export interface RaceConfig {
+    circuitId: string;
+    circuitName: string;
+    country: string;
+    totalLaps: number;
+    year: number;
+}
+
+export interface FullRaceData {
+    raceId: string;
+    config: RaceConfig;
+    laps: RaceLap[];
+}
+
+// ─── Circuit ──────────────────────────────────────────────────────────────
 export interface Circuit {
     id: string;
     name: string;
     country: string;
     length: number;
     turns: number;
-    sectors: [number, number, number];
+    laps: number;
     drsZones: number;
-    lapRecord: {
-        time: number;
-        driver: string;
-        year: number;
+}
+
+// ─── Qualifying ───────────────────────────────────────────────────────────
+export type QualifyingSession = 'Q1' | 'Q2' | 'Q3';
+
+export interface QualifyingResult {
+    driverCode: string;
+    driverName: string;
+    driverNumber: number;
+    teamId: string;
+    teamName: string;
+    teamColor: string;
+    q1Time: number | null;
+    q2Time: number | null;
+    q3Time: number | null;
+    bestTime: number;
+    position: number;
+    eliminated: boolean;
+    eliminatedIn: QualifyingSession | null;
+    driverPhoto?: string;
+}
+
+export interface QualifyingData {
+    circuitId: string;
+    results: QualifyingResult[];
+    sessionTimes: {
+        q1: QualifyingResult[];
+        q2: QualifyingResult[];
+        q3: QualifyingResult[];
     };
 }
 
-export type SimulationStatus = 'IDLE' | 'RUNNING' | 'PAUSED' | 'FINISHED' | 'ERROR';
-
-export interface ScenarioConfig {
-    circuit_id: string;
-    year: number;
-    lap_count: number;
-    drivers: any[]; // refine as needed
-    events: any[];
+// ─── Grid Position ────────────────────────────────────────────────────────
+export interface GridPosition {
+    position: number;
+    driverCode: string;
+    driverName: string;
+    driverNumber: number;
+    teamId: string;
+    teamName: string;
+    teamColor: string;
+    qualifyingTime: string;
+    driverPhoto?: string;
 }
 
-export interface SimulationResult {
-    id: string;
-    date: string;
-    circuit: string;
-    winner: string;
-    fastestLap: string;
-    totalTime: string;
-}
+// ─── Simulation Phase (expanded state machine) ───────────────────────────
+export type SimulationPhase =
+    | 'CIRCUIT_SELECT'
+    | 'WEEKEND_INTRO'
+    | 'QUALIFYING'
+    | 'QUALI_RESULTS'
+    | 'GRID_FORMATION'
+    | 'RACE_READY'
+    | 'RACE_PLAYING'
+    | 'RACE_PAUSED'
+    | 'RACE_FINISHED';
+
+// ─── Simulation Status (kept for backwards compat) ───────────────────────
+export type SimulationStatus = 'IDLE' | 'LOADING' | 'READY' | 'PLAYING' | 'PAUSED' | 'FINISHED';
