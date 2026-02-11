@@ -6,7 +6,7 @@
 import React, { useState, useMemo } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useAppStore } from '../../store/useAppStore';
-import { TEAMS_2026_DATA, type Team2026 } from '../../data/teams2026';
+import { TEAMS_2026_DATA, type Team2026 } from '../../data/f1-data';
 import { DRIVERS_2026 } from '../../mocks/drivers';
 import type { Driver } from '../../types/f1';
 

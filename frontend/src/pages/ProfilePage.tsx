@@ -7,7 +7,7 @@ import React, { useState } from 'react';
 import { motion } from 'framer-motion';
 import { useNavigate } from 'react-router-dom';
 import { useAppStore } from '../store/useAppStore';
-import { TEAMS_2026_DATA } from '../data/teams2026';
+import { TEAMS_2026_DATA } from '../data/f1-data';
 import { getDriverByCode } from '../mocks/drivers';
 import { DashboardLayout } from '../components/dashboard/DashboardLayout';
 

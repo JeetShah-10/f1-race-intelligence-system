@@ -8,7 +8,6 @@ import type {
     FullRaceData,
     SimulationPhase,
     QualifyingData,
-    QualifyingResult,
     GridPosition,
 } from '../types/simulation';
 import { generateMockRace, generateMockQualifying, generateGrid } from '../data/simulationMockData';
@@ -176,7 +175,7 @@ export const useSimulationStore = create<SimulationStore>((set, get) => ({
 
         qualiTimer = setInterval(() => {
             revealCount++;
-            const state = get();
+
 
             if (revealCount >= totalDrivers) {
                 clearQualiTimer();

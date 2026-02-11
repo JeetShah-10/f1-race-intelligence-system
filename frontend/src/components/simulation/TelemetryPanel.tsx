@@ -95,8 +95,8 @@ function DriverDetail() {
                                     d.sectorStatus[i] === 'GREEN' ? 'rgba(0,230,118,0.10)' :
                                         'rgba(255,255,255,0.03)',
                                 borderBottom: `2px solid ${d.sectorStatus[i] === 'PURPLE' ? '#A020F0' :
-                                        d.sectorStatus[i] === 'GREEN' ? '#00E676' :
-                                            'rgba(255,255,255,0.06)'
+                                    d.sectorStatus[i] === 'GREEN' ? '#00E676' :
+                                        'rgba(255,255,255,0.06)'
                                     }`,
                             }}
                         >
@@ -153,7 +153,7 @@ function StatCell({ label, value, purple }: { label: string; value: string; purp
 
 // ─── Main Panel ──────────────────────────────────────────────────────────
 export function TelemetryPanel() {
-    const { allPastEvents, selectedDriver } = useSimulationStore();
+    const { allPastEvents } = useSimulationStore();
 
     const recentEvents = allPastEvents.slice(-20).reverse();
 

@@ -1,4 +1,4 @@
-import { TEAMS_2026_DATA } from './teams2026';
+import { TEAMS_2026_DATA } from './f1-data';
 import type {
     RaceLap,
     RaceConfig,
