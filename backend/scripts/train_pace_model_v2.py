@@ -34,7 +34,7 @@ MODEL_DIR = ROOT / "app" / "models"
 MODEL_DIR.mkdir(parents=True, exist_ok=True)
 
 SUPABASE_URL = os.getenv("SUPABASE_URL")
-SUPABASE_KEY = os.getenv("SUPABASE_SERVICE_KEY") or os.getenv("SUPABASE_KEY")
+SUPABASE_KEY = os.getenv("SUPABASE_SERVICE_KEY") or os.getenv("SUPABASE_KEY") or os.getenv("SUPABASE_ANON_KEY")
 
 # Model output paths (must match pace_model.py expectations)
 BASELINE_MODEL_PATH = MODEL_DIR / "baseline_pace_model.pkl"
