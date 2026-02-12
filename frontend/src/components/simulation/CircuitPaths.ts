@@ -11,7 +11,7 @@ export interface CircuitSVG {
 const CIRCUIT_IMAGES: Record<string, { map: string; photo: string }> = {
     bahrain: { map: 'bahrain-grand-prix-map.png', photo: 'bahrain-grand-prix-circuit.webp' },
     jeddah: { map: 'saudi-arabia-grand-prix-map.png', photo: 'saudi-arabia-grand-prix-circuit.webp' },
-    melbourne: { map: 'australian-grand-prix-map.png', photo: 'australian-grand-prix-circuit.webp' },
+    melbourne: { map: 'australian-grand-prix-map.png', photo: 'australian-grand-prix-circuit.jpeg' },
     suzuka: { map: 'suzuka-map.png', photo: 'suzuka-circuit.webp' },
     shanghai: { map: 'shanghai-grand-prix-map.png', photo: 'shanghai-grand-prix-circuit.webp' },
     miami: { map: 'miami-grand-prix-map.png', photo: 'miami-grand-prix-circuit.webp' },

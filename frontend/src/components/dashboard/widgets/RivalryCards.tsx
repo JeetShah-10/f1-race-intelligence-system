@@ -91,7 +91,7 @@ export const RivalryCards: React.FC = () => {
             <div className="flex flex-col h-full w-full relative overflow-hidden">
                 <div className="absolute top-0 left-0 right-0 z-20 px-4 py-3 border-b border-white/[0.08] flex items-center justify-between bg-black/20 backdrop-blur-md">
                     <h3 className="text-white/90 font-racing text-sm flex items-center gap-2 tracking-wider">
-                        <span className="w-1.5 h-1.5 rounded-full bg-orange-500 animate-pulse shadow-[0_0_8px_rgba(249,115,22,0.8)]" />
+                        <span className="w-1.5 h-1.5 rounded-full bg-[#E10600] animate-pulse shadow-[0_0_8px_rgba(225,6,0,0.8)]" />
                         KEY RIVALRIES
                     </h3>
 
@@ -103,7 +103,7 @@ export const RivalryCards: React.FC = () => {
                                     setDirection(i > index ? 1 : -1);
                                     setIndex(i);
                                 }}
-                                className={`h-1 rounded-full transition-all duration-300 ${i === index ? 'w-4 bg-orange-500' : 'w-1 bg-white/20 hover:bg-white/40'}`}
+                                className={`h-1 rounded-full transition-all duration-300 ${i === index ? 'w-4 bg-[#E10600] shadow-[0_0_6px_rgba(225,6,0,0.6)]' : 'w-1 bg-white/20 hover:bg-white/40'}`}
                             />
                         ))}
                     </div>
@@ -215,7 +215,7 @@ export const RivalryCards: React.FC = () => {
                 <div className="absolute inset-y-0 left-0 w-16 z-20 flex items-center justify-start pl-2 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
                     <button
                         onClick={() => paginate(-1)}
-                        className="p-2 rounded-full bg-white/5 hover:bg-white/10 border border-white/5 backdrop-blur text-white/70 hover:text-white transition-all transform hover:scale-110 active:scale-95"
+                        className="p-2 rounded-full bg-white/5 hover:bg-[#E10600]/20 border border-white/5 hover:border-[#E10600]/30 backdrop-blur text-white/70 hover:text-white transition-all transform hover:scale-110 active:scale-95"
                     >
                         <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
@@ -226,7 +226,7 @@ export const RivalryCards: React.FC = () => {
                 <div className="absolute inset-y-0 right-0 w-16 z-20 flex items-center justify-end pr-2 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
                     <button
                         onClick={() => paginate(1)}
-                        className="p-2 rounded-full bg-white/5 hover:bg-white/10 border border-white/5 backdrop-blur text-white/70 hover:text-white transition-all transform hover:scale-110 active:scale-95"
+                        className="p-2 rounded-full bg-white/5 hover:bg-[#E10600]/20 border border-white/5 hover:border-[#E10600]/30 backdrop-blur text-white/70 hover:text-white transition-all transform hover:scale-110 active:scale-95"
                     >
                         <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />

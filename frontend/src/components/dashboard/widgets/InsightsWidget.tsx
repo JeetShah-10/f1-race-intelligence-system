@@ -55,10 +55,10 @@ export const InsightsWidget: React.FC = () => {
 
             <div className="px-4 py-3 border-b border-white/[0.08] flex items-center justify-between">
                 <h3 className="text-white/90 font-semibold text-sm flex items-center gap-2">
-                    <span className="w-1.5 h-1.5 rounded-full bg-purple-500 animate-pulse" />
+                    <span className="w-1.5 h-1.5 rounded-full bg-[#E10600] animate-pulse" />
                     AI Insights
                 </h3>
-                <span className="text-purple-400/60 text-xs">Live</span>
+                <span className="text-[#E10600]/60 text-xs">Live</span>
             </div>
 
 
@@ -112,7 +112,7 @@ export const InsightsWidget: React.FC = () => {
                     whileHover={{ scale: 1.02 }}
                     whileTap={{ scale: 0.98 }}
                     onClick={() => navigate('/insights')}
-                    className="w-full text-center text-white/50 text-xs hover:text-purple-400 transition-colors flex items-center justify-center gap-1 py-1"
+                    className="w-full text-center text-white/50 text-xs hover:text-[#E10600] transition-colors flex items-center justify-center gap-1 py-1"
                 >
                     View All Insights
                     <svg className="w-3 h-3" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">

@@ -35,9 +35,9 @@ export const MomentumTracker: React.FC = () => {
     return (
         <div className="h-full bg-white/[0.02] backdrop-blur-sm rounded-xl border border-white/[0.06] overflow-hidden flex flex-col">
 
-            <div className="px-4 py-3 border-b border-white/[0.06] flex items-center justify-between bg-gradient-to-r from-blue-500/5 to-transparent">
+            <div className="px-4 py-3 border-b border-white/[0.06] flex items-center justify-between bg-gradient-to-r from-[#E10600]/5 to-transparent">
                 <h3 className="text-white/90 font-semibold text-sm flex items-center gap-2">
-                    <span className="w-1.5 h-1.5 rounded-full bg-blue-500" />
+                    <span className="w-1.5 h-1.5 rounded-full bg-[#E10600] animate-pulse" />
                     Driver Momentum
                 </h3>
                 <span className="text-white/40 text-xs font-mono">Last 5 Races</span>

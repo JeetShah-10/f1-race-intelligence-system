@@ -34,7 +34,7 @@ export const NextRaceHero: React.FC = () => {
                         transition={{ duration: 1.5, ease: "easeOut" }}
                         src={nextRace.mapImage}
                         alt="Track Map"
-                        className="w-full h-full object-contain filter drop-shadow-[0_0_8px_rgba(255,255,255,0.5)]"
+                        className="w-full h-full object-contain filter drop-shadow-[0_0_12px_rgba(225,6,0,0.6)]"
                     />
 
                     <div className="absolute inset-0 bg-gradient-to-b from-transparent via-white/10 to-transparent w-full h-[20%] animate-scanline pointer-events-none" />
@@ -51,7 +51,7 @@ export const NextRaceHero: React.FC = () => {
                 </div>
 
 
-                <div className="absolute top-4 right-4 flex items-center gap-3">
+                <div className="absolute top-4 right-4 flex items-center gap-3 bg-black/40 backdrop-blur-md rounded-xl px-4 py-2 border border-white/[0.08]">
                     <div className="text-center">
                         <CountUpNumber
                             target={nextRace.countdown?.days || 0}
@@ -114,7 +114,7 @@ export const NextRaceHero: React.FC = () => {
 
                 <Link
                     to="/simulate"
-                    className="mt-4 inline-flex items-center gap-2 px-5 py-2.5 rounded-lg bg-[#E10600] hover:bg-[#FF1801] text-white font-semibold text-sm transition-colors w-fit"
+                    className="mt-4 inline-flex items-center gap-2 px-5 py-2.5 rounded-lg bg-[#E10600] hover:bg-[#FF1801] text-white font-semibold text-sm transition-all w-fit hover:shadow-[0_0_20px_rgba(225,6,0,0.4)]"
                 >
                     <svg className="w-4 h-4" viewBox="0 0 24 24" fill="currentColor">
                         <polygon points="5,3 19,12 5,21" />

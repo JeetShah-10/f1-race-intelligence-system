@@ -14,9 +14,9 @@ export const RaceCalendarWidget: React.FC = () => {
     return (
         <GlassCard className="h-full flex flex-col overflow-hidden" blur="sm" padding="none">
 
-            <div className="px-4 py-3 border-b border-white/[0.06] flex items-center justify-between bg-gradient-to-r from-blue-500/5 to-transparent flex-shrink-0">
+            <div className="px-4 py-3 border-b border-white/[0.06] flex items-center justify-between bg-gradient-to-r from-[#E10600]/5 to-transparent flex-shrink-0">
                 <h3 className="text-white/90 font-racing text-sm flex items-center gap-2 tracking-wider">
-                    <span className="w-1.5 h-1.5 rounded-full bg-blue-500" />
+                    <span className="w-1.5 h-1.5 rounded-full bg-[#E10600]" />
                     RACE CALENDAR
                 </h3>
                 <span className="text-white/40 text-xs font-mono">2026 SEASON</span>
@@ -69,7 +69,7 @@ export const RaceCalendarWidget: React.FC = () => {
 
 
             <div className="px-4 py-2 border-t border-white/[0.06] bg-white/[0.01] flex-shrink-0">
-                <Link to="/calendar" className="w-full text-center text-white/40 text-xs hover:text-blue-400 transition-colors font-medium block py-1">
+                <Link to="/calendar" className="w-full text-center text-white/40 text-xs hover:text-[#E10600] transition-colors font-medium block py-1">
                     View Full Calendar →
                 </Link>
             </div>

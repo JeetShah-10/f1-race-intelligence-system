@@ -49,7 +49,7 @@ const glowColorMap = {
 export const GlassCard: React.FC<GlassCardProps> = ({
     children,
     blur = 'xl',
-    glowColor = 'white',
+    glowColor = 'red',
     interactive = true,
     padding = 'md',
     className = '',

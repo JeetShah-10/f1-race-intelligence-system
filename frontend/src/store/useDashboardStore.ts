@@ -178,7 +178,7 @@ const mockNextRace: NextRace = {
         hours: 6,
         minutes: 0,
     },
-    image: '/assets/circuits/australian-grand-prix-circuit.webp',
+    image: '/assets/circuits/australian-grand-prix-circuit.jpeg',
     mapImage: '/assets/circuits/australian-grand-prix-map.png',
 };
 

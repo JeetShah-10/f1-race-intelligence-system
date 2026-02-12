@@ -50,7 +50,7 @@ export const RecentWorkWidget: React.FC = () => {
 
             <div className="px-4 py-3 border-b border-white/[0.08] flex items-center justify-between">
                 <h3 className="text-white/90 font-semibold text-sm flex items-center gap-2">
-                    <span className="w-1.5 h-1.5 rounded-full bg-emerald-500" />
+                    <span className="w-1.5 h-1.5 rounded-full bg-[#E10600]" />
                     Recent Work
                 </h3>
             </div>
@@ -101,7 +101,7 @@ export const RecentWorkWidget: React.FC = () => {
 
 
             <div className="px-4 py-2 border-t border-white/[0.08]">
-                <button className="w-full text-center text-white/50 text-xs hover:text-white/80 transition-colors">
+                <button className="w-full text-center text-white/50 text-xs hover:text-[#E10600] transition-colors">
                     View All Work →
                 </button>
             </div>

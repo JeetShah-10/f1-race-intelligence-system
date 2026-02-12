@@ -27,9 +27,9 @@ export const ConstructorStandingsWidget: React.FC = () => {
 
     return (
         <GlassCard className="h-full flex flex-col overflow-hidden" blur="sm" padding="none">
-            <div className="px-4 py-3 border-b border-white/[0.06] flex items-center justify-between bg-gradient-to-r from-[#FF8000]/5 to-transparent flex-shrink-0">
+            <div className="px-4 py-3 border-b border-white/[0.06] flex items-center justify-between bg-gradient-to-r from-[#E10600]/5 to-transparent flex-shrink-0">
                 <h3 className="text-white/90 font-racing text-sm flex items-center gap-2 tracking-wider">
-                    <span className="w-1.5 h-1.5 rounded-full bg-[#FF8000]" />
+                    <span className="w-1.5 h-1.5 rounded-full bg-[#E10600]" />
                     CONSTRUCTORS
                 </h3>
                 <span className="text-white/40 text-xs font-mono">2026</span>
@@ -97,7 +97,7 @@ export const ConstructorStandingsWidget: React.FC = () => {
             </div>
 
             <div className="px-4 py-2 border-t border-white/[0.06] bg-white/[0.01] flex-shrink-0">
-                <Link to="/standings/constructors" className="w-full text-center text-white/40 text-xs hover:text-[#FF8000] transition-colors font-medium flex items-center justify-center gap-1 py-1">
+                <Link to="/standings/constructors" className="w-full text-center text-white/40 text-xs hover:text-[#E10600] transition-colors font-medium flex items-center justify-center gap-1 py-1">
                     View Full Standings
                     <svg className="w-3 h-3" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                         <path d="M5 12h14M12 5l7 7-7 7" strokeLinecap="round" strokeLinejoin="round" />

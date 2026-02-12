@@ -644,7 +644,7 @@ export const CIRCUITS_2026: Circuit2026[] = [
         laps: 58,
         lapDistance: 5.278,
         images: {
-            photo: ci('australian-grand-prix-circuit.webp'),
+            photo: ci('australian-grand-prix-circuit.jpeg'),
             map: ci('australian-grand-prix-map.webp'),
         },
     },

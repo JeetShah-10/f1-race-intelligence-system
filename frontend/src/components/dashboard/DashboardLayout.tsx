@@ -27,8 +27,8 @@ export const DashboardLayout: React.FC<DashboardLayoutProps> = ({
                 <CarbonFiber opacity={0.6} />
                 <NoiseOverlay opacity={0.03} />
                 <div className="absolute inset-0 opacity-10" style={{ background: 'linear-gradient(to bottom, transparent 50%, rgba(0, 0, 0, 0.3) 50%)', backgroundSize: '100% 4px' }} />
-                <div className="absolute top-[-20%] left-[-10%] w-[50%] h-[50%] rounded-full bg-blue-900/10 blur-[120px]" />
-                <div className="absolute bottom-[-20%] right-[-10%] w-[50%] h-[50%] rounded-full bg-red-900/10 blur-[120px]" />
+                <div className="absolute top-[-20%] left-[-10%] w-[50%] h-[50%] rounded-full bg-red-900/10 blur-[120px]" />
+                <div className="absolute bottom-[-20%] right-[-10%] w-[50%] h-[50%] rounded-full bg-red-900/8 blur-[120px]" />
             </div>
 
             {/* MOBILE SIDEBAR (Overlay) - Independent of layout flow */}
