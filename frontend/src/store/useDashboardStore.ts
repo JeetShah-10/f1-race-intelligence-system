@@ -1,4 +1,5 @@
 import { create } from 'zustand';
+import { api } from '../services/api';
 
 // ─────────────────────────────────────────────────────────────────────────────
 // TYPE DEFINITIONS
@@ -346,6 +347,9 @@ interface DashboardState {
     // Selectors
     getDriverByCode: (code: string) => Driver | undefined;
     getMomentumByDriver: (code: string) => DriverMomentum | undefined;
+
+    // API integration
+    loadDashboardData: () => Promise<void>;
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
@@ -403,6 +407,65 @@ export const useDashboardStore = create<DashboardState>((set, get) => ({
     // Selectors
     getDriverByCode: (code) => get().standings.find((d) => d.code === code),
     getMomentumByDriver: (code) => get().momentum.find((m) => m.driver === code),
+
+    // API integration — fetch real data, keep mock as fallback
+    loadDashboardData: async () => {
+        try {
+            // Attempt to fetch driver standings
+            const standings = await api.getStandings(2025);
+            if (standings && standings.length > 0) {
+                const enrichedDrivers: Driver[] = standings.map((s: any, idx: number) => ({
+                    name: s.driver_name || s.name || s.driver || '',
+                    code: s.driver_code || s.code || '',
+                    team: s.team || s.constructor || '',
+                    points: s.points || 0,
+                    position: s.position || idx + 1,
+                    teamColor: TEAM_COLORS[s.team || s.constructor || ''] || '#FFFFFF',
+                    image: DRIVER_IMAGES[s.driver_code || s.code || ''] || '',
+                }));
+                set({ standings: enrichedDrivers });
+                console.log('[Dashboard] ✅ Standings loaded from backend');
+            }
+        } catch (err) {
+            console.warn('[Dashboard] ⚠️ Backend standings unavailable, using mock data:', err);
+        }
+
+        try {
+            // Attempt to fetch calendar
+            const calendarData = await api.getCalendar(2026);
+            if (calendarData && calendarData.length > 0) {
+                const races: Race[] = calendarData.map((entry: any, idx: number) => ({
+                    round: entry.round || idx + 1,
+                    name: entry.event_name || entry.name || '',
+                    country: entry.country || '',
+                    date: entry.date || '',
+                    flag: entry.flag || '',
+                    status: idx === 0 ? 'next' as const : 'upcoming' as const,
+                    circuit: entry.circuit || entry.circuit_name || '',
+                }));
+                set({ calendar: races });
+                console.log('[Dashboard] ✅ Calendar loaded from backend');
+            }
+        } catch (err) {
+            console.warn('[Dashboard] ⚠️ Backend calendar unavailable, using mock data:', err);
+        }
+
+        try {
+            // Check backend health and update meta
+            const healthy = await api.checkHealth();
+            set({
+                meta: {
+                    ...get().meta,
+                    status: healthy ? 'Operational' : 'Degraded',
+                    lastIngest: new Date().toISOString(),
+                },
+            });
+        } catch {
+            set({
+                meta: { ...get().meta, status: 'Offline' },
+            });
+        }
+    },
 }));
 
 // ─────────────────────────────────────────────────────────────────────────────

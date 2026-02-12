@@ -2,7 +2,7 @@ import { create } from 'zustand';
 
 interface Driver {
     id: string;
-    [key: string]: unknown;
+    [key: string]: any;
 }
 
 interface RaceState {

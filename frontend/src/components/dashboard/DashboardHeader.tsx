@@ -177,10 +177,9 @@ export const DashboardHeader: React.FC = () => {
         }
     }, [searchResults, selectedIndex]);
 
-    const handleSearchChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
-        setSearchQuery(e.target.value);
+    useEffect(() => {
         setSelectedIndex(0);
-    }, []);
+    }, [searchQuery]);
 
     const formattedTime = currentTime.toLocaleTimeString('en-US', {
         hour: '2-digit',
@@ -272,7 +271,7 @@ export const DashboardHeader: React.FC = () => {
                                         ref={searchInputRef}
                                         type="text"
                                         value={searchQuery}
-                                        onChange={handleSearchChange}
+                                        onChange={(e) => setSearchQuery(e.target.value)}
                                         onKeyDown={handleKeyDown}
                                         placeholder="Search drivers, races, actions..."
                                         className="flex-1 bg-transparent text-white placeholder-white/40 outline-none text-base"

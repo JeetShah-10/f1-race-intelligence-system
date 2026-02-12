@@ -1,3 +1,6 @@
+<<<<<<< HEAD
+# api_contract.md
+=======
 # API Contract — F1 Race Intelligence System
 
 ## Overview
@@ -357,3 +360,4 @@ All endpoints return standard error format:
 | Guest | 10 | 0 |
 | Registered | 60 | 10 |
 | Premium | 120 | 50 |
+>>>>>>> 2c436438b203d70c19f4e9029ac974df401817b5

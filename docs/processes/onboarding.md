@@ -1,3 +1,6 @@
+<<<<<<< HEAD
+# onboarding.md
+=======
 # Onboarding — F1 Race Intelligence System
 
 ## Quick Start
@@ -45,3 +48,4 @@ uvicorn app.main:app --reload
 import fastf1
 fastf1.Cache.enable_cache('./cache/fastf1')
 ```
+>>>>>>> 2c436438b203d70c19f4e9029ac974df401817b5

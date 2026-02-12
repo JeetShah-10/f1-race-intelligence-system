@@ -1,3 +1,6 @@
+<<<<<<< HEAD
+# ml_model_spec.md
+=======
 # ML Model Specification — F1 Race Intelligence System
 
 ## Overview
@@ -201,3 +204,4 @@ confidence = 1.0 - model_uncertainty * recency_weight * completeness_score
 | Race winner accuracy | > 25% | Last 3 seasons |
 | Podium accuracy | > 40% | Last 3 seasons |
 | Inference time | < 500ms | Per prediction |
+>>>>>>> 2c436438b203d70c19f4e9029ac974df401817b5

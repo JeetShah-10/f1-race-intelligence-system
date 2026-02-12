@@ -10,15 +10,6 @@ interface LoadingScreenProps {
  * LoadingScreen - Cinematic F1-style loading intro
  * Inspired by frontend-w.com with percentage counter and smooth transitions
  */
-// Status messages that cycle during loading (stable reference outside component)
-const STATUS_MESSAGES = [
-    'INITIALIZING',
-    'LOADING TELEMETRY',
-    'SYNCING RACE DATA',
-    'CALIBRATING AI MODELS',
-    'READY TO RACE'
-];
-
 export const LoadingScreen: React.FC<LoadingScreenProps> = ({
     onComplete,
     minDisplayTime = 2500
@@ -26,6 +17,15 @@ export const LoadingScreen: React.FC<LoadingScreenProps> = ({
     const [progress, setProgress] = useState(0);
     const [statusText, setStatusText] = useState('INITIALIZING');
     const [isComplete, setIsComplete] = useState(false);
+
+    // Status messages that cycle during loading
+    const statusMessages = [
+        'INITIALIZING',
+        'LOADING TELEMETRY',
+        'SYNCING RACE DATA',
+        'CALIBRATING AI MODELS',
+        'READY TO RACE'
+    ];
 
     useEffect(() => {
         const startTime = Date.now();
@@ -38,9 +38,9 @@ export const LoadingScreen: React.FC<LoadingScreenProps> = ({
             // Update status text based on progress
             const statusIndex = Math.min(
                 Math.floor(newProgress / 25),
-                STATUS_MESSAGES.length - 1
+                statusMessages.length - 1
             );
-            setStatusText(STATUS_MESSAGES[statusIndex]);
+            setStatusText(statusMessages[statusIndex]);
 
             if (newProgress >= 100) {
                 clearInterval(interval);

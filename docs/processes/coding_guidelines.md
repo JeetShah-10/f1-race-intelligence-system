@@ -1,3 +1,6 @@
+<<<<<<< HEAD
+# coding_guidelines.md
+=======
 # Coding Guidelines — F1 Race Intelligence System
 
 ## TypeScript (Frontend)
@@ -48,3 +51,4 @@ def predict_race(circuit, year):
 
 - Frontend: ESLint + Prettier
 - Backend: Ruff + Black
+>>>>>>> 2c436438b203d70c19f4e9029ac974df401817b5

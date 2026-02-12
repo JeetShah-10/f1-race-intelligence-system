@@ -25,8 +25,7 @@ export function ScrollProvider({ children }: ScrollProviderProps) {
     const [scrollY, setScrollY] = useState(0);
     const [velocity, setVelocity] = useState(0);
     const [isLoaded, setIsLoaded] = useState(false);
-    const [lenisInstance, setLenisInstance] = useState<Lenis | null>(null);
-    const rafCallbackRef = useRef<((time: number) => void) | null>(null);
+    const lenisRef = useRef<Lenis | null>(null);
 
     useEffect(() => {
         const lenis = new Lenis({
@@ -38,8 +37,7 @@ export function ScrollProvider({ children }: ScrollProviderProps) {
             touchMultiplier: 2,
         });
 
-        // eslint-disable-next-line react-hooks/set-state-in-effect
-        setLenisInstance(lenis);
+        lenisRef.current = lenis;
 
         lenis.on('scroll', (e: { scroll: number; limit: number; velocity: number }) => {
             setScrollY(e.scroll);
@@ -48,20 +46,17 @@ export function ScrollProvider({ children }: ScrollProviderProps) {
             ScrollTrigger.update();
         });
 
-        const rafCallback = (time: number) => {
+        gsap.ticker.add((time) => {
             lenis.raf(time * 1000);
-        };
-        rafCallbackRef.current = rafCallback;
-        gsap.ticker.add(rafCallback);
+        });
 
         gsap.ticker.lagSmoothing(0);
 
         return () => {
-            if (rafCallbackRef.current) {
-                gsap.ticker.remove(rafCallbackRef.current);
-            }
             lenis.destroy();
-            setLenisInstance(null);
+            gsap.ticker.remove((time) => {
+                lenis.raf(time * 1000);
+            });
         };
     }, []);
 
@@ -71,7 +66,7 @@ export function ScrollProvider({ children }: ScrollProviderProps) {
                 scrollProgress,
                 scrollY,
                 velocity,
-                lenis: lenisInstance,
+                lenis: lenisRef.current,
                 isLoaded,
                 setIsLoaded,
             }}
@@ -81,7 +76,6 @@ export function ScrollProvider({ children }: ScrollProviderProps) {
     );
 }
 
-// eslint-disable-next-line react-refresh/only-export-components
 export function useScroll() {
     const context = useContext(ScrollContext);
     if (!context) {
@@ -90,7 +84,6 @@ export function useScroll() {
     return context;
 }
 
-// eslint-disable-next-line react-refresh/only-export-components
 export function useSectionProgress(sectionRef: React.RefObject<HTMLElement | null>) {
     const [progress, setProgress] = useState(0);
 

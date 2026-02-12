@@ -4,10 +4,21 @@
 .env.*.local
 *.env
 
-# Backend Cache
+# Agent-specific (private)
+.agent/
+.antigravity/
+.context/
+
+# Reference files (too large for regular git)
+3D-model-and-references/
+ml_data/
 backend/cache/
+
+# Python
+venv/
 __pycache__/
 *.pyc
+*.pyo
 
 # Node
 node_modules/
@@ -25,5 +36,17 @@ build/
 .gemini/
 
 # OS
-.DS_Store
 Thumbs.db
+
+# Large Models & DBs
+*.db
+backend/f1_sim.db
+*.pkl
+!backend/app/models/*.pkl # Keep small models if needed, but risky. Better to ignore all large ones.
+# Actually, let's ignore all pkl for now to be safe, or just large ones.
+# user's pkls were small (1.6MB), so maybe keep them?
+# The error was 560MB file. That was likely in backend/cache.
+
+# Caches
+cache/
+backend/cache/

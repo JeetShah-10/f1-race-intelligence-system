@@ -1,4 +1,5 @@
 import { create } from 'zustand';
+import { api } from '../services/api';
 
 export interface Circuit {
     id: string;
@@ -46,6 +47,7 @@ interface CircuitState {
     setInsights: (insights: ModelInsight[]) => void;
     calendar: RaceEvent[];
     setCalendar: (events: RaceEvent[]) => void;
+    loadCircuits: () => Promise<void>;
 }
 
 const defaultCircuits: Circuit[] = [
@@ -133,4 +135,32 @@ export const useCircuitStore = create<CircuitState>((set) => ({
 
     calendar: [],
     setCalendar: (events) => set({ calendar: events }),
+
+    loadCircuits: async () => {
+        try {
+            const backendCircuits = await api.getCircuits();
+            if (backendCircuits && backendCircuits.length > 0) {
+                const circuits: Circuit[] = backendCircuits.map((bc: any) => ({
+                    id: bc.circuit_id || bc.id || '',
+                    name: bc.name || bc.circuit_name || '',
+                    country: bc.country || '',
+                    countryCode: bc.country_code || '',
+                    city: bc.city || bc.location || '',
+                    image: bc.image || `/assets/circuits/${(bc.circuit_id || bc.id || '').toLowerCase()}-circuit.webp`,
+                    map: bc.map || `/assets/circuits/${(bc.circuit_id || bc.id || '').toLowerCase()}-map.webp`,
+                    length: bc.length_km ? `${bc.length_km} km` : bc.length || '',
+                    laps: bc.total_laps || bc.laps || 0,
+                    lapRecord: bc.lap_record || '',
+                    lapRecordHolder: bc.lap_record_holder || '',
+                    characteristics: bc.characteristics || [],
+                    pitLoss: bc.pit_loss || '',
+                    tyreCompounds: bc.tyre_compounds || [],
+                }));
+                set({ circuits });
+                console.log('[Circuits] \u2705 Loaded from backend');
+            }
+        } catch (err) {
+            console.warn('[Circuits] \u26a0\ufe0f Backend unavailable, using default data:', err);
+        }
+    },
 }));

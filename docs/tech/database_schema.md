@@ -1,3 +1,6 @@
+<<<<<<< HEAD
+# database_schema.md
+=======
 # Database Schema — F1 Race Intelligence System
 
 ## MVP Approach: File-Based Artifacts
@@ -71,3 +74,4 @@ artifacts/
 └── cache/
     └── fastf1/
 ```
+>>>>>>> 2c436438b203d70c19f4e9029ac974df401817b5

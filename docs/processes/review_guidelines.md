@@ -1,3 +1,6 @@
+<<<<<<< HEAD
+# review_guidelines.md
+=======
 # Review Guidelines — F1 Race Intelligence System
 
 ## PR Requirements
@@ -31,3 +34,4 @@
 - **Small PRs (< 100 lines):** Same day
 - **Medium (100-500 lines):** 1-2 days
 - **Large (500+ lines):** Consider splitting
+>>>>>>> 2c436438b203d70c19f4e9029ac974df401817b5

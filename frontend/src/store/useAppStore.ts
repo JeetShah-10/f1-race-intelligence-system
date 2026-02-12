@@ -1,5 +1,6 @@
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
+import { authService } from '../services/auth';
 
 export type DashboardMode = 'view' | 'simulate' | 'compare';
 export type UserTier = 'guest' | 'registered' | 'premium';
@@ -28,6 +29,7 @@ interface AppState {
     upgradeToPremium: () => void;
     setFavorites: (team: string, driver: string) => void;
     completeOnboarding: () => void;
+    initializeAuth: () => Promise<void>;
     isLoading: boolean;
     setLoading: (loading: boolean) => void;
     isSidebarOpen: boolean;
@@ -86,6 +88,21 @@ export const useAppStore = create<AppState>()(
             completeOnboarding: () => set((state) => ({
                 user: { ...state.user, hasCompletedOnboarding: true }
             })),
+            initializeAuth: async () => {
+                const { session } = await authService.getSession();
+                if (session?.user) {
+                    set((state) => ({
+                        isAuthenticated: true,
+                        user: {
+                            ...state.user,
+                            email: session.user.email || null,
+                            id: session.user.id,
+                            name: session.user.user_metadata?.name || state.user.name || session.user.email?.split('@')[0],
+                            avatar: session.user.user_metadata?.avatar_url || state.user.avatar,
+                        }
+                    }));
+                }
+            },
 
             isLoading: false,
             setLoading: (loading) => set({ isLoading: loading }),

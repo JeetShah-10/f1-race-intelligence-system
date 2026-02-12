@@ -85,5 +85,13 @@ export const authService = {
             redirectTo: `${window.location.origin}/reset-password`
         })
         return { data, error }
+    },
+
+    /**
+     * Update user attributes
+     */
+    updateUser: async (attributes: { password?: string, data?: object }) => {
+        const { data, error } = await supabase.auth.updateUser(attributes)
+        return { data, error }
     }
 }

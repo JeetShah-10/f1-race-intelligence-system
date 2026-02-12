@@ -1,4 +1,5 @@
 import { create } from 'zustand';
+import { api } from '../services/api';
 
 export interface Driver {
     code: string;
@@ -33,6 +34,7 @@ interface DriverState {
     setSelectedDriver: (code: string | null) => void;
     isLoading: boolean;
     setLoading: (loading: boolean) => void;
+    loadDrivers: () => Promise<void>;
 }
 
 const defaultStandings: Driver[] = [
@@ -75,4 +77,39 @@ export const useDriverStore = create<DriverState>((set) => ({
 
     isLoading: false,
     setLoading: (loading) => set({ isLoading: loading }),
+
+    loadDrivers: async () => {
+        set({ isLoading: true });
+        try {
+            const backendDrivers = await api.getDrivers(2025);
+            if (backendDrivers && backendDrivers.length > 0) {
+                const TEAM_COLORS: Record<string, string> = {
+                    'Red Bull Racing': '#3671C6', 'Red Bull': '#3671C6',
+                    'Ferrari': '#E8002D', 'McLaren': '#FF8000',
+                    'Mercedes': '#27F4D2', 'Aston Martin': '#229971',
+                    'Alpine': '#0093CC', 'Williams': '#64C4FF',
+                    'Racing Bulls': '#6692FF', 'Audi': '#000000',
+                    'Haas': '#B6BABD', 'Cadillac': '#1E3264',
+                };
+                const drivers: Driver[] = backendDrivers.map((d: any, idx: number) => ({
+                    code: d.code || d.driver_code || '',
+                    name: d.name || d.full_name || `${d.givenName || ''} ${d.familyName || ''}`.trim(),
+                    team: d.team || d.constructor || '',
+                    teamColor: TEAM_COLORS[d.team || d.constructor || ''] || '#FFFFFF',
+                    number: d.number || d.driver_number || parseInt(d.permanentNumber) || 0,
+                    country: d.country || d.nationality || '',
+                    image: d.image || `/assets/drivers/${(d.code || '').toLowerCase()}-removebg-preview.png`,
+                    points: d.points || 0,
+                    position: d.position || idx + 1,
+                    gap: d.gap || (idx === 0 ? 'Leader' : ''),
+                }));
+                set({ standings: drivers });
+                console.log('[Drivers] \u2705 Loaded from backend');
+            }
+        } catch (err) {
+            console.warn('[Drivers] \u26a0\ufe0f Backend unavailable, using mock data:', err);
+        } finally {
+            set({ isLoading: false });
+        }
+    },
 }));

@@ -1,3 +1,6 @@
+<<<<<<< HEAD
+# commit_conventions.md
+=======
 # Commit Conventions — F1 Race Intelligence System
 
 ## Format
@@ -39,3 +42,4 @@ docs(ml): update model spec with features
 - Max 72 chars first line
 - Use present tense ("add" not "added")
 - Reference issues: `Fixes #123`
+>>>>>>> 2c436438b203d70c19f4e9029ac974df401817b5

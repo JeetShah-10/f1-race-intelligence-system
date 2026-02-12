@@ -3,28 +3,7 @@ import { motion } from 'framer-motion';
 import { Link } from 'react-router-dom';
 import { ArrowRight, Zap, TrendingUp, Flag } from 'lucide-react';
 
-interface DriverInfo {
-    firstName: string;
-    lastName: string;
-    image: string;
-    scale?: number;
-    number: string;
-}
-
-interface TeamRevealCardProps {
-    name: string;
-    country: string;
-    car: string;
-    drivers: DriverInfo[];
-    themeColor: string;
-    accentColor: string;
-    delay: number;
-    driverGap?: string;
-    panelMode?: 'wide' | 'tight';
-    logo?: string;
-}
-
-const TeamRevealCard = ({ name, country, car, drivers, themeColor, accentColor, delay, driverGap = "gap-12 md:gap-32", panelMode = "wide", logo }: TeamRevealCardProps) => {
+const TeamRevealCard = ({ name, country, car, drivers, themeColor, accentColor, delay, driverGap = "gap-12 md:gap-32", panelMode = "wide", logo }: any) => {
 
     const getPanelPosition = (index: number) => {
         if (panelMode === 'tight') {
@@ -69,7 +48,7 @@ const TeamRevealCard = ({ name, country, car, drivers, themeColor, accentColor, 
             <div className="absolute inset-0 flex flex-col justify-end pb-0 overflow-hidden">
                 <div className={`absolute inset-x-0 bottom-[100px] md:bottom-[80px] flex items-end justify-center z-10 h-full pointer-events-none`}>
                     <div className={`flex items-end ${driverGap} w-full justify-center px-8 transition-all duration-500`}>
-                        {drivers.map((driver: DriverInfo, i: number) => (
+                        {drivers.map((driver: any, i: number) => (
                             <motion.div
                                 key={i}
                                 className="relative flex flex-col items-center group/driver"
@@ -117,19 +96,7 @@ const TeamRevealCard = ({ name, country, car, drivers, themeColor, accentColor, 
     );
 };
 
-interface DriverMoveCardProps {
-    title?: string;
-    fromTeam: string;
-    toTeam: string;
-    driverName: string;
-    image: string;
-    type: 'promotion' | 'recruit';
-    color: string;
-    delay: number;
-    brightness?: number;
-}
-
-const DriverMoveCard = ({ fromTeam, toTeam, driverName, image, type, color, delay, brightness = 1 }: DriverMoveCardProps) => (
+const DriverMoveCard = ({ fromTeam, toTeam, driverName, image, type, color, delay, brightness = 1 }: any) => (
     <motion.div
         initial={{ opacity: 0, y: 30 }}
         whileInView={{ opacity: 1, y: 0 }}

@@ -1,3 +1,6 @@
+<<<<<<< HEAD
+# integration_plan.md
+=======
 # Integration Plan — F1 Race Intelligence System
 
 ## Overview
@@ -154,3 +157,4 @@ ML_MODEL_PATH=./models/pace_model.pkl
 ARTIFACT_DIR=./artifacts
 LOG_LEVEL=INFO
 ```
+>>>>>>> 2c436438b203d70c19f4e9029ac974df401817b5

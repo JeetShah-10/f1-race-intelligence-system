@@ -10,7 +10,9 @@ import type {
     QualifyingData,
     GridPosition,
 } from '../types/simulation';
-import { generateMockRace, generateMockQualifying, generateGrid } from '../data/simulationMockData';
+import { generateMockRace, generateMockQualifying, generateGrid, getCircuitById } from '../data/simulationMockData';
+import { api } from '../services/api';
+import { transformSimulationResult, transformQualifyingResult } from '../services/transformers';
 
 // ─── Adaptive Speed Config ────────────────────────────────────────────────
 const SPEED = {
@@ -153,11 +155,25 @@ export const useSimulationStore = create<SimulationStore>((set, get) => ({
 
     // ────── Qualifying ──────
 
-    startQualifying: () => {
+    startQualifying: async () => {
         const { selectedCircuitId } = get();
         if (!selectedCircuitId) return;
 
-        const qualData = generateMockQualifying(selectedCircuitId);
+        set({ status: 'LOADING' });
+
+        // Attempt backend API call, fall back to mock
+        let qualData: QualifyingData;
+        try {
+            const backendResult = await api.runQualifying({
+                circuit_id: selectedCircuitId,
+                grid: 'current_2026',
+            });
+            qualData = transformQualifyingResult(backendResult);
+            console.log('[Qualifying] ✅ Using backend API data');
+        } catch (err) {
+            console.warn('[Qualifying] ⚠️ Backend unavailable, using mock data:', err);
+            qualData = generateMockQualifying(selectedCircuitId);
+        }
 
         set({
             phase: 'QUALIFYING',
@@ -175,7 +191,6 @@ export const useSimulationStore = create<SimulationStore>((set, get) => ({
 
         qualiTimer = setInterval(() => {
             revealCount++;
-
 
             if (revealCount >= totalDrivers) {
                 clearQualiTimer();
@@ -258,30 +273,42 @@ export const useSimulationStore = create<SimulationStore>((set, get) => ({
 
     // ────── Race ──────
 
-    startRace: () => {
+    startRace: async () => {
         const { selectedCircuitId, gridOrder } = get();
         if (!selectedCircuitId) return;
 
         set({ phase: 'RACE_READY', status: 'LOADING' });
 
-        setTimeout(() => {
-            const data = generateMockRace(selectedCircuitId, gridOrder.length > 0 ? gridOrder : undefined);
-            const firstLap = data.laps[0];
-
-            set({
-                phase: 'RACE_READY',
-                fullRaceData: data,
-                raceConfig: data.config,
-                currentLap: 0,
-                currentStandings: firstLap?.standings || [],
-                currentFlag: 'GREEN',
-                currentEvents: [],
-                allPastEvents: [],
-                isPlaying: false,
-                selectedDriver: null,
-                status: 'READY',
+        let data: FullRaceData;
+        try {
+            const circuit = getCircuitById(selectedCircuitId);
+            const backendResult = await api.runSimulation({
+                circuit_id: selectedCircuitId,
+                lap_count: circuit?.laps ?? 57,
+                grid: 'current_2026',
             });
-        }, 600);
+            data = transformSimulationResult(backendResult, circuit || null);
+            console.log('[Race] ✅ Using backend simulation data');
+        } catch (err) {
+            console.warn('[Race] ⚠️ Backend unavailable, using mock data:', err);
+            data = generateMockRace(selectedCircuitId, gridOrder.length > 0 ? gridOrder : undefined);
+        }
+
+        const firstLap = data.laps[0];
+
+        set({
+            phase: 'RACE_READY',
+            fullRaceData: data,
+            raceConfig: data.config,
+            currentLap: 0,
+            currentStandings: firstLap?.standings || [],
+            currentFlag: 'GREEN',
+            currentEvents: [],
+            allPastEvents: [],
+            isPlaying: false,
+            selectedDriver: null,
+            status: 'READY',
+        });
     },
 
     play: () => {

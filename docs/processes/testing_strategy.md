@@ -1,3 +1,6 @@
+<<<<<<< HEAD
+# testing_strategy.md
+=======
 # Testing Strategy — F1 Race Intelligence System
 
 ## Frontend Tests
@@ -37,3 +40,4 @@ cd backend && pytest tests/ -v
 - Use FastF1 cached data
 - Mock external APIs
 - Fixtures in `tests/fixtures/`
+>>>>>>> 2c436438b203d70c19f4e9029ac974df401817b5
