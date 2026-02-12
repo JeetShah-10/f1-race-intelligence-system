@@ -1,0 +1,238 @@
+/* ─── Predict Page — Keyframe Animations & Utility Classes ─── */
+
+@keyframes scanline-sweep {
+    0% {
+        transform: translateY(-100%);
+        opacity: 0;
+    }
+
+    10% {
+        opacity: 1;
+    }
+
+    90% {
+        opacity: 1;
+    }
+
+    100% {
+        transform: translateY(100vh);
+        opacity: 0;
+    }
+}
+
+@keyframes pulse-glow {
+
+    0%,
+    100% {
+        box-shadow: 0 0 20px rgba(232, 0, 45, 0.3), 0 0 40px rgba(232, 0, 45, 0.1);
+    }
+
+    50% {
+        box-shadow: 0 0 30px rgba(232, 0, 45, 0.5), 0 0 60px rgba(232, 0, 45, 0.2);
+    }
+}
+
+@keyframes pulse-badge {
+
+    0%,
+    100% {
+        transform: scale(1);
+    }
+
+    50% {
+        transform: scale(1.08);
+    }
+}
+
+@keyframes slide-in-left {
+    from {
+        transform: translateX(-30px);
+        opacity: 0;
+    }
+
+    to {
+        transform: translateX(0);
+        opacity: 1;
+    }
+}
+
+@keyframes slide-up-fade {
+    from {
+        transform: translateY(12px);
+        opacity: 0;
+    }
+
+    to {
+        transform: translateY(0);
+        opacity: 1;
+    }
+}
+
+@keyframes progress-fill {
+    from {
+        width: 0%;
+    }
+
+    to {
+        width: 100%;
+    }
+}
+
+@keyframes text-shimmer {
+    0% {
+        background-position: -200% center;
+    }
+
+    100% {
+        background-position: 200% center;
+    }
+}
+
+@keyframes ring-fill {
+    from {
+        stroke-dashoffset: var(--ring-circumference);
+    }
+
+    to {
+        stroke-dashoffset: var(--ring-target);
+    }
+}
+
+@keyframes float-subtle {
+
+    0%,
+    100% {
+        transform: translateY(0);
+    }
+
+    50% {
+        transform: translateY(-4px);
+    }
+}
+
+@keyframes bg-pan-slow {
+    from {
+        background-position: 0% 50%;
+    }
+
+    to {
+        background-position: 100% 50%;
+    }
+}
+
+/* ─── Utility Classes ─── */
+
+.prediction-glass {
+    background: rgba(255, 255, 255, 0.03);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border: 1px solid rgba(255, 255, 255, 0.06);
+}
+
+.prediction-glass-strong {
+    background: rgba(255, 255, 255, 0.05);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.pulse-glow {
+    animation: pulse-glow 2.5s ease-in-out infinite;
+}
+
+.pulse-badge {
+    animation: pulse-badge 2s ease-in-out infinite;
+}
+
+.scanline {
+    animation: scanline-sweep 3s linear infinite;
+}
+
+.progress-bar-fill {
+    animation: progress-fill 3s ease-out forwards;
+}
+
+.text-shimmer {
+    background: linear-gradient(90deg,
+            rgba(255, 255, 255, 0.4) 0%,
+            rgba(255, 255, 255, 1) 50%,
+            rgba(255, 255, 255, 0.4) 100%);
+    background-size: 200% auto;
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+    animation: text-shimmer 3s linear infinite;
+}
+
+.bg-pan-slow {
+    animation: bg-pan-slow 30s linear infinite alternate;
+}
+
+/* ─── Tyre Compound Badges ─── */
+
+.tyre-soft {
+    background: #FF3333;
+    color: #fff;
+}
+
+.tyre-medium {
+    background: #FFC906;
+    color: #000;
+}
+
+.tyre-hard {
+    background: #FFFFFF;
+    color: #000;
+}
+
+.tyre-inter {
+    background: #1EB53A;
+    color: #fff;
+}
+
+.tyre-wet {
+    background: #0064E0;
+    color: #fff;
+}
+
+/* ─── Position Badge Gradients ─── */
+
+.position-gold {
+    background: linear-gradient(135deg, #FFD700 0%, #B8860B 100%);
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+}
+
+.position-silver {
+    background: linear-gradient(135deg, #E8E8E8 0%, #808080 100%);
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+}
+
+.position-bronze {
+    background: linear-gradient(135deg, #CD7F32 0%, #8B4513 100%);
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+}
+
+/* ─── Scrollbar ─── */
+
+.predict-scroll::-webkit-scrollbar {
+    width: 4px;
+}
+
+.predict-scroll::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+.predict-scroll::-webkit-scrollbar-thumb {
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 2px;
+}
+
+.predict-scroll::-webkit-scrollbar-thumb:hover {
+    background: rgba(255, 255, 255, 0.2);
+}

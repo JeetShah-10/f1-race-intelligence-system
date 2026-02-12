@@ -44,6 +44,26 @@ export const RivalryCards: React.FC = () => {
     const standings = useDashboardStore(selectStandings) || [];
     const topRivalries = rivalries.slice(0, 5);
 
+    const [index, setIndex] = useState(0);
+    const [direction, setDirection] = useState(0);
+    const [isHovered, setIsHovered] = useState(false);
+
+    const getDriver = (code: string) => standings.find(d => d.code === code);
+
+    const paginate = (newDirection: number) => {
+        setDirection(newDirection);
+        setIndex((prev) => (prev + newDirection + topRivalries.length) % topRivalries.length);
+    };
+
+    useEffect(() => {
+        if (isHovered || topRivalries.length === 0) return;
+        const timer = setInterval(() => {
+            paginate(1);
+        }, 6000);
+        return () => clearInterval(timer);
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [index, isHovered, topRivalries.length]);
+
     if (!topRivalries || topRivalries.length === 0) {
         return (
             <GlassCard className="h-full flex items-center justify-center" blur="sm" padding="none">
@@ -54,25 +74,6 @@ export const RivalryCards: React.FC = () => {
             </GlassCard>
         );
     }
-
-    const [index, setIndex] = useState(0);
-    const [direction, setDirection] = useState(0);
-    const [isHovered, setIsHovered] = useState(false);
-
-    const getDriver = (code: string) => standings.find(d => d.code === code);
-
-    useEffect(() => {
-        if (isHovered) return;
-        const timer = setInterval(() => {
-            paginate(1);
-        }, 6000);
-        return () => clearInterval(timer);
-    }, [index, isHovered]);
-
-    const paginate = (newDirection: number) => {
-        setDirection(newDirection);
-        setIndex((prev) => (prev + newDirection + topRivalries.length) % topRivalries.length);
-    };
 
     const rivalry = topRivalries[index];
     const d1 = getDriver(rivalry.pair[0]);

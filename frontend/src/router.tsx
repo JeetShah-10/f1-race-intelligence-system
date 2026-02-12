@@ -18,7 +18,7 @@ const LoginPage = lazy(() => import('./pages/LoginPage').then(m => ({ default: m
 const SignupPage = lazy(() => import('./pages/SignupPage').then(m => ({ default: m.SignupPage })));
 const PricingPage = lazy(() => import('./pages/PricingPage').then(m => ({ default: m.PricingPage })));
 const DashboardPage = lazy(() => import('./pages/DashboardPage'));
-const PredictPage = lazy(() => import('./pages/PredictPage').then(m => ({ default: m.PredictPage })));
+const PredictPage = lazy(() => import('./pages/PredictPage'));
 const SimulatePage = lazy(() => import('./pages/SimulatePage').then(m => ({ default: m.SimulatePage })));
 const AnalyzePage = lazy(() => import('./pages/AnalyzePage').then(m => ({ default: m.AnalyzePage })));
 const TelemetryPage = lazy(() => import('./pages/analyze/TelemetryPage').then(m => ({ default: m.TelemetryPage })));

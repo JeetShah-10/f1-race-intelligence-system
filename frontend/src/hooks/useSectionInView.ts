@@ -14,7 +14,8 @@ export function useSectionInView(
     const isInView = useInView(ref, {
         once: options.once ?? false,
         amount: options.threshold ?? 0.3,
-        margin: options.margin as any // Cast to satisfy Framer Motion's MarginType if string isn't directly accepted
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        margin: options.margin as any
     });
 
     return [ref as unknown as RefObject<HTMLElement>, isInView];
