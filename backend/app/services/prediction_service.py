@@ -13,7 +13,7 @@ class PredictionService:
         try:
             self.rank_model = joblib.load(MODEL_PATH)
         except (FileNotFoundError, EOFError, ValueError) as e:
-            print(f"Error loading rank model: {e}")
+            # print(f"Error loading rank model: {e}")
             self.rank_model = None
 
         self.pace_model = PaceModel()
@@ -47,6 +47,7 @@ class PredictionService:
     def get_simulation_handoff(self, request: SimulationRequest) -> list[MLHandoff]:
         """
         Generates a list of MLHandoff objects using the PaceModel.
+        KEPT FOR BACKWARDS COMPATIBILITY / INITIAL STATE.
         """
         handoff_data = []
         for driver in request.drivers:
@@ -54,19 +55,10 @@ class PredictionService:
                 driver=driver.driver,
                 compound=driver.compound,
                 tyre_life=driver.tyre_life,
-<<<<<<< HEAD
-                track_temp=request.track_temp,
-                air_temp=request.air_temp,
-                team=driver.team,
-                speed_st=request.speed_st or 0, # Use 0 if not provided
-                speed_fl=request.speed_fl or 0, # Use 0 if not provided
-                session_type=request.session_type
-=======
                 team=driver.team,
                 speed_st=request.speed_st or 0,
                 speed_fl=request.speed_fl or 0,
                 lap_number=1 # Baseline at start of race
->>>>>>> 5875195 (Recover all stashed backend files - Week 1 API endpoints and services)
             )
             
             degradation_slope = self.pace_model.get_degradation_slope(
@@ -82,3 +74,35 @@ class PredictionService:
             handoff_data.append(handoff)
         
         return handoff_data
+
+    def get_simulation_handoff_raw(self, drivers) -> list[MLHandoff]:
+        """
+        Generates MLHandoff list from a raw list of DriverInput objects.
+        Used by compare/season/scenario APIs that don't have a full SimulationRequest.
+        """
+        handoff_data = []
+        for driver in drivers:
+            baseline_lap_time = self.pace_model.predict_baseline_pace(
+                driver=driver.driver,
+                compound=driver.compound,
+                tyre_life=driver.tyre_life,
+                team=driver.team,
+                speed_st=0,
+                speed_fl=0,
+                lap_number=1,
+            )
+            degradation_slope = self.pace_model.get_degradation_slope(
+                driver=driver.driver,
+                compound=driver.compound,
+            )
+            handoff = MLHandoff(
+                driver_id=driver.driver,
+                baseline_lap_time=baseline_lap_time,
+                tyre_degradation_slope=degradation_slope,
+            )
+            handoff_data.append(handoff)
+        return handoff_data
+
+    def get_pace_model(self) -> PaceModel:
+        """Expose the loaded model instance."""
+        return self.pace_model

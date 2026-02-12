@@ -6,3 +6,10 @@ joblib
 numpy
 lightgbm
 cattrs
+python-dotenv
+requests
+fastf1
+supabase
+pydantic
+httpx
+websockets

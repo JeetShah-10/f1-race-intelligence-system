@@ -1,0 +1,24 @@
+{
+  "version": "v2",
+  "trained_on": "Supabase fastf1_training_data",
+  "samples": 98383,
+  "years": [
+    2022,
+    2023,
+    2024,
+    2025
+  ],
+  "circuits": 25,
+  "drivers": 31,
+  "rmse": 7.1569,
+  "mae": 5.0164,
+  "features": [
+    "Compound",
+    "TyreLife",
+    "Driver",
+    "Team",
+    "SpeedST",
+    "SpeedFL",
+    "LapNumber"
+  ]
+}

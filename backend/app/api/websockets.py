@@ -1,93 +1,112 @@
+from fastapi import APIRouter, WebSocket, WebSocketDisconnect
+from typing import Dict, List
 import asyncio
 import json
-from fastapi import APIRouter, WebSocket, WebSocketDisconnect
-from app.simulation.simulation_context import SimulationContext
-from app.simulation.race_engine import RaceEngine
+import traceback
+
 from app.schemas.simulation import SimulationRequest
+from app.simulation.race_engine import RaceEngine
+from app.simulation.simulation_context import SimulationContext
 from app.services.prediction_service import PredictionService
 
 router = APIRouter()
+
+# Store active connections
+class ConnectionManager:
+    def __init__(self):
+        self.active_connections: List[WebSocket] = []
+
+    async def connect(self, websocket: WebSocket):
+        await websocket.accept()
+        self.active_connections.append(websocket)
+
+    def disconnect(self, websocket: WebSocket):
+        self.active_connections.remove(websocket)
+
+    async def send_json(self, message: dict, websocket: WebSocket):
+        await websocket.send_json(message)
+
+manager = ConnectionManager()
 prediction_service = PredictionService()
 
-@router.websocket("/simulate")
-async def websocket_simulate(websocket: WebSocket):
-    """
-    Real-Time Race Simulation Stream.
-    Protocol:
-    1. Client connects.
-    2. Client sends JSON SimulationRequest.
-    3. Server streams Lap Updates (JSON).
-    4. Server sends "FINISHED" message.
-    """
-    await websocket.accept()
-    
+@router.websocket("/ws/race")
+async def websocket_endpoint(websocket: WebSocket):
+    await manager.connect(websocket)
     try:
-        # 1. Wait for Configuration
         data = await websocket.receive_text()
-        req_dict = json.loads(data)
+        req_data = json.loads(data)
         
-        # Validate Request
-        request = SimulationRequest(**req_dict)
-        print(f"📡 WS: Starting Simulation for {request.circuit_id}")
-
-        # 2. Setup Engine (Same as Batch API)
-        ml_handoffs = prediction_service.get_simulation_handoff(request)
+        # Parse Request
+        simulation_request = SimulationRequest(**req_data)
         
+        # 1. Get ML Data + Model
+        ml_handoff = prediction_service.get_simulation_handoff(simulation_request)
+        pace_model = prediction_service.get_pace_model()  # <--- INJECTED
+        
+        # 2. Build Context
         ctx = SimulationContext(
-            circuit=request.circuit_id,
-            year=request.year,
-            drivers=request.drivers,
-            weather="Sunny",
-            track_temp=request.track_temp,
-            air_temp=request.air_temp,
-            lap_count=request.lap_count,
-            ml_handoff=ml_handoffs
+            drivers=simulation_request.drivers,
+            weather=simulation_request.event_config.weather if simulation_request.event_config else "dry",
+            circuit=simulation_request.circuit_id,
+            year=2024,
+            lap_count=simulation_request.laps,
+            track_temp=simulation_request.track_temp,
+            air_temp=simulation_request.air_temp,
+            ml_handoff=ml_handoff,
+            pace_model=pace_model # <--- INJECTED
         )
         
+        # 3. Initialize Engine
         engine = RaceEngine(ctx)
         
-        # 3. Register Custom Events if any
-        for evt in request.events:
-            if evt.type == "SC":
-                from app.simulation.events import SafetyCarEvent
-                engine.event_manager.register_event(SafetyCarEvent(evt.start_lap, evt.duration))
-
-        # 4. Stream Loop
+        # 4. Stream Laps
         for snapshot in engine.stream():
-            # Format Snapshot for Client
-            # Only sending essential visual data to keep frame size low
-            lap_data = {
+            # Convert Snapshot to JSON-friendly dict
+            # We need to map the internal snapshot to the WebSocket message format
+            # New format: { "type": "LAP_UPDATE", "lap": X, "drivers": [...] }
+            
+            drivers_data = []
+            sorted_driver_ids = snapshot.driver_positions
+            
+            for d_id in sorted_driver_ids:
+                drivers_data.append({
+                    "driver_id": d_id,
+                    "position": sorted_driver_ids.index(d_id) + 1,
+                    "gap_to_leader": snapshot.gaps_to_leader.get(d_id, 0.0),
+                    "interval": snapshot.intervals.get(d_id, 0.0),
+                    "last_lap_time": snapshot.lap_times.get(d_id, 0.0),
+                    "sector_times": snapshot.sector_times.get(d_id, []),
+                    "tyre_compound": snapshot.tyre_compounds.get(d_id, ""),
+                    "tyre_age": snapshot.tyre_ages.get(d_id, 0),
+                    "pit_stops": snapshot.pit_stop_counts.get(d_id, 0)
+                })
+
+            msg = {
+                "type": "LAP_UPDATE",
                 "lap": snapshot.lap_number,
-                "positions": snapshot.driver_positions,
-                "gaps": snapshot.gaps_to_leader,
-                "times": snapshot.lap_times
+                "sc_status": snapshot.sc_status, 
+                "weather": snapshot.weather,
+                "track_temp": snapshot.track_temp,
+                "drivers": drivers_data,
+                "dnf": snapshot.dnf_this_lap
             }
             
-            await websocket.send_json({
-                "type": "LAP_UPDATE",
-                "data": lap_data
-            })
+            await manager.send_json(msg, websocket)
             
-            # Artificial Delay for UX (Fast Motion)
-            await asyncio.sleep(0.2) # 5 Laps per second
-            
-        # 5. Finish
+            # Simple throttle to control animation speed
+            await asyncio.sleep(0.1)
+
+        # 5. Finalize
         final_results = engine.final_results()
-        await websocket.send_json({
+        await manager.send_json({
             "type": "RACE_COMPLETE",
             "results": final_results
-        })
+        }, websocket)
         
-        print("📡 WS: Simulation Complete")
-        await websocket.close()
-
     except WebSocketDisconnect:
-        print("📡 WS: Client Disconnected")
+        manager.disconnect(websocket)
     except Exception as e:
-        print(f"❌ WS Error: {e}")
-        # Try to send error if still connected
-        try:
-            await websocket.send_json({"type": "ERROR", "message": str(e)})
-            await websocket.close()
-        except:
-            pass
+        print(f"WS Error: {e}")
+        traceback.print_exc()
+        await manager.send_json({"type": "ERROR", "message": str(e)}, websocket)
+        manager.disconnect(websocket)

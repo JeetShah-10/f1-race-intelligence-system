@@ -1,0 +1,289 @@
+{
+    "season": 2026,
+    "teams": [
+        {
+            "id": "mclaren",
+            "name": "McLaren F1 Team",
+            "archetype": "mclaren",
+            "performance_modifiers": {
+                "lap_time_bias": -0.25,
+                "reliability_score": 0.95
+            },
+            "color": "#FF8000"
+        },
+        {
+            "id": "mercedes",
+            "name": "Mercedes-AMG PETRONAS",
+            "archetype": "mercedes",
+            "performance_modifiers": {
+                "lap_time_bias": -0.15,
+                "reliability_score": 0.92
+            },
+            "color": "#00D2BE"
+        },
+        {
+            "id": "red_bull",
+            "name": "Oracle Red Bull Racing",
+            "archetype": "red_bull",
+            "performance_modifiers": {
+                "lap_time_bias": -0.05,
+                "reliability_score": 0.90
+            },
+            "color": "#0600EF"
+        },
+        {
+            "id": "ferrari",
+            "name": "Scuderia Ferrari HP",
+            "archetype": "ferrari",
+            "performance_modifiers": {
+                "lap_time_bias": 0.05,
+                "reliability_score": 0.88
+            },
+            "color": "#DC0000"
+        },
+        {
+            "id": "williams",
+            "name": "Williams Racing",
+            "archetype": "williams",
+            "performance_modifiers": {
+                "lap_time_bias": 0.05,
+                "reliability_score": 0.90
+            },
+            "color": "#005AFF"
+        },
+        {
+            "id": "aston_martin",
+            "name": "Aston Martin F1 Team",
+            "archetype": "aston_martin",
+            "performance_modifiers": {
+                "lap_time_bias": 0.10,
+                "reliability_score": 0.85
+            },
+            "color": "#006F62"
+        },
+        {
+            "id": "rb",
+            "name": "Visa Cash App RB",
+            "archetype": "rb",
+            "performance_modifiers": {
+                "lap_time_bias": 0.15,
+                "reliability_score": 0.88
+            },
+            "color": "#2B4562"
+        },
+        {
+            "id": "haas",
+            "name": "MoneyGram Haas F1 Team",
+            "archetype": "haas",
+            "performance_modifiers": {
+                "lap_time_bias": 0.20,
+                "reliability_score": 0.85
+            },
+            "color": "#FFFFFF"
+        },
+        {
+            "id": "audi",
+            "name": "Audi F1 Team",
+            "archetype": "sauber",
+            "performance_modifiers": {
+                "lap_time_bias": 0.30,
+                "reliability_score": 0.82
+            },
+            "color": "#F2F2F2"
+        },
+        {
+            "id": "alpine",
+            "name": "BWT Alpine F1 Team",
+            "archetype": "alpine",
+            "performance_modifiers": {
+                "lap_time_bias": 0.35,
+                "reliability_score": 0.80
+            },
+            "color": "#0090FF"
+        },
+        {
+            "id": "cadillac",
+            "name": "Cadillac Andretti F1",
+            "archetype": "alpine",
+            "performance_modifiers": {
+                "lap_time_bias": 0.40,
+                "reliability_score": 0.80
+            },
+            "color": "#FFD700"
+        }
+    ],
+    "drivers": [
+        {
+            "id": "nor",
+            "code": "NOR",
+            "name": "Lando Norris",
+            "team_id": "mclaren",
+            "archetype": "norris",
+            "performance_modifiers": {
+                "raw_pace": -0.3,
+                "consistency": 0.95
+            }
+        },
+        {
+            "id": "pia",
+            "code": "PIA",
+            "name": "Oscar Piastri",
+            "team_id": "mclaren",
+            "archetype": "piastri",
+            "performance_modifiers": {
+                "raw_pace": -0.2,
+                "consistency": 0.90
+            }
+        },
+        {
+            "id": "ver",
+            "code": "VER",
+            "name": "Max Verstappen",
+            "team_id": "red_bull",
+            "archetype": "verstappen",
+            "performance_modifiers": {
+                "raw_pace": -0.35,
+                "consistency": 0.96
+            }
+        },
+        {
+            "id": "had",
+            "code": "HAD",
+            "name": "Isak Hadjar",
+            "team_id": "red_bull",
+            "archetype": "perez",
+            "performance_modifiers": {
+                "raw_pace": 0.1,
+                "consistency": 0.85
+            }
+        },
+        {
+            "id": "lec",
+            "code": "LEC",
+            "name": "Charles Leclerc",
+            "team_id": "ferrari",
+            "archetype": "leclerc",
+            "performance_modifiers": {
+                "raw_pace": -0.25,
+                "consistency": 0.92
+            }
+        },
+        {
+            "id": "ham",
+            "code": "HAM",
+            "name": "Lewis Hamilton",
+            "team_id": "ferrari",
+            "archetype": "hamilton",
+            "performance_modifiers": {
+                "raw_pace": -0.15,
+                "consistency": 0.95
+            }
+        },
+        {
+            "id": "rus",
+            "code": "RUS",
+            "name": "George Russell",
+            "team_id": "mercedes",
+            "archetype": "russell",
+            "performance_modifiers": {
+                "raw_pace": -0.2,
+                "consistency": 0.88
+            }
+        },
+        {
+            "id": "ant",
+            "code": "ANT",
+            "name": "Andrea Kimi Antonelli",
+            "team_id": "mercedes",
+            "archetype": "piastri",
+            "performance_modifiers": {
+                "raw_pace": -0.15,
+                "consistency": 0.85
+            }
+        },
+        {
+            "id": "alb",
+            "code": "ALB",
+            "name": "Alex Albon",
+            "team_id": "williams",
+            "archetype": "albon",
+            "performance_modifiers": {
+                "raw_pace": -0.1,
+                "consistency": 0.92
+            }
+        },
+        {
+            "id": "sai",
+            "code": "SAI",
+            "name": "Carlos Sainz",
+            "team_id": "williams",
+            "archetype": "sainz",
+            "performance_modifiers": {
+                "raw_pace": -0.05,
+                "consistency": 0.94
+            }
+        },
+        {
+            "id": "law",
+            "code": "LAW",
+            "name": "Liam Lawson",
+            "team_id": "rb",
+            "archetype": "tsunoda",
+            "performance_modifiers": {
+                "raw_pace": 0.0,
+                "consistency": 0.90
+            }
+        },
+        {
+            "id": "lin",
+            "code": "LIN",
+            "name": "Arvid Lindblad",
+            "team_id": "rb",
+            "archetype": "lawson",
+            "performance_modifiers": {
+                "raw_pace": 0.05,
+                "consistency": 0.85
+            }
+        },
+        {
+            "id": "bot",
+            "code": "BOT",
+            "name": "Valtteri Bottas",
+            "team_id": "cadillac",
+            "archetype": "bottas",
+            "performance_modifiers": {
+                "raw_pace": 0.076,
+                "consistency": 0.82
+            }
+        },
+        {
+            "id": "checo",
+            "code": "PER",
+            "name": "Sergio Perez",
+            "team_id": "cadillac",
+            "archetype": "perez",
+            "performance_modifiers": {
+                "raw_pace": -0.054,
+                "consistency": 0.81
+            }
+        },
+        {
+            "id": "pal",
+            "code": "PAL",
+            "name": "Alex Palou",
+            "team_id": "audi",
+            "archetype": "rookie_steady",
+            "performance_modifiers": {
+                "raw_pace": 0.15,
+                "consistency": 0.88
+            }
+        }
+    ],
+    "circuit_modifications": {
+        "madrid": {
+            "archetype": "baku",
+            "length_km": 5.47,
+            "corners": 20
+        }
+    }
+}
