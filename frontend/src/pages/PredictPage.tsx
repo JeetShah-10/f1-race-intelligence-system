@@ -26,7 +26,7 @@ const pageTransition = {
     transition: { duration: 0.35, ease: [0.25, 0.46, 0.45, 0.94] as [number, number, number, number] },
 };
 
-export default function PredictPage() {
+export function PredictPage() {
     const [state, setState] = useState<PredictionState>('CALENDAR');
     const [selectedCircuit, setSelectedCircuit] = useState<Circuit2026 | null>(null);
     const [result, setResult] = useState<PredictionResult | null>(null);
