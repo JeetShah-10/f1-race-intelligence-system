@@ -42,6 +42,26 @@ CIRCUIT_META = {
 async def list_circuits():
     """List all circuits."""
     circuits = db_service.get_circuits()
+    
+    # Fallback if DB is empty: Use CIRCUIT_META keys
+    if not circuits:
+        result = []
+        for cid, meta in CIRCUIT_META.items():
+            # Basic formatting for name/country since they aren't in meta
+            name = cid.replace("_", " ").title()
+            country = "Unknown" 
+            
+            result.append({
+                "id": cid,
+                "name": name,
+                "country": country,
+                "length": meta["length"],
+                "turns": meta["turns"],
+                "laps": meta["laps"],
+                "drsZones": meta["drs_zones"],
+            })
+        return {"circuits": result}
+
     result = []
     for c in circuits:
         cid = c.get("circuit_id", "")
