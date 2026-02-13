@@ -30,7 +30,7 @@ function getCountryFlag(country: string): string {
         'Singapore': '🇸🇬', 'Mexico': '🇲🇽', 'Brazil': '🇧🇷', 'Qatar': '🇶🇦',
         'UAE': '🇦🇪',
     };
-    return flags[country] || '🏁';
+    return flags[country] || '';
 }
 
 export function SimulatePage() {
@@ -46,37 +46,37 @@ export function SimulatePage() {
         return () => window.removeEventListener('keydown', handleKeyDown);
     }, [handleKeyDown]);
 
-    // ──── PHASE: Circuit Select ────
+    //  PHASE: Circuit Select 
     if (phase === 'CIRCUIT_SELECT') {
         return <CircuitSelector onSelect={selectCircuit} />;
     }
 
-    // ──── PHASE: Weekend Intro ────
+    //  PHASE: Weekend Intro 
     if (phase === 'WEEKEND_INTRO') {
         return <WeekendIntro />;
     }
 
-    // ──── PHASE: Qualifying ────
+    //  PHASE: Qualifying 
     if (phase === 'QUALIFYING') {
         return <QualifyingView />;
     }
 
-    // ──── PHASE: Qualifying Results → Grid ────
+    //  PHASE: Qualifying Results -> Grid 
     if (phase === 'QUALI_RESULTS') {
         return <QualiResultsTransition />;
     }
 
-    // ──── PHASE: Grid Formation ────
+    //  PHASE: Grid Formation 
     if (phase === 'GRID_FORMATION') {
         return <GridFormation />;
     }
 
-    // ──── PHASE: Race (Ready / Playing / Paused) ────
+    //  PHASE: Race (Ready / Playing / Paused) 
     if (phase === 'RACE_READY' || phase === 'RACE_PLAYING' || phase === 'RACE_PAUSED') {
         return <RaceView />;
     }
 
-    // ──── PHASE: Race Finished ────
+    //  PHASE: Race Finished 
     if (phase === 'RACE_FINISHED') {
         return <RaceResults />;
     }
@@ -84,7 +84,7 @@ export function SimulatePage() {
     return <CircuitSelector onSelect={selectCircuit} />;
 }
 
-// ─── Circuit Selector ───────────────────────────────────────────────────
+//  Circuit Selector 
 function CircuitSelector({ onSelect }: { onSelect: (id: string) => void }) {
     return (
         <div className="h-screen flex flex-col" style={{ background: '#0a0a0f' }}>
@@ -155,7 +155,7 @@ function CircuitSelector({ onSelect }: { onSelect: (id: string) => void }) {
     );
 }
 
-// ─── Qualifying Results Transition ──────────────────────────────────────
+//  Qualifying Results Transition 
 function QualiResultsTransition() {
     const { qualifyingData, showGrid } = useSimulationStore();
 
@@ -208,14 +208,14 @@ function QualiResultsTransition() {
                     transition={{ delay: 1.5 }}
                     whileHover={{ scale: 1.03 }}
                 >
-                    VIEW STARTING GRID →
+                    VIEW STARTING GRID &rarr;
                 </motion.button>
             </motion.div>
         </div>
     );
 }
 
-// ─── Race View (Running) ────────────────────────────────────────────────
+//  Race View (Running) 
 function RaceView() {
     const { raceConfig, status } = useSimulationStore();
 

@@ -16,7 +16,7 @@ if not SUPABASE_URL or not SUPABASE_KEY:
         pass
 
 if not SUPABASE_URL or not SUPABASE_KEY:
-    print("❌ Error: SUPABASE_URL or SUPABASE_SERVICE_KEY not found.")
+    print(" Error: SUPABASE_URL or SUPABASE_SERVICE_KEY not found.")
     exit(1)
 
 supabase: Client = create_client(SUPABASE_URL, SUPABASE_KEY)
@@ -27,53 +27,53 @@ supabase: Client = create_client(SUPABASE_URL, SUPABASE_KEY)
 # We need to ensure 'drivers' table has these drivers first.
 
 drivers_data = [
-    # McLaren Mastercard
-    ("lando_norris", "Lando", "Norris", 1, "McLaren Mastercard", "mclaren", "NOR"),
-    ("oscar_piastri", "Oscar", "Piastri", 81, "McLaren Mastercard", "mclaren", "PIA"),
+    # McLaren
+    ("lando_norris", "Lando", "Norris", 1, "McLaren", "mclaren", "NOR"),
+    ("oscar_piastri", "Oscar", "Piastri", 81, "McLaren", "mclaren", "PIA"),
     
-    # Red Bull Ford
-    ("max_verstappen", "Max", "Verstappen", 3, "Red Bull Ford", "red_bull", "VER"),
-    ("liam_lawson", "Liam", "Lawson", 30, "Red Bull Ford", "red_bull", "LAW"),
+    # Red Bull Racing
+    ("max_verstappen", "Max", "Verstappen", 3, "Red Bull Racing", "red_bull", "VER"),
+    ("isack_hadjar", "Isack", "Hadjar", 6, "Red Bull Racing", "red_bull", "HAD"),
     
     # Ferrari
-    ("lewis_hamilton", "Lewis", "Hamilton", 44, "Ferrari", "ferrari", "HAM"),
     ("charles_leclerc", "Charles", "Leclerc", 16, "Ferrari", "ferrari", "LEC"),
-    
-    # Audi Revolut
-    ("gabriel_bortoleto", "Gabriel", "Bortoleto", 11, "Audi Revolut", "audi", "BOR"),
-    ("nico_hulkenberg", "Nico", "Hulkenberg", 27, "Audi Revolut", "audi", "HUL"),
-    
-    # Cadillac
-    ("sergio_perez", "Sergio", "Perez", 11, "Cadillac", "cadillac", "PER"),
-    ("valtteri_bottas", "Valtteri", "Bottas", 77, "Cadillac", "cadillac", "BOT"),
+    ("lewis_hamilton", "Lewis", "Hamilton", 44, "Ferrari", "ferrari", "HAM"),
     
     # Mercedes
     ("george_russell", "George", "Russell", 63, "Mercedes", "mercedes", "RUS"),
     ("andrea_kimi_antonelli", "Andrea Kimi", "Antonelli", 12, "Mercedes", "mercedes", "ANT"),
     
-    # Aston Martin Honda
-    ("fernando_alonso", "Fernando", "Alonso", 14, "Aston Martin Honda", "aston_martin", "ALO"),
-    ("lance_stroll", "Lance", "Stroll", 18, "Aston Martin Honda", "aston_martin", "STR"),
-    
-    # Alpine
-    ("pierre_gasly", "Pierre", "Gasly", 10, "Alpine", "alpine", "GAS"),
-    ("jack_doohan", "Jack", "Doohan", 7, "Alpine", "alpine", "DOO"), # Assuming #7 or similar
-    
     # Williams
     ("alex_albon", "Alex", "Albon", 23, "Williams", "williams", "ALB"),
     ("carlos_sainz", "Carlos", "Sainz", 55, "Williams", "williams", "SAI"),
+    
+    # Racing Bulls
+    ("liam_lawson", "Liam", "Lawson", 30, "Racing Bulls", "rb", "LAW"),
+    ("arvid_lindblad", "Arvid", "Lindblad", 27, "Racing Bulls", "rb", "LIN"),
+    
+    # Aston Martin
+    ("fernando_alonso", "Fernando", "Alonso", 14, "Aston Martin", "aston_martin", "ALO"),
+    ("lance_stroll", "Lance", "Stroll", 18, "Aston Martin", "aston_martin", "STR"),
     
     # Haas
     ("esteban_ocon", "Esteban", "Ocon", 31, "Haas", "haas", "OCO"),
     ("oliver_bearman", "Oliver", "Bearman", 87, "Haas", "haas", "BEA"),
     
-    # RB
-    ("yuki_tsunoda", "Yuki", "Tsunoda", 22, "RB", "rb", "TSU"),
-    ("isack_hadjar", "Isack", "Hadjar", 6, "RB", "rb", "HAD")
+    # Audi
+    ("nico_hulkenberg", "Nico", "Hulkenberg", 27, "Audi", "audi", "HUL"),
+    ("gabriel_bortoleto", "Gabriel", "Bortoleto", 5, "Audi", "audi", "BOR"),
+    
+    # Alpine
+    ("pierre_gasly", "Pierre", "Gasly", 10, "Alpine", "alpine", "GAS"),
+    ("franco_colapinto", "Franco", "Colapinto", 43, "Alpine", "alpine", "COL"),
+    
+    # Cadillac
+    ("valtteri_bottas", "Valtteri", "Bottas", 77, "Cadillac", "cadillac", "BOT"),
+    ("sergio_perez", "Sergio", "Perez", 11, "Cadillac", "cadillac", "PER"),
 ]
 
 def seed():
-    print("🚀 Starting 2026 Seeding...")
+    print(" Starting 2026 Seeding...")
     
     # 1. Upsert Drivers
     print("Updating Drivers table...")
@@ -91,7 +91,7 @@ def seed():
             # Try to update or insert. Supabase/PostgREST upsert needs explicit header or ON CONFLICT
             res = supabase.table("drivers").upsert(driver_payload).execute()
         except Exception as e:
-            print(f"⚠️ Error upserting driver {d_id}: {e}")
+            print(f"[!] Error upserting driver {d_id}: {e}")
 
     # 2. Upsert Standings for 2026
     print("Updating Standings table for 2026...")
@@ -115,9 +115,9 @@ def seed():
         
     try:
         res = supabase.table("standings").upsert(standings_payload, on_conflict="driver_id, year").execute()
-        print(f"✅ Successfully seeded {len(res.data)} standings entries.")
+        print(f" Successfully seeded {len(res.data)} standings entries.")
     except Exception as e:
-        print(f"❌ Error seeding standings: {e}")
+        print(f" Error seeding standings: {e}")
 
 if __name__ == "__main__":
     seed()

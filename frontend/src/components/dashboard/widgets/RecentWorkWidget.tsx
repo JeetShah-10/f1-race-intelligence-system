@@ -102,7 +102,7 @@ export const RecentWorkWidget: React.FC = () => {
 
             <div className="px-4 py-2 border-t border-white/[0.08]">
                 <button className="w-full text-center text-white/50 text-xs hover:text-[#E10600] transition-colors">
-                    View All Work →
+                    View All Work &rarr;
                 </button>
             </div>
         </div>

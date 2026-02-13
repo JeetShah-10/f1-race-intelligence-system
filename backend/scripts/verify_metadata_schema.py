@@ -12,21 +12,21 @@ load_dotenv(env_path)
 from app.services.database_service import DatabaseService
 
 def verify_schema_existence():
-    print("🔍 Verifying Metadata Schema...")
+    print(" Verifying Metadata Schema...")
     
     db = DatabaseService()
     if not db.supabase:
-        print("❌ Database connection failed.")
+        print(" Database connection failed.")
         return
 
     try:
         # Try to select from 'seasons'
         # Even if empty, it should not throw "relation does not exist"
         response = db.supabase.table("seasons").select("*").limit(1).execute()
-        print("✅ Table 'seasons' is accessible.")
+        print(" Table 'seasons' is accessible.")
         print(f"   Data: {response.data}")
     except Exception as e:
-        print(f"❌ Table verification failed: {e}")
+        print(f" Table verification failed: {e}")
         if "relation" in str(e) and "does not exist" in str(e):
              print("   >> The SQL script definitely needs to be run (excluding the policy creation if needed).")
         else:

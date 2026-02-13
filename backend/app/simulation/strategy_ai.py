@@ -1,6 +1,6 @@
 # backend/app/simulation/strategy_ai.py
 """
-Strategy AI — Per-team pit decision engine integrated into the race loop.
+Strategy AI - Per-team pit decision engine integrated into the race loop.
 
 Each lap, the engine asks StrategyAI.evaluate() for every driver.
 The AI decides whether to pit and which compound to use, based on:
@@ -19,7 +19,7 @@ if TYPE_CHECKING:
     from app.simulation.driver_state import DriverState
 
 
-# ── Compound Performance Data ──
+#  Compound Performance Data 
 COMPOUND_DATA = {
     "SOFT":         {"pace_offset": 0.0,  "base_life": 16,  "wear_rate": 0.055},
     "MEDIUM":       {"pace_offset": 0.5,  "base_life": 26,  "wear_rate": 0.035},
@@ -45,7 +45,7 @@ class StrategyAI:
     """
     Per-driver, per-lap strategy evaluator.
     
-    Integrates with the RaceEngine loop — replaces hard-coded PitStopEvent logic.
+    Integrates with the RaceEngine loop - replaces hard-coded PitStopEvent logic.
     """
     
     # Pit stop time loss (typical F1 stationary + pit lane delta)
@@ -89,11 +89,11 @@ class StrategyAI:
         laps_remaining = total_laps - lap
         compound = (driver.tire_compound or "MEDIUM").upper()
         
-        # ── Rule 0: Don't pit if already in pit or not running ──
+        #  Rule 0: Don't pit if already in pit or not running 
         if driver.in_pit or not driver.is_running:
             return PitDecision(should_pit=False, reason="already_in_pit_or_dnf")
         
-        # ── Rule 1: Don't pit if too few laps remain ──
+        #  Rule 1: Don't pit if too few laps remain 
         if laps_remaining < self.MIN_LAPS_FOR_PIT:
             # Exception: mandatory compound not met
             if not self._has_met_compound_rule(driver.driver_id, weather):
@@ -105,7 +105,7 @@ class StrategyAI:
                 )
             return PitDecision(should_pit=False, reason="too_few_laps")
         
-        # ── Rule 2: Critical tyre health — MUST pit ──
+        #  Rule 2: Critical tyre health - MUST pit 
         if driver.tyre_health <= self.CRITICAL_HEALTH:
             return PitDecision(
                 should_pit=True,
@@ -114,9 +114,9 @@ class StrategyAI:
                 urgency=1.0,
             )
         
-        # ── Rule 3: Safety Car Opportunism ──
+        #  Rule 3: Safety Car Opportunism 
         if sc_active or vsc_active:
-            # Pit under SC/VSC if tyres are worn (health < 50%) — it's "free"
+            # Pit under SC/VSC if tyres are worn (health < 50%) - it's "free"
             if driver.tyre_health < 0.50 and driver.tire_age >= 8:
                 return PitDecision(
                     should_pit=True,
@@ -125,7 +125,7 @@ class StrategyAI:
                     urgency=0.8,
                 )
         
-        # ── Rule 4: Weather change — wrong tyres ──
+        #  Rule 4: Weather change - wrong tyres 
         is_wet = weather.upper() in ("WET", "RAIN", "DAMP")
         on_dry_tyres = compound in DRY_COMPOUNDS
         on_wet_tyres = compound in WET_COMPOUNDS
@@ -145,7 +145,7 @@ class StrategyAI:
                 urgency=0.9,
             )
         
-        # ── Rule 5: Tyre cliff approaching — performance degradation ──
+        #  Rule 5: Tyre cliff approaching - performance degradation 
         if driver.tyre_health <= self.CONCERN_HEALTH:
             # Calculate pace loss from tyre deg
             pace_loss = driver.tyre_pace_penalty
@@ -157,7 +157,7 @@ class StrategyAI:
                     urgency=0.7,
                 )
         
-        # ── Rule 6: Undercut opportunity ──
+        #  Rule 6: Undercut opportunity 
         if (driver.laps_behind_car >= 3 
             and driver.gap_to_car_ahead < 2.0 
             and driver.tire_age >= 10
@@ -171,7 +171,19 @@ class StrategyAI:
                     urgency=0.6,
                 )
         
-        # ── Rule 7: Standard window — tyre life exceeded base life ──
+        #  Rule 6.5: Mandatory minimum pit stop 
+        # F1 regulations require at least 2 dry compounds => at least 1 pit stop
+        # Force pit if driver hasn't stopped and we're past 60% race distance
+        race_progress = lap / total_laps if total_laps > 0 else 0
+        if driver.total_pit_stops == 0 and race_progress >= 0.60:
+            return PitDecision(
+                should_pit=True,
+                target_compound=self._select_compound(driver, laps_remaining, weather),
+                reason="mandatory_min_pit_stop",
+                urgency=0.85,
+            )
+        
+        #  Rule 7: Standard window - tyre life exceeded base life 
         base_life = COMPOUND_DATA.get(compound, {}).get("base_life", 25)
         if driver.tire_age >= base_life:
             # Pit with high probability once past base life

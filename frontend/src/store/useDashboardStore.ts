@@ -1,9 +1,9 @@
 import { create } from 'zustand';
 import { api } from '../services/api';
 
-// ─────────────────────────────────────────────────────────────────────────────
+// 
 // TYPE DEFINITIONS
-// ─────────────────────────────────────────────────────────────────────────────
+// 
 
 export interface NextRace {
     name: string;
@@ -103,9 +103,9 @@ export interface Race {
     circuit: string;
 }
 
-// ─────────────────────────────────────────────────────────────────────────────
+// 
 // MOCK DATA
-// ─────────────────────────────────────────────────────────────────────────────
+// 
 
 const TEAM_COLORS: Record<string, string> = {
     'Red Bull Racing': '#3671C6',
@@ -252,11 +252,11 @@ const mockInsights: Insights = {
 };
 
 const mockScenarios: Scenario[] = [
-    { id: 'chaos', name: 'Chaos Mode', icon: '⚠️', description: 'High incident probability' },
-    { id: 'high-deg', name: 'High Degradation', icon: '🛞', description: 'Tyre wear favors alternate strategies' },
-    { id: 'rain', name: 'Rain Probability', icon: '🌧', description: 'Wet conditions expected during race', premium: true },
-    { id: 'strategy-opt', name: 'Strategy Optimizer', icon: '🧮', description: 'Compute ideal pit windows', premium: true },
-    { id: 'multi-compare', name: 'Multi Compare', icon: '🔒', description: 'Premium feature', premium: true },
+    { id: 'chaos', name: 'Chaos Mode', icon: '[!]', description: 'High incident probability' },
+    { id: 'high-deg', name: 'High Degradation', icon: '', description: 'Tyre wear favors alternate strategies' },
+    { id: 'rain', name: 'Rain Probability', icon: '', description: 'Wet conditions expected during race', premium: true },
+    { id: 'strategy-opt', name: 'Strategy Optimizer', icon: '', description: 'Compute ideal pit windows', premium: true },
+    { id: 'multi-compare', name: 'Multi Compare', icon: '', description: 'Premium feature', premium: true },
 ];
 
 const mockMeta: Meta = {
@@ -308,9 +308,9 @@ const mockCalendar: Race[] = [
     { round: 23, name: 'Abu Dhabi GP', country: 'UAE', date: 'DEC 06', flag: '🇦🇪', status: 'upcoming', circuit: 'Yas Marina' },
 ];
 
-// ─────────────────────────────────────────────────────────────────────────────
+// 
 // STORE INTERFACE
-// ─────────────────────────────────────────────────────────────────────────────
+// 
 
 interface DashboardState {
     // Mode
@@ -352,9 +352,9 @@ interface DashboardState {
     loadDashboardData: () => Promise<void>;
 }
 
-// ─────────────────────────────────────────────────────────────────────────────
+// 
 // STORE CREATION
-// ─────────────────────────────────────────────────────────────────────────────
+// 
 
 const loadSidebarState = () => {
     try {
@@ -408,7 +408,7 @@ export const useDashboardStore = create<DashboardState>((set, get) => ({
     getDriverByCode: (code) => get().standings.find((d) => d.code === code),
     getMomentumByDriver: (code) => get().momentum.find((m) => m.driver === code),
 
-    // API integration — fetch real data, keep mock as fallback
+    // API integration - fetch real data, keep mock as fallback
     loadDashboardData: async () => {
         try {
             // Attempt to fetch driver standings
@@ -424,10 +424,10 @@ export const useDashboardStore = create<DashboardState>((set, get) => ({
                     image: DRIVER_IMAGES[s.driver_code || s.code || ''] || '',
                 }));
                 set({ standings: enrichedDrivers });
-                console.log('[Dashboard] ✅ Standings loaded from backend');
+                console.log('[Dashboard]  Standings loaded from backend');
             }
         } catch (err) {
-            console.warn('[Dashboard] ⚠️ Backend standings unavailable, using mock data:', err);
+            console.warn('[Dashboard] [!] Backend standings unavailable, using mock data:', err);
         }
 
         try {
@@ -444,10 +444,10 @@ export const useDashboardStore = create<DashboardState>((set, get) => ({
                     circuit: entry.circuit || entry.circuit_name || '',
                 }));
                 set({ calendar: races });
-                console.log('[Dashboard] ✅ Calendar loaded from backend');
+                console.log('[Dashboard]  Calendar loaded from backend');
             }
         } catch (err) {
-            console.warn('[Dashboard] ⚠️ Backend calendar unavailable, using mock data:', err);
+            console.warn('[Dashboard] [!] Backend calendar unavailable, using mock data:', err);
         }
 
         try {
@@ -468,9 +468,9 @@ export const useDashboardStore = create<DashboardState>((set, get) => ({
     },
 }));
 
-// ─────────────────────────────────────────────────────────────────────────────
+// 
 // EXPORTED SELECTORS (for component usage)
-// ─────────────────────────────────────────────────────────────────────────────
+// 
 
 export const selectNextRace = (state: DashboardState) => state.nextRace;
 export const selectStandings = (state: DashboardState) => state.standings;

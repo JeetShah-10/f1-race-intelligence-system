@@ -29,7 +29,7 @@ def get_supabase():
         url = os.getenv("SUPABASE_URL")
         key = os.getenv("SUPABASE_SERVICE_KEY") or os.getenv("SUPABASE_ANON_KEY")
         if not url or not key:
-            log.warning("Supabase credentials not found — database operations will be disabled")
+            log.warning("Supabase credentials not found - database operations will be disabled")
             return None
         try:
             from supabase import create_client
@@ -51,7 +51,7 @@ class DatabaseService:
     def is_connected(self) -> bool:
         return self.sb is not None
 
-    # ── Simulation Persistence ────────────────────────────────────────────
+    #  Simulation Persistence 
 
     def save_simulation(self, result: dict) -> Optional[str]:
         """
@@ -64,7 +64,7 @@ class DatabaseService:
             simulation_id (UUID) or None on failure
         """
         if not self.is_connected:
-            log.warning("Supabase not connected — skipping save")
+            log.warning("Supabase not connected - skipping save")
             return None
 
         try:
@@ -124,7 +124,7 @@ class DatabaseService:
             log.error(f"Error saving simulation: {e}")
             return None
 
-    # ── Read Operations ───────────────────────────────────────────────────
+    #  Read Operations 
 
     def get_standings(self, year: int = 2026) -> list[dict]:
         """Get driver standings for a given year."""

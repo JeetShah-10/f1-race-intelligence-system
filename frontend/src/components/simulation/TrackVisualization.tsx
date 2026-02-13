@@ -3,7 +3,7 @@ import { useSimulationStore } from '../../store/useSimulationStore';
 import type { DriverStanding } from '../../types/simulation';
 import { getCircuitPath } from './CircuitPaths';
 
-// ─── Driver Dot Component ─────────────────────────────────────────────────
+//  Driver Dot Component 
 function DriverDot({
     driver,
     x,
@@ -75,7 +75,7 @@ function DriverDot({
     );
 }
 
-// ─── Main Track Visualization ─────────────────────────────────────────────
+//  Main Track Visualization 
 export function TrackVisualization() {
     const { currentStandings, selectedDriver, setSelectedDriver, raceConfig, currentLap, currentFlag } = useSimulationStore();
     const svgRef = useRef<SVGSVGElement>(null);
@@ -160,7 +160,7 @@ export function TrackVisualization() {
                 }}
             />
 
-            {/* Circuit Info Overlay — Top Left */}
+            {/* Circuit Info Overlay - Top Left */}
             {raceConfig && (
                 <div className="absolute top-4 left-4 z-20">
                     <div className="flex items-center gap-2 mb-1">
@@ -178,7 +178,7 @@ export function TrackVisualization() {
                 </div>
             )}
 
-            {/* Lap Counter — Top Right */}
+            {/* Lap Counter - Top Right */}
             <div className="absolute top-4 right-4 z-20 flex items-center gap-3">
                 {currentFlag !== 'GREEN' && (
                     <div className={`px-2 py-1 rounded text-[10px] font-bold font-ui uppercase tracking-wider ${currentFlag === 'SC' ? 'bg-orange-500/20 text-orange-400 border border-orange-500/30' :
@@ -198,7 +198,7 @@ export function TrackVisualization() {
                 </div>
             </div>
 
-            {/* Track Map Layer — visible background */}
+            {/* Track Map Layer - visible background */}
             <div className="relative w-[85%] h-[85%] flex items-center justify-center">
                 {/* Map Image */}
                 {circuitConfig.mapImage && (
@@ -262,7 +262,7 @@ export function TrackVisualization() {
                     </svg>
                 )}
 
-                {/* Driver Dots — positioned via CSS percentages */}
+                {/* Driver Dots - positioned via CSS percentages */}
                 {driverPositions.map(({ driver, x, y }) => (
                     <DriverDot
                         key={driver.driverCode}
@@ -277,7 +277,7 @@ export function TrackVisualization() {
                 ))}
             </div>
 
-            {/* Selected Driver Detail — Bottom Left */}
+            {/* Selected Driver Detail - Bottom Left */}
             {selectedDriver && (() => {
                 const d = currentStandings.find(s => s.driverCode === selectedDriver);
                 if (!d || d.status === 'OUT') return null;

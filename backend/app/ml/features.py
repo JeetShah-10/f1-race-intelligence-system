@@ -35,8 +35,8 @@ def calculate_fuel_load(laps: pd.DataFrame, total_laps: int = 57) -> pd.DataFram
 
 def calculate_fuel_penalty(laps: pd.DataFrame, total_laps: int = 57) -> pd.DataFrame:
     """
-    Calculate fuel penalty (legacy method — kept for compatibility).
-    FuelPenalty ≈ (TotalLaps - CurrentLap) * 0.035s
+    Calculate fuel penalty (legacy method - kept for compatibility).
+    FuelPenalty  (TotalLaps - CurrentLap) * 0.035s
     """
     fuel_cost_per_lap = 0.035  # seconds
     laps['FuelLoad_laps'] = total_laps - laps['LapNumber']
@@ -72,7 +72,7 @@ def calculate_traffic_index(laps: pd.DataFrame) -> pd.DataFrame:
 
         for i, (idx, row) in enumerate(group.iterrows()):
             if i == 0:
-                # Leader — clear air
+                # Leader - clear air
                 traffic_indices.append(0.0)
             else:
                 # Simple traffic proxy based on position density
@@ -161,7 +161,7 @@ def prepare_features(laps: pd.DataFrame, total_race_laps: int = 57) -> pd.DataFr
     """
     df = laps.copy()
 
-    # Filter valid laps — green flag only
+    # Filter valid laps - green flag only
     if 'TrackStatus' in df.columns:
         df = df[df['TrackStatus'] == '1']
 

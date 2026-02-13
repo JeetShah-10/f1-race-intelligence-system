@@ -1,12 +1,12 @@
 /**
- * F1 Intelligence Platform - 2025 Standings Mock Data
+ * F1 Intelligence Platform - 2026 Standings Mock Data
  * Sample championship standings for UI development
  */
 
 import type { DriverStanding, ConstructorStanding } from '../types/f1';
 
 /**
- * Sample Driver Championship Standings (2025 Season - Mid-Season)
+ * Sample Driver Championship Standings (2026 Season - Mid-Season)
  * Based on realistic point distributions
  */
 export const DRIVER_STANDINGS_2025: DriverStanding[] = [
@@ -108,8 +108,8 @@ export const DRIVER_STANDINGS_2025: DriverStanding[] = [
     },
     {
         position: 9,
-        driver: 'LAW',
-        driverName: 'Liam Lawson',
+        driver: 'HAD',
+        driverName: 'Isack Hadjar',
         team: 'Red Bull Racing',
         points: 82,
         wins: 0,
@@ -168,9 +168,9 @@ export const DRIVER_STANDINGS_2025: DriverStanding[] = [
     },
     {
         position: 14,
-        driver: 'TSU',
-        driverName: 'Yuki Tsunoda',
-        team: 'RB',
+        driver: 'LAW',
+        driverName: 'Liam Lawson',
+        team: 'Racing Bulls',
         points: 28,
         wins: 0,
         podiums: 0,
@@ -182,7 +182,7 @@ export const DRIVER_STANDINGS_2025: DriverStanding[] = [
         position: 15,
         driver: 'HUL',
         driverName: 'Nico Hulkenberg',
-        team: 'Kick Sauber',
+        team: 'Audi',
         points: 22,
         wins: 0,
         podiums: 0,
@@ -204,8 +204,8 @@ export const DRIVER_STANDINGS_2025: DriverStanding[] = [
     },
     {
         position: 17,
-        driver: 'DOO',
-        driverName: 'Jack Doohan',
+        driver: 'COL',
+        driverName: 'Franco Colapinto',
         team: 'Alpine',
         points: 12,
         wins: 0,
@@ -216,9 +216,9 @@ export const DRIVER_STANDINGS_2025: DriverStanding[] = [
     },
     {
         position: 18,
-        driver: 'HAD',
-        driverName: 'Isack Hadjar',
-        team: 'RB',
+        driver: 'LIN',
+        driverName: 'Arvid Lindblad',
+        team: 'Racing Bulls',
         points: 8,
         wins: 0,
         podiums: 0,
@@ -242,8 +242,32 @@ export const DRIVER_STANDINGS_2025: DriverStanding[] = [
         position: 20,
         driver: 'BOR',
         driverName: 'Gabriel Bortoleto',
-        team: 'Kick Sauber',
+        team: 'Audi',
         points: 4,
+        wins: 0,
+        podiums: 0,
+        poles: 0,
+        fastestLaps: 0,
+        lastRacePoints: 0,
+    },
+    {
+        position: 21,
+        driver: 'PER',
+        driverName: 'Sergio Pérez',
+        team: 'Cadillac',
+        points: 2,
+        wins: 0,
+        podiums: 0,
+        poles: 0,
+        fastestLaps: 0,
+        lastRacePoints: 0,
+    },
+    {
+        position: 22,
+        driver: 'BOT',
+        driverName: 'Valtteri Bottas',
+        team: 'Cadillac',
+        points: 1,
         wins: 0,
         podiums: 0,
         poles: 0,
@@ -253,7 +277,7 @@ export const DRIVER_STANDINGS_2025: DriverStanding[] = [
 ];
 
 /**
- * Sample Constructor Championship Standings (2025 Season - Mid-Season)
+ * Sample Constructor Championship Standings (2026 Season - Mid-Season)
  */
 export const CONSTRUCTOR_STANDINGS_2025: ConstructorStanding[] = [
     {
@@ -281,7 +305,7 @@ export const CONSTRUCTOR_STANDINGS_2025: ConstructorStanding[] = [
         teamColor: '#3671C6',
         points: 337,
         wins: 7,
-        drivers: ['VER', 'LAW'],
+        drivers: ['VER', 'HAD'],
     },
     {
         position: 4,
@@ -317,21 +341,21 @@ export const CONSTRUCTOR_STANDINGS_2025: ConstructorStanding[] = [
         teamColor: '#0093CC',
         points: 60,
         wins: 0,
-        drivers: ['GAS', 'DOO'],
+        drivers: ['GAS', 'COL'],
     },
     {
         position: 8,
-        team: 'RB',
-        shortName: 'RB',
+        team: 'Racing Bulls',
+        shortName: 'RCB',
         teamColor: '#6692FF',
         points: 36,
         wins: 0,
-        drivers: ['TSU', 'HAD'],
+        drivers: ['LAW', 'LIN'],
     },
     {
         position: 9,
-        team: 'Kick Sauber',
-        shortName: 'KSA',
+        team: 'Audi',
+        shortName: 'AUD',
         teamColor: '#52E252',
         points: 26,
         wins: 0,
@@ -345,6 +369,15 @@ export const CONSTRUCTOR_STANDINGS_2025: ConstructorStanding[] = [
         points: 22,
         wins: 0,
         drivers: ['OCO', 'BEA'],
+    },
+    {
+        position: 11,
+        team: 'Cadillac',
+        shortName: 'CAD',
+        teamColor: '#1E3D6F',
+        points: 3,
+        wins: 0,
+        drivers: ['PER', 'BOT'],
     },
 ];
 

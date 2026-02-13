@@ -3,7 +3,7 @@
 Dynamic weather evolution model for race simulations.
 
 Models realistic weather transitions during a race:
-  - Dry ↔ Light Rain ↔ Heavy Rain
+  - Dry  Light Rain  Heavy Rain
   - Gradual temperature changes
   - Track wetness accumulation and drying
   - Tyre compound recommendations
@@ -102,10 +102,10 @@ class WeatherEvolutionModel:
         """
         progress = lap / total_laps
 
-        # ── Condition Transitions ──
+        #  Condition Transitions 
         self._maybe_transition()
 
-        # ── Temperature Evolution ──
+        #  Temperature Evolution 
         # Air temp: slight drift + sinusoidal variation
         air_temp = self.initial_air_temp + 2.0 * math.sin(progress * math.pi)
         air_temp += self.rng.gauss(0, 0.3)
@@ -120,7 +120,7 @@ class WeatherEvolutionModel:
 
         track_temp += self.rng.gauss(0, 0.5)
 
-        # ── Track Wetness ──
+        #  Track Wetness 
         if self.current_condition == "heavy_rain":
             self.track_wetness = min(1.0, self.track_wetness + 0.08)
         elif self.current_condition == "light_rain":
@@ -130,7 +130,7 @@ class WeatherEvolutionModel:
             drying_rate = 0.02 + (track_temp - 20) * 0.001
             self.track_wetness = max(0.0, self.track_wetness - drying_rate)
 
-        # ── Rain Intensity ──
+        #  Rain Intensity 
         if self.current_condition == "heavy_rain":
             rain_intensity = 0.6 + self.rng.uniform(0, 0.4)
         elif self.current_condition == "light_rain":
@@ -138,7 +138,7 @@ class WeatherEvolutionModel:
         else:
             rain_intensity = 0.0
 
-        # ── Humidity ──
+        #  Humidity 
         base_humidity = 40.0 + rain_intensity * 50.0
         humidity = base_humidity + self.rng.gauss(0, 3.0)
 

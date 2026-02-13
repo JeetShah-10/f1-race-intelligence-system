@@ -15,11 +15,11 @@ from app.services.database_service import DatabaseService
 from app.schemas.simulation import SimulationResult, DriverResult, LapData
 
 def populate_demo_data():
-    print("🚀 Populating Supabase with DEMO Data (Persistent)...")
+    print(" Populating Supabase with DEMO Data (Persistent)...")
     
     db = DatabaseService()
     if not db.supabase:
-        print("❌ DatabaseService failed to initialize.")
+        print(" DatabaseService failed to initialize.")
         return
 
     # 1. Create Mock Simulation Result
@@ -69,11 +69,11 @@ def populate_demo_data():
     sim_id = db.save_simulation(result, session_type="DEMO_RUN", year=2025)
     
     if not sim_id:
-        print("❌ Save failed.")
+        print(" Save failed.")
         return
         
-    print(f"✅ Save successful!")
-    print(f"👉 Check your Supabase Dashboard now.")
+    print(f" Save successful!")
+    print(f" Check your Supabase Dashboard now.")
     print(f"   Table: simulation_results -> ID: {sim_id}")
 
 if __name__ == "__main__":

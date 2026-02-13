@@ -24,12 +24,12 @@ def setup_fastf1():
     fastf1.Cache.enable_cache(CACHE_DIR)
 
 def ingest_race_data():
-    print("🚀 Starting Phase 2: Race Data Ingestion...")
+    print(" Starting Phase 2: Race Data Ingestion...")
     setup_fastf1()
     
     db = DatabaseService()
     if not db.supabase:
-        print("❌ Database connection failed.")
+        print(" Database connection failed.")
         return
 
     # 1. Get List of Races to Process
@@ -37,9 +37,9 @@ def ingest_race_data():
     try:
         response = db.supabase.table("races").select("race_id, year, round, name").execute()
         races_db = response.data
-        print(f"📅 Found {len(races_db)} races in database to process.")
+        print(f" Found {len(races_db)} races in database to process.")
     except Exception as e:
-        print(f"❌ Failed to fetch races list: {e}")
+        print(f" Failed to fetch races list: {e}")
         return
 
     for race_meta in races_db:
@@ -57,7 +57,7 @@ def ingest_race_data():
             # --- RACE RESULTS ---
             results = session.results
             if results is None or results.empty:
-                print("   ⚠️ No results data.")
+                print("   [!] No results data.")
             else:
                 results_payload = []
                 for _, row in results.iterrows():
@@ -85,15 +85,15 @@ def ingest_race_data():
                 if results_payload:
                     try:
                         db.supabase.table("race_results").upsert(results_payload).execute()
-                        print(f"   ✅ Upserted {len(results_payload)} results.")
+                        print(f"    Upserted {len(results_payload)} results.")
                     except Exception as e:
-                        print(f"      ⚠️ Result upsert error: {e}")
+                        print(f"      [!] Result upsert error: {e}")
 
 
             # --- LAP TIMES ---
             laps = session.laps
             if laps is None or laps.empty:
-                print("   ⚠️ No lap data.")
+                print("   [!] No lap data.")
             else:
                 # Optimized Payload Construction
                 # We need to map DriverNumber to driver_id first
@@ -141,14 +141,14 @@ def ingest_race_data():
                             # Supabase limits payload size, chunking is safer
                             db.supabase.table("lap_times").upsert(chunk).execute()
                         except Exception as e:
-                            print(f"      ⚠️ Lap chunk {i}-{i+chunk_size} error: {e}")
+                            print(f"      [!] Lap chunk {i}-{i+chunk_size} error: {e}")
                     
-                    print(f"   ✅ Upserted {total_laps} laps.")
+                    print(f"    Upserted {total_laps} laps.")
 
         except Exception as e:
-            print(f"   ❌ Failed to process race {race_id}: {e}")
+            print(f"    Failed to process race {race_id}: {e}")
 
-    print("\n✅ Phase 2 Ingestion Complete!")
+    print("\n Phase 2 Ingestion Complete!")
 
 if __name__ == "__main__":
     ingest_race_data()

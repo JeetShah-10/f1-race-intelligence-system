@@ -16,11 +16,11 @@ from app.schemas.simulation import SimulationResult, DriverResult, LapData
 from supabase import create_client
 
 def verify_integration():
-    print("🚀 Starting Database Integration Verification...")
+    print(" Starting Database Integration Verification...")
     
     db = DatabaseService()
     if not db.supabase:
-        print("❌ DatabaseService failed to initialize.")
+        print(" DatabaseService failed to initialize.")
         return
 
     # 1. Create Mock Simulation Result
@@ -51,10 +51,10 @@ def verify_integration():
     sim_id = db.save_simulation(result, session_type="TEST_INTEGRATION", year=2025)
     
     if not sim_id:
-        print("❌ Save failed (returned None).")
+        print(" Save failed (returned None).")
         return
         
-    print(f"✅ Save successful. Simulation ID: {sim_id}")
+    print(f" Save successful. Simulation ID: {sim_id}")
     
     # 3. Verify Data in DB
     print("3. Verifying Relational Integrity...")
@@ -73,14 +73,14 @@ def verify_integration():
     print(f"   [Laps] Found {len(laps.data)} laps (Expected 2).")
     
     if len(laps.data) == 2:
-        print("✅ INTEGRATION TEST PASSED")
+        print(" INTEGRATION TEST PASSED")
     else:
-        print("❌ INTEGRATION TEST FAILED: Lap count mismatch.")
+        print(" INTEGRATION TEST FAILED: Lap count mismatch.")
 
     # 4. Cleanup
     print("4. Cleaning Up...")
     db.supabase.table("simulation_results").delete().eq("id", sim_id).execute()
-    print("✅ Cleanup complete.")
+    print(" Cleanup complete.")
 
 if __name__ == "__main__":
     verify_integration()

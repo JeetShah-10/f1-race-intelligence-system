@@ -3,7 +3,7 @@
 Enhanced Crash/Incident Model with severity levels.
 
 Returns an incident type AND severity when an incident occurs:
-  - CRASH with severity: LOW (Yellow Flag → VSC), MED (SC), HIGH (Red Flag)
+  - CRASH with severity: LOW (Yellow Flag -> VSC), MED (SC), HIGH (Red Flag)
   - MECHANICAL with severity: LOW (VSC), MED (SC)
 
 Probability is influenced by:
@@ -55,7 +55,7 @@ class CrashModel:
     """
     Probabilistic incident generator for the race simulation.
     
-    Base crash probability per lap ≈ 0.1-0.3% per driver.
+    Base crash probability per lap  0.1-0.3% per driver.
     This means in a 57-lap race with 20 drivers, we expect ~1-3 incidents total.
     """
 
@@ -87,14 +87,14 @@ class CrashModel:
         """
         circuit_risk = CIRCUIT_RISK.get(circuit_id.lower(), DEFAULT_RISK)
         
-        # ── Weather Multiplier ──
+        #  Weather Multiplier 
         weather_mult = 1.0
         if weather.upper() in ("WET", "RAIN"):
             weather_mult = 2.5
         elif weather.upper() == "DAMP":
             weather_mult = 1.8
         
-        # ── Crash Check ──
+        #  Crash Check 
         crash_prob = self.BASE_CRASH_PROB
         crash_prob *= (1.0 + circuit_risk)
         crash_prob *= weather_mult
@@ -111,7 +111,7 @@ class CrashModel:
         if self.rng.random() < crash_prob:
             return "CRASH"
         
-        # ── Mechanical Check ──
+        #  Mechanical Check 
         mech_prob = self.BASE_MECHANICAL_PROB
         mech_prob *= (2.0 - reliability_score)  # Less reliable = more failures
         

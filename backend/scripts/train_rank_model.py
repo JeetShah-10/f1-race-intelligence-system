@@ -118,23 +118,23 @@ def aggregate_race_stats(df: pd.DataFrame) -> pd.DataFrame:
 
 
 def train_rank_model():
-    print("🏁 Starting Race Rank Model Training (Ensemble)...")
+    print(" Starting Race Rank Model Training (Ensemble)...")
     
     if not os.path.exists(DATA_PATH):
-        print(f"❌ Data file not found: {DATA_PATH}")
+        print(f" Data file not found: {DATA_PATH}")
         return
     
     # Load data
     try:
         df = pd.read_parquet(DATA_PATH)
-        print(f"✅ Loaded {len(df)} laps.")
+        print(f" Loaded {len(df)} laps.")
     except Exception as e:
-        print(f"❌ Error loading data: {e}")
+        print(f" Error loading data: {e}")
         return
     
     # Aggregate to race-level
     race_stats = aggregate_race_stats(df)
-    print(f"✅ Aggregated to {len(race_stats)} driver-race entries.")
+    print(f" Aggregated to {len(race_stats)} driver-race entries.")
     
     # Features and target
     feature_cols = [
@@ -151,11 +151,11 @@ def train_rank_model():
     race_stats = race_stats.dropna(subset=feature_cols + [target])
     
     # Generate synthetic data
-    print("🧬 Generating synthetic data...")
+    print(" Generating synthetic data...")
     synthetic_df = generate_synthetic_data(race_stats[feature_cols + [target]], num_samples=500)
     
     combined_df = pd.concat([race_stats, synthetic_df], axis=0)
-    print(f"✅ Combined Real ({len(race_stats)}) + Synthetic ({len(synthetic_df)}) samples.")
+    print(f" Combined Real ({len(race_stats)}) + Synthetic ({len(synthetic_df)}) samples.")
     
     X = combined_df[feature_cols]
     y = combined_df[target]
@@ -180,14 +180,14 @@ def train_rank_model():
         weights=[0.35, 0.40, 0.25] # Slightly higher weight to RF/GB
     )
     
-    print("🚀 Training Ensemble Model...")
+    print(" Training Ensemble Model...")
     ensemble.fit(X_train, y_train)
     
     # Evaluate
     train_score = ensemble.score(X_train, y_train)
     test_score = ensemble.score(X_test, y_test)
     
-    print(f"\n📊 Model Performance:")
+    print(f"\n Model Performance:")
     print(f"   Train R²: {train_score:.4f}")
     print(f"   Test R²:  {test_score:.4f}")
     
@@ -196,7 +196,7 @@ def train_rank_model():
         os.makedirs(MODEL_DIR)
     
     joblib.dump(ensemble, MODEL_PATH)
-    print(f"\n✅ Ensemble Model saved to {MODEL_PATH}")
+    print(f"\n Ensemble Model saved to {MODEL_PATH}")
 
 
 if __name__ == "__main__":

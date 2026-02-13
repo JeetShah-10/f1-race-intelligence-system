@@ -3,7 +3,7 @@
 Database connection stubs.
 
 This module provides placeholder database utilities. The simulation
-engine works without a database — these stubs unblock the server
+engine works without a database - these stubs unblock the server
 startup so the /api/simulate/generate endpoint (which does NOT use
 the database) can be tested.
 

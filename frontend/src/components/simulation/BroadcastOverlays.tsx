@@ -3,7 +3,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { useSimulationStore } from '../../store/useSimulationStore';
 import type { RaceEvent } from '../../types/simulation';
 
-// ─── Event Queue ──────────────────────────────────────────────────────────
+//  Event Queue 
 interface QueuedEvent extends RaceEvent {
     id: string;
     expiresAt: number;
@@ -69,7 +69,7 @@ export function BroadcastOverlays() {
 
     return (
         <>
-            {/* ─── Safety Car / VSC Banner ───── */}
+            {/*  Safety Car / VSC Banner  */}
             <AnimatePresence>
                 {(isSC || isVSC) && (
                     <motion.div
@@ -88,7 +88,7 @@ export function BroadcastOverlays() {
                                 animate={{ opacity: [1, 0.4, 1] }}
                                 transition={{ repeat: Infinity, duration: 1.2 }}
                             >
-                                <span className="text-2xl">⚠️</span>
+                                <span className="text-2xl">[!]</span>
                             </motion.div>
                             <div>
                                 <div className="text-[10px] text-white/70 tracking-[0.2em] font-bold">
@@ -103,7 +103,7 @@ export function BroadcastOverlays() {
                 )}
             </AnimatePresence>
 
-            {/* ─── Event Chyrons ───── */}
+            {/*  Event Chyrons  */}
             <div className="absolute bottom-24 left-1/2 -translate-x-1/2 z-30 flex flex-col items-center gap-2 w-[500px]">
                 <AnimatePresence mode="sync">
                     {latestEvent && (
@@ -116,13 +116,13 @@ export function BroadcastOverlays() {
                 </AnimatePresence>
             </div>
 
-            {/* ─── Lap Counter ───── */}
+            {/*  Lap Counter  */}
             <LapIndicator />
         </>
     );
 }
 
-// ─── Event Chyron Component ──────────────────────────────────────────────
+//  Event Chyron Component 
 function EventChyron({
     event,
     standings,
@@ -210,7 +210,7 @@ function getEventStyle(type: string) {
                 bg: 'linear-gradient(135deg, rgba(255,152,0,0.15) 0%, rgba(10,10,15,0.95) 100%)',
                 glow: '0 0 20px rgba(255,152,0,0.15)',
                 border: 'rgba(255,152,0,0.25)',
-                icon: '⚠️',
+                icon: '[!]',
                 labelText: 'SAFETY CAR',
                 label: '#FF9800',
             };
@@ -219,7 +219,7 @@ function getEventStyle(type: string) {
                 bg: 'linear-gradient(135deg, rgba(255,152,0,0.12) 0%, rgba(10,10,15,0.95) 100%)',
                 glow: '0 0 15px rgba(255,152,0,0.1)',
                 border: 'rgba(255,152,0,0.2)',
-                icon: '⚠️',
+                icon: '[!]',
                 labelText: 'VIRTUAL SAFETY CAR',
                 label: '#FF9800',
             };
@@ -229,7 +229,7 @@ function getEventStyle(type: string) {
                 bg: 'linear-gradient(135deg, rgba(255,23,68,0.15) 0%, rgba(10,10,15,0.95) 100%)',
                 glow: '0 0 20px rgba(255,23,68,0.15)',
                 border: 'rgba(255,23,68,0.25)',
-                icon: '💥',
+                icon: '',
                 labelText: type === 'CRASH' ? 'INCIDENT' : 'RETIREMENT',
                 label: '#FF1744',
             };
@@ -238,7 +238,7 @@ function getEventStyle(type: string) {
                 bg: 'linear-gradient(135deg, rgba(160,32,240,0.15) 0%, rgba(10,10,15,0.95) 100%)',
                 glow: '0 0 20px rgba(160,32,240,0.15)',
                 border: 'rgba(160,32,240,0.3)',
-                icon: '⏱',
+                icon: '',
                 labelText: 'FASTEST LAP',
                 label: '#A020F0',
             };
@@ -247,7 +247,7 @@ function getEventStyle(type: string) {
                 bg: 'linear-gradient(135deg, rgba(255,193,7,0.12) 0%, rgba(10,10,15,0.95) 100%)',
                 glow: '0 0 15px rgba(255,193,7,0.1)',
                 border: 'rgba(255,193,7,0.2)',
-                icon: '🏴',
+                icon: '',
                 labelText: 'FIA STEWARDS',
                 label: '#FFC107',
             };
@@ -256,14 +256,14 @@ function getEventStyle(type: string) {
                 bg: 'rgba(10,10,15,0.9)',
                 glow: 'none',
                 border: 'rgba(255,255,255,0.08)',
-                icon: '📡',
+                icon: '',
                 labelText: 'RACE CONTROL',
                 label: 'rgba(255,255,255,0.5)',
             };
     }
 }
 
-// ─── Lap Counter ─────────────────────────────────────────────────────────
+//  Lap Counter 
 function LapIndicator() {
     const { currentLap, raceConfig, currentFlag } = useSimulationStore();
     if (!raceConfig) return null;

@@ -1,6 +1,6 @@
 # backend/app/simulation/events.py
 """
-Race Event System — Lifecycle hooks and concrete event implementations.
+Race Event System - Lifecycle hooks and concrete event implementations.
 
 Events can modify RaceEngine and DriverState via:
   - before_lap(): called before simulation for the lap
@@ -15,7 +15,10 @@ Concrete events:
 """
 
 from abc import ABC, abstractmethod
+import logging
 from typing import TYPE_CHECKING, List, Optional
+
+logger = logging.getLogger(__name__)
 
 if TYPE_CHECKING:
     from app.simulation.race_engine import RaceEngine
@@ -44,7 +47,7 @@ class RaceEvent(ABC):
 class EventManager:
     """
     Manages the lifecycle and execution of race events.
-    Supports safe iteration — events registered mid-race are queued.
+    Supports safe iteration - events registered mid-race are queued.
     """
     def __init__(self):
         self.events: List[RaceEvent] = []
@@ -76,9 +79,9 @@ class EventManager:
             self._pending.clear()
 
 
-# ──────────────────────────────────────────────────────────────────────────────
+# 
 # CONCRETE IMPLEMENTATIONS
-# ──────────────────────────────────────────────────────────────────────────────
+# 
 
 class SafetyCarEvent(RaceEvent):
     """
@@ -102,7 +105,7 @@ class SafetyCarEvent(RaceEvent):
 
     def before_lap(self, engine: "RaceEngine", lap: int) -> None:
         if self.applies_to_lap(lap):
-            print(f"⚠️ SAFETY CAR ACTIVE (Lap {lap})")
+            print(f"[!] SAFETY CAR ACTIVE (Lap {lap})")
             
             # Set global flag
             engine.flags["SC"] = True
@@ -117,19 +120,27 @@ class SafetyCarEvent(RaceEvent):
                 for d in sorted_drivers:
                     if d.is_running:
                         d.current_time = current_t
-                        current_t += 0.5  # 0.5s gap under SC
+                        current_t += 1.0  # 1.0s gap under SC (realistic train spacing)
                         
     def after_lap(self, engine: "RaceEngine", lap: int) -> None:
         if lap == self.end_lap - 1:
-            print("🟩 SAFETY CAR ENDING")
+            logger.info("[SC] SAFETY CAR ENDING - restart spread applied")
             engine.flags["SC"] = False
+            
+            # Restart spread: faster cars pull away, slower cars lose time
+            # Simulates the chaos of a SC restart where gaps re-form
+            import random
+            for d in engine.drivers:
+                if d.is_running:
+                    restart_delta = random.uniform(-0.3, 0.5)  # Asymmetric: easier to lose time
+                    d.current_time += restart_delta
 
 
 class VSCEvent(RaceEvent):
     """
     Virtual Safety Car (VSC) period.
     - All drivers must maintain a minimum lap time (~40% slower than race pace)
-    - NO bunching — gaps maintained
+    - NO bunching - gaps maintained
     - Pit stops still allowed (and strategically advantageous)
     """
     
@@ -147,19 +158,19 @@ class VSCEvent(RaceEvent):
 
     def before_lap(self, engine: "RaceEngine", lap: int) -> None:
         if self.applies_to_lap(lap):
-            print(f"🟡 VIRTUAL SAFETY CAR (Lap {lap})")
+            logger.info("[VSC] VIRTUAL SAFETY CAR (Lap %d)", lap)
             engine.flags["VSC"] = True
             engine.flags["SC"] = False  # VSC doesn't coexist with SC
                         
     def after_lap(self, engine: "RaceEngine", lap: int) -> None:
         if lap == self.end_lap - 1:
-            print("🟩 VSC ENDING")
+            logger.info("[VSC] VSC ENDING")
             engine.flags["VSC"] = False
 
 
 class RedFlagEvent(RaceEvent):
     """
-    Red Flag — Race stopped.
+    Red Flag - Race stopped.
     - All drivers return to pit lane
     - Grid reformed in current positions
     - Standing restart on the next lap
@@ -179,7 +190,7 @@ class RedFlagEvent(RaceEvent):
 
     def before_lap(self, engine: "RaceEngine", lap: int) -> None:
         if lap == self.trigger_lap and not self.triggered:
-            print(f"🔴 RED FLAG (Lap {lap}) — RACE STOPPED")
+            logger.info("[RED FLAG] RED FLAG (Lap %d) - RACE STOPPED", lap)
             self.triggered = True
             engine.flags["RED_FLAG"] = True
             engine.flags["SC"] = False
@@ -193,7 +204,7 @@ class RedFlagEvent(RaceEvent):
                     driver.record_event("RED_FLAG_TYRE_RESET", lap)
                     
         if lap == self.restart_lap:
-            print(f"🟩 RACE RESTART (Lap {lap}) — Standing Start")
+            logger.info("[RESTART] RACE RESTART (Lap %d) - Standing Start", lap)
             engine.flags["RED_FLAG"] = False
             
             # Apply standing start gaps (similar to race start)
@@ -235,7 +246,7 @@ class WeatherChangeEvent(RaceEvent):
         engine.weather = self.new_weather
         self.applied = True
         
-        print(f"🌧️ WEATHER CHANGE (Lap {lap}): {old_weather} -> {self.new_weather}")
+        logger.info("[WEATHER] WEATHER CHANGE (Lap %d): %s -> %s", lap, old_weather, self.new_weather)
         
         for driver in engine.drivers:
             if driver.is_running:

@@ -1,12 +1,12 @@
 import { Link, useLocation } from 'react-router-dom';
 
 const MODULES = [
-    { id: 'telemetry', name: 'Telemetry', path: '/analyze/telemetry', icon: '📊', desc: 'Speed, throttle, brake traces', color: '#CF2C28' },
-    { id: 'laptimes', name: 'Lap Times', path: '/analyze/laptimes', icon: '⏱️', desc: 'Lap time distribution & sectors', color: '#FF8700' },
-    { id: 'strategy', name: 'Strategy', path: '/analyze/strategy', icon: '🎯', desc: 'Tyre stints & pit windows', color: '#00D2BE' },
-    { id: 'season', name: 'Season', path: '/analyze/season', icon: '📈', desc: 'Championship progression', color: '#0090FF' },
-    { id: 'driver', name: 'Driver vs', path: '/analyze/driver', icon: '👤', desc: 'Head-to-head comparisons', color: '#A020F0' },
-    { id: 'constructor', name: 'Constructor vs', path: '/analyze/constructor', icon: '🏎️', desc: 'Team performance analysis', color: '#FFD700' },
+    { id: 'telemetry', name: 'Telemetry', path: '/analyze/telemetry', icon: '', desc: 'Speed, throttle, brake traces', color: '#CF2C28' },
+    { id: 'laptimes', name: 'Lap Times', path: '/analyze/laptimes', icon: '', desc: 'Lap time distribution & sectors', color: '#FF8700' },
+    { id: 'strategy', name: 'Strategy', path: '/analyze/strategy', icon: '', desc: 'Tyre stints & pit windows', color: '#00D2BE' },
+    { id: 'season', name: 'Season', path: '/analyze/season', icon: '', desc: 'Championship progression', color: '#0090FF' },
+    { id: 'driver', name: 'Driver vs', path: '/analyze/driver', icon: '', desc: 'Head-to-head comparisons', color: '#A020F0' },
+    { id: 'constructor', name: 'Constructor vs', path: '/analyze/constructor', icon: '', desc: 'Team performance analysis', color: '#FFD700' },
 ];
 
 export function AnalyzePage() {
@@ -92,7 +92,7 @@ export function AnalyzePage() {
                                         style={{ color: module.color }}
                                     >
                                         <span>Open</span>
-                                        <span>→</span>
+                                        <span>&rarr;</span>
                                     </div>
                                 </div>
                             </Link>
@@ -122,7 +122,7 @@ export function AnalyzePage() {
                             <div className="p-5 border border-white/20 rounded-xl cursor-pointer hover:bg-white/5 transition-all">
                                 <div className="flex items-center gap-3 mb-2">
                                     <div className="w-10 h-10 rounded-lg bg-white/10 flex items-center justify-center text-xl">
-                                        🧪
+
                                     </div>
                                     <div className="font-bold" style={{ fontFamily: 'NeoSpeed, sans-serif' }}>Simulation Results</div>
                                 </div>

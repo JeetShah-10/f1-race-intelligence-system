@@ -70,7 +70,7 @@ export const LiveTimingTower: React.FC<LiveTimingTowerProps> = ({ className = ''
             {/* Footer CTA */}
             <div className="p-3 bg-white/5 text-center hover:bg-white/10 transition-colors cursor-pointer group">
                 <span className="text-xs font-bold text-white/60 group-hover:text-white transition-colors">
-                    TRY SIMULATION →
+                    TRY SIMULATION &rarr;
                 </span>
             </div>
         </motion.div>

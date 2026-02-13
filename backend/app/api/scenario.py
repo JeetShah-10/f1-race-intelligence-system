@@ -2,7 +2,7 @@
 """
 What-If scenario API.
 
-POST /api/scenario/whatif — Run hypothetical scenarios:
+POST /api/scenario/whatif - Run hypothetical scenarios:
   - Driver team swaps ("What if Hamilton was at Red Bull?")
   - Performance adjustments ("What if McLaren gained 0.5s?")
   - Weather overrides ("What if it rained at Monaco?")
@@ -29,7 +29,7 @@ with open(CONFIG_PATH) as f:
     SEASON_CONFIG = json.load(f)
 
 
-# ── Schemas ──
+#  Schemas 
 
 class Modification(BaseModel):
     type: str                           # driver_swap, performance_boost, weather_override, dnf_inject
@@ -122,14 +122,14 @@ def what_if_scenario(request: WhatIfRequest):
     if not request.modifications:
         raise HTTPException(400, "At least one modification is required")
 
-    # ── 1. Run Baseline ──
+    #  1. Run Baseline 
     base_grid = _build_grid()
     base_weather = "DRY"
     original_results = _run_simulation(
         base_grid, request.circuit, request.year, request.lap_count, base_weather
     )
 
-    # ── 2. Apply Modifications ──
+    #  2. Apply Modifications 
     mod_grid = copy.deepcopy(base_grid)
     mod_weather = base_weather
     mods_applied = 0
@@ -169,12 +169,12 @@ def what_if_scenario(request: WhatIfRequest):
                     mods_applied += 1
                     break
 
-    # ── 3. Run Modified Simulation ──
+    #  3. Run Modified Simulation 
     modified_results = _run_simulation(
         mod_grid, request.circuit, request.year, request.lap_count, mod_weather
     )
 
-    # ── 4. Calculate Deltas ──
+    #  4. Calculate Deltas 
     orig_positions = {r.get("driver_id"): r.get("position", 99) for r in original_results}
     mod_positions = {r.get("driver_id"): r.get("position", 99) for r in modified_results}
 

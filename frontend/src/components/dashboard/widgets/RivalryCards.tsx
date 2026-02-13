@@ -48,7 +48,7 @@ export const RivalryCards: React.FC = () => {
         return (
             <GlassCard className="h-full flex items-center justify-center" blur="sm" padding="none">
                 <div className="flex flex-col items-center gap-2 text-white/30">
-                    <span className="text-2xl">🏁</span>
+                    <span className="text-2xl"></span>
                     <span className="text-sm font-medium">No active rivalries</span>
                 </div>
             </GlassCard>

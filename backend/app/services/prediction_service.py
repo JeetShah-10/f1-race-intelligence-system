@@ -5,6 +5,7 @@ import numpy as np
 from app.schemas.ml_simulation_handoff import MLHandoff
 from app.ml.pace_model import PaceModel
 from app.schemas.simulation import SimulationRequest
+from app.services.driver_mapping import to_ml_driver_sector, to_ml_team_sector
 
 MODEL_PATH = Path(__file__).resolve().parent.parent / "models" / "race_rank_model_v0.pkl"
 
@@ -51,18 +52,21 @@ class PredictionService:
         """
         handoff_data = []
         for driver in request.drivers:
+            ml_driver = to_ml_driver_sector(driver.driver)
+            ml_team = to_ml_team_sector(driver.team)
+
             baseline_lap_time = self.pace_model.predict_baseline_pace(
-                driver=driver.driver,
+                driver=ml_driver,
                 compound=driver.compound,
                 tyre_life=driver.tyre_life,
-                team=driver.team,
+                team=ml_team,
                 speed_st=request.speed_st or 0,
                 speed_fl=request.speed_fl or 0,
-                lap_number=1 # Baseline at start of race
+                lap_number=1  # Baseline at start of race
             )
             
             degradation_slope = self.pace_model.get_degradation_slope(
-                driver=driver.driver,
+                driver=ml_driver,
                 compound=driver.compound
             )
 
@@ -82,17 +86,20 @@ class PredictionService:
         """
         handoff_data = []
         for driver in drivers:
+            ml_driver = to_ml_driver_sector(driver.driver)
+            ml_team = to_ml_team_sector(driver.team)
+
             baseline_lap_time = self.pace_model.predict_baseline_pace(
-                driver=driver.driver,
+                driver=ml_driver,
                 compound=driver.compound,
                 tyre_life=driver.tyre_life,
-                team=driver.team,
+                team=ml_team,
                 speed_st=0,
                 speed_fl=0,
                 lap_number=1,
             )
             degradation_slope = self.pace_model.get_degradation_slope(
-                driver=driver.driver,
+                driver=ml_driver,
                 compound=driver.compound,
             )
             handoff = MLHandoff(

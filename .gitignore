@@ -50,3 +50,18 @@ backend/f1_sim.db
 # Caches
 cache/
 backend/cache/
+
+# Logs & debug output
+*.log
+*_output.txt
+
+# Temp tracking files
+tracked_files.txt
+git_status.txt
+
+# Legacy directories (removed from project)
+F1_Intelligence_Model/
+f1-race-prediction/
+3D-model-backup/
+notebooks/
+ml_notebooks/

@@ -1,13 +1,13 @@
 # backend/app/ml/pace_model.py
 """
-PaceModel — LightGBM models for F1 pace prediction.
+PaceModel - LightGBM models for F1 pace prediction.
 
 Two models:
 1. Baseline lap-time model (legacy, backwards-compatible)
 2. Sector-time model (Master Plan spec: predicts S1/S2/S3 individually)
 
 The sector model uses features: CircuitKey, Compound, TyreAge, FuelLoad,
-TrafficIndex, Sector, Driver, Team — as specified in the simulation master plan.
+TrafficIndex, Sector, Driver, Team - as specified in the simulation master plan.
 """
 
 import pandas as pd
@@ -52,9 +52,9 @@ class PaceModel:
             "TrafficIndex", "Sector", "Driver", "Team"
         ]
 
-    # ──────────────────────────────────────────────────────────────────────
-    # SECTOR-TIME MODEL (Master Plan — race_pace_v1.pkl)
-    # ──────────────────────────────────────────────────────────────────────
+    # 
+    # SECTOR-TIME MODEL (Master Plan - race_pace_v1.pkl)
+    # 
 
     def train_sector_model(self, df: pd.DataFrame):
         """
@@ -124,8 +124,8 @@ class PaceModel:
         from sklearn.metrics import mean_absolute_error
         y_pred = model.predict(X_test)
         mae = mean_absolute_error(y_test, y_pred)
-        print(f"  ✅ Sector model MAE: {mae:.3f}s")
-        print(f"  ✅ Saved to {SECTOR_MODEL_PATH}")
+        print(f"   Sector model MAE: {mae:.3f}s")
+        print(f"   Saved to {SECTOR_MODEL_PATH}")
 
     def predict_sector_time(
         self,
@@ -188,9 +188,9 @@ class PaceModel:
         except Exception:
             return 30.0  # Safe fallback (~90s lap / 3 sectors)
 
-    # ──────────────────────────────────────────────────────────────────────
+    # 
     # LEGACY LAP-TIME MODEL (baseline_pace_model.pkl)
-    # ──────────────────────────────────────────────────────────────────────
+    # 
 
     def train_baseline_model(self, df: pd.DataFrame):
         """Trains a LightGBM regressor to predict full lap times."""
@@ -254,9 +254,9 @@ class PaceModel:
         joblib.dump(self.degradation_models, DEGRADATION_MODEL_PATH)
         print(f"Degradation models trained and saved to {DEGRADATION_MODEL_PATH}")
 
-    # ──────────────────────────────────────────────────────────────────────
+    # 
     # MODEL LOADING
-    # ──────────────────────────────────────────────────────────────────────
+    # 
 
     def load_models(self):
         """Load all available models from disk."""
@@ -277,9 +277,9 @@ class PaceModel:
         if self.degradation_models: loaded.append("degradation")
         print(f"Models loaded: {', '.join(loaded) if loaded else 'none'}")
 
-    # ──────────────────────────────────────────────────────────────────────
+    # 
     # LEGACY PREDICTION (backwards compatible)
-    # ──────────────────────────────────────────────────────────────────────
+    # 
 
     def predict_baseline_pace(self, driver: str, compound: str, tyre_life: int,
                               team: str, speed_st: float, speed_fl: float, lap_number: int, **kwargs) -> float:
@@ -291,7 +291,8 @@ class PaceModel:
         )
 
     def predict_lap_time(self, driver: str, compound: str, tyre_life: int,
-                         team: str, speed_st: float, speed_fl: float, lap_number: int) -> float:
+                         team: str, speed_st: float, speed_fl: float, lap_number: int,
+                         circuit: str = "bahrain") -> float:
         """
         Predicts lap time for a single lap.
         
@@ -307,7 +308,7 @@ class PaceModel:
                     total += self.predict_sector_time(
                         sector=s, driver=driver, compound=compound,
                         tyre_age=tyre_life, team=team,
-                        circuit="unknown",  # Will be overridden at call site
+                        circuit=circuit,
                         fuel_load=fuel_load, traffic_index=0.0,
                     )
                 return total

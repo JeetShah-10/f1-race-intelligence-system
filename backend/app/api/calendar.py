@@ -1,6 +1,6 @@
 # backend/app/api/calendar.py
 """
-Race calendar endpoint — reads from Supabase `races` table.
+Race calendar endpoint - reads from Supabase `races` table.
 """
 
 from fastapi import APIRouter, Query

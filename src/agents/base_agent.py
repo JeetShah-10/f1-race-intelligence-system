@@ -48,7 +48,7 @@ class BaseAgent:
             try:
                 self.client = genai.Client(api_key=settings.GOOGLE_API_KEY)
             except Exception as e:
-                print(f"⚠️ {role} agent: genai client not initialized: {e}")
+                print(f"[!] {role} agent: genai client not initialized: {e}")
                 # Fallback to dummy client
                 class _DummyClient:
                     class _Models:

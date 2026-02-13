@@ -19,7 +19,7 @@ if TYPE_CHECKING:
     from app.simulation.driver_state import DriverState
 
 
-# ── Circuit DRS Zone Configuration ──
+#  Circuit DRS Zone Configuration 
 # Maps circuit_id -> list of sectors (1-indexed) that contain DRS zones
 CIRCUIT_DRS_ZONES: Dict[str, List[int]] = {
     # Modern F1 tracks typically have 2-3 DRS zones
@@ -120,7 +120,7 @@ class OvertakeModel:
         if not attacker.is_running or not defender.is_running:
             return None
 
-        # ── Calculate Overtake Probability ──
+        #  Calculate Overtake Probability 
         is_drs = self.is_drs_sector(circuit_id, sector)
         base_prob = self.BASE_DRS_PROB if is_drs else self.BASE_NON_DRS_PROB
         
@@ -161,14 +161,14 @@ class OvertakeModel:
         prob = base_prob * tyre_factor * aggression_factor * skill_factor * proximity_factor * weather_factor * stuck_factor
         prob = max(0.0, min(prob, 0.95))  # Cap at 95%
 
-        # ── Attempt Decision ──
+        #  Attempt Decision 
         # Not every close-proximity results in an attempt
         attempt_threshold = 0.3 + (0.4 * (1.0 - attacker.aggression))  # Aggressive drivers attempt more
         if self.rng.random() > (1.0 - attempt_threshold * (gap / self.DRS_THRESHOLD)):
             # No attempt this sector
             return None
 
-        # ── Outcome ──
+        #  Outcome 
         roll = self.rng.random()
         if roll < prob:
             # SUCCESS

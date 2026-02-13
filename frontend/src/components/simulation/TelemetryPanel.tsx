@@ -2,23 +2,23 @@ import { useSimulationStore } from '../../store/useSimulationStore';
 import { TIRE_COLORS } from '../../types/simulation';
 import type { RaceEvent } from '../../types/simulation';
 
-// ─── Event Type Config ────────────────────────────────────────────────────
+//  Event Type Config 
 const EVENT_ICONS: Record<string, { icon: string; color: string }> = {
-    OVERTAKE: { icon: '⇄', color: '#00E676' },
-    PIT_STOP: { icon: '■', color: '#FFC107' },
-    SC_DEPLOY: { icon: '●', color: '#FF9800' },
-    SC_END: { icon: '●', color: '#00E676' },
-    VSC_DEPLOY: { icon: '⚠', color: '#FF9800' },
-    VSC_END: { icon: '✓', color: '#00E676' },
-    DNF: { icon: '✕', color: '#FF1744' },
-    FASTEST_LAP: { icon: '⏱', color: '#A020F0' },
-    DRS_ENABLED: { icon: '▸', color: '#00F0FF' },
-    YELLOW_FLAG: { icon: '⚑', color: '#FFC107' },
+    OVERTAKE: { icon: '', color: '#00E676' },
+    PIT_STOP: { icon: '', color: '#FFC107' },
+    SC_DEPLOY: { icon: '', color: '#FF9800' },
+    SC_END: { icon: '', color: '#00E676' },
+    VSC_DEPLOY: { icon: '[!]', color: '#FF9800' },
+    VSC_END: { icon: '[OK]', color: '#00E676' },
+    DNF: { icon: '', color: '#FF1744' },
+    FASTEST_LAP: { icon: '', color: '#A020F0' },
+    DRS_ENABLED: { icon: '', color: '#00F0FF' },
+    YELLOW_FLAG: { icon: '', color: '#FFC107' },
 };
 
-// ─── Event Feed Item ──────────────────────────────────────────────────────
+//  Event Feed Item 
 function EventItem({ event }: { event: RaceEvent }) {
-    const cfg = EVENT_ICONS[event.type] || { icon: '●', color: '#666' };
+    const cfg = EVENT_ICONS[event.type] || { icon: '', color: '#666' };
     return (
         <div className="flex items-start gap-2 py-1.5 border-b border-white/[0.03] last:border-0">
             <span className="text-[11px] flex-shrink-0 mt-0.5" style={{ color: cfg.color }}>{cfg.icon}</span>
@@ -30,7 +30,7 @@ function EventItem({ event }: { event: RaceEvent }) {
     );
 }
 
-// ─── Selected Driver Detail ──────────────────────────────────────────────
+//  Selected Driver Detail 
 function DriverDetail() {
     const { selectedDriver, currentStandings } = useSimulationStore();
 
@@ -151,7 +151,7 @@ function StatCell({ label, value, purple }: { label: string; value: string; purp
     );
 }
 
-// ─── Main Panel ──────────────────────────────────────────────────────────
+//  Main Panel 
 export function TelemetryPanel() {
     const { allPastEvents } = useSimulationStore();
 

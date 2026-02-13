@@ -92,11 +92,18 @@ class BayesianTyreModel:
         current_lap: int,
         compound: str,
         laps_on_tyre: int,
-        track_condition: str = "DRY"
+        track_condition: str = "DRY",
+        skip_fuel_penalty: bool = False,
     ) -> Tuple[float, float, Dict]:
         """
         Predict the lap time components for the next lap.
         Returns: (predicted_pace, std_dev, info_dict)
+        
+        Args:
+            skip_fuel_penalty: When True, omit fuel mass effect from prediction.
+                Set True when ML models (Method A/B) are active, since they
+                already account for fuel effects in their training data.
+                Prevents the double-counting that causes inflated lap times.
         """
         if compound not in self.tyre_profiles:
             # Fallback for unknown compound
@@ -115,9 +122,11 @@ class BayesianTyreModel:
         # pace = base_pace + (laps * deg)
         deg_penalty = (laps_on_tyre - 1) * effective_deg
         
-        # 2. Fuel Component
+        # 2. Fuel Component (skip when ML is handling fuel effects)
+        fuel_penalty = 0.0
         current_fuel = max(0, self.config.starting_fuel - (current_lap - 1) * self.config.fuel_burn_rate)
-        fuel_penalty = current_fuel * self.fuel_effect
+        if not skip_fuel_penalty:
+            fuel_penalty = current_fuel * self.fuel_effect
         
         # 3. Warmup Component
         warmup_penalty = 0.0
@@ -144,7 +153,8 @@ class BayesianTyreModel:
             'warmup_penalty': warmup_penalty,
             'mismatch_penalty': mismatch_penalty,
             'effective_deg': effective_deg,
-            'tyre_health': max(0, 100 - (laps_on_tyre * effective_deg * 20)) # approx health metric
+            'tyre_health': max(0, 100 - (laps_on_tyre * effective_deg * 20)), # approx health metric
+            'fuel_skipped': skip_fuel_penalty,
         }
         
         return predicted_impact, uncertainty, info

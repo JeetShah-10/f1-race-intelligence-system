@@ -2,7 +2,7 @@
 """
 Driver head-to-head comparison API.
 
-POST /api/compare/drivers — Compare two drivers across circuits using
+POST /api/compare/drivers - Compare two drivers across circuits using
 the 2026 season config and optionally historical FastF1 data.
 """
 
@@ -26,7 +26,7 @@ with open(CONFIG_PATH) as f:
     SEASON_CONFIG = json.load(f)
 
 
-# ── Schemas ──
+#  Schemas 
 
 class CompareRequest(BaseModel):
     driver1: str           # e.g. "VER"

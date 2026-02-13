@@ -1,20 +1,20 @@
 export const springs = {
-    // Snappy — Buttons, interactions
+    // Snappy - Buttons, interactions
     snappy: { type: 'spring', stiffness: 400, damping: 30 },
 
-    // Smooth — Cards, panels
+    // Smooth - Cards, panels
     smooth: { type: 'spring', stiffness: 300, damping: 30 },
 
-    // Gentle — Reveals, hero elements
+    // Gentle - Reveals, hero elements
     gentle: { type: 'spring', stiffness: 200, damping: 25 },
 
-    // Bouncy — Playful accents
+    // Bouncy - Playful accents
     bouncy: { type: 'spring', stiffness: 500, damping: 15 },
 
-    // Slow — Cinematic reveals
+    // Slow - Cinematic reveals
     slow: { type: 'spring', stiffness: 100, damping: 20 },
 
-    // 3D Car — Smooth following
+    // 3D Car - Smooth following
     car3d: { type: 'spring', stiffness: 50, damping: 15, mass: 0.5 },
 } as const;
 

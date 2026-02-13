@@ -24,7 +24,7 @@ const COUNTRY_FLAGS: Record<string, string> = {
 };
 
 export function getCountryFlag(countryCode: string): string {
-    return COUNTRY_FLAGS[countryCode] || '🏁';
+    return COUNTRY_FLAGS[countryCode] || '';
 }
 
 interface DriverSeed {

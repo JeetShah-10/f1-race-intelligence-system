@@ -14,7 +14,7 @@ import type {
     GridPosition,
 } from '../types/simulation';
 
-// ─── 2026 Driver Database ─────────────────────────────────────────────────
+//  2026 Driver Database 
 interface DriverInfo {
     code: string;
     name: string;
@@ -51,7 +51,7 @@ const DRIVERS_2026: DriverInfo[] = [
     { code: 'BOT', name: 'Valtteri Bottas', number: 77, teamId: 'cadillac', basePace: 0.52, consistency: 0.25, racecraft: 0.65, photo: '/assets/drivers/valtteri-bottas-removebg-preview.webp' },
 ];
 
-// ─── 2026 Circuits (IDs MATCH SimulatePage.tsx) ──────────────────────────
+//  2026 Circuits (IDs MATCH SimulatePage.tsx) 
 export const CIRCUITS_2026: Circuit[] = [
     { id: 'bahrain', name: 'Bahrain Grand Prix', country: 'Bahrain', length: 5.412, turns: 15, laps: 57, drsZones: 3 },
     { id: 'jeddah', name: 'Saudi Arabian Grand Prix', country: 'Saudi Arabia', length: 6.174, turns: 27, laps: 50, drsZones: 3 },
@@ -79,7 +79,7 @@ export const CIRCUITS_2026: Circuit[] = [
     { id: 'abu_dhabi', name: 'Abu Dhabi Grand Prix', country: 'UAE', length: 5.281, turns: 16, laps: 58, drsZones: 2 },
 ];
 
-// ─── Helpers ──────────────────────────────────────────────────────────────
+//  Helpers 
 function seededRandom(seed: number): () => number {
     let s = seed;
     return () => {
@@ -114,7 +114,7 @@ function formatQualTime(seconds: number): string {
     return `${mins}:${secs.toFixed(3).padStart(6, '0')}`;
 }
 
-// ─── Tyre Degradation ─────────────────────────────────────────────────────
+//  Tyre Degradation 
 const DEGRADATION: Record<TireCompound, { rate: number; cliff: number }> = {
     SOFT: { rate: 0.035, cliff: 22 },
     MEDIUM: { rate: 0.022, cliff: 32 },
@@ -129,7 +129,7 @@ function tyreDeg(compound: TireCompound, age: number): number {
     return d.rate * d.cliff + d.rate * 2.2 * (age - d.cliff);
 }
 
-// ─── Pit Strategy Templates ──────────────────────────────────────────────
+//  Pit Strategy Templates 
 interface PitPlan {
     compound: TireCompound;
     lap: number;
@@ -150,7 +150,7 @@ function getStrategy(driverIndex: number, totalLaps: number): PitPlan[] {
     return strategies[driverIndex % strategies.length];
 }
 
-// ─── Pre-Defined Race Events (with penalties) ────────────────────────────
+//  Pre-Defined Race Events (with penalties) 
 interface ScheduledEvent {
     lap: number;
     type: RaceEvent['type'];
@@ -164,25 +164,25 @@ function getScheduledEvents(totalLaps: number): ScheduledEvent[] {
     return [
         { lap: 1, type: 'OVERTAKE', description: 'HAM overtakes RUS into Turn 1', drivers: ['HAM', 'RUS'] },
         { lap: 4, type: 'OVERTAKE', description: 'NOR overtakes LEC at Turn 4', drivers: ['NOR', 'LEC'] },
-        { lap: Math.round(totalLaps * 0.12), type: 'PENALTY', description: 'STR — 5 second time penalty (track limits)', drivers: ['STR'] },
-        { lap: Math.round(totalLaps * 0.15), type: 'FASTEST_LAP', description: 'VER sets fastest lap — 1:31.456', drivers: ['VER'] },
+        { lap: Math.round(totalLaps * 0.12), type: 'PENALTY', description: 'STR - 5 second time penalty (track limits)', drivers: ['STR'] },
+        { lap: Math.round(totalLaps * 0.15), type: 'FASTEST_LAP', description: 'VER sets fastest lap - 1:31.456', drivers: ['VER'] },
         { lap: Math.round(totalLaps * 0.25), type: 'OVERTAKE', description: 'PIA overtakes RUS on the straight', drivers: ['PIA', 'RUS'] },
-        { lap: Math.round(totalLaps * 0.35), type: 'PENALTY', description: 'OCO — 10 second penalty (causing a collision)', drivers: ['OCO'] },
-        { lap: Math.round(totalLaps * 0.38), type: 'CRASH', description: 'STR crashes at Turn 8 — Safety Car deployed', drivers: ['STR'], flag: 'SC', flagDuration: 4 },
-        { lap: Math.round(totalLaps * 0.38) + 4, type: 'SC_END', description: 'Safety Car withdrawn — racing resumes', drivers: [] },
+        { lap: Math.round(totalLaps * 0.35), type: 'PENALTY', description: 'OCO - 10 second penalty (causing a collision)', drivers: ['OCO'] },
+        { lap: Math.round(totalLaps * 0.38), type: 'CRASH', description: 'STR crashes at Turn 8 - Safety Car deployed', drivers: ['STR'], flag: 'SC', flagDuration: 4 },
+        { lap: Math.round(totalLaps * 0.38) + 4, type: 'SC_END', description: 'Safety Car withdrawn - racing resumes', drivers: [] },
         { lap: Math.round(totalLaps * 0.55), type: 'OVERTAKE', description: 'LEC overtakes NOR at the chicane', drivers: ['LEC', 'NOR'] },
-        { lap: Math.round(totalLaps * 0.60), type: 'FASTEST_LAP', description: 'NOR sets fastest lap — 1:30.891', drivers: ['NOR'] },
-        { lap: Math.round(totalLaps * 0.65), type: 'PENALTY', description: 'HAD — 5 second penalty (unsafe pit release)', drivers: ['HAD'] },
-        { lap: Math.round(totalLaps * 0.72), type: 'CRASH', description: 'BOT retires — rear-end collision damage', drivers: ['BOT'] },
-        { lap: Math.round(totalLaps * 0.80), type: 'VSC_DEPLOY', description: 'Virtual Safety Car — debris on track', drivers: [], flag: 'VSC', flagDuration: 3 },
-        { lap: Math.round(totalLaps * 0.80) + 3, type: 'VSC_END', description: 'VSC ending — racing resumes', drivers: [] },
+        { lap: Math.round(totalLaps * 0.60), type: 'FASTEST_LAP', description: 'NOR sets fastest lap - 1:30.891', drivers: ['NOR'] },
+        { lap: Math.round(totalLaps * 0.65), type: 'PENALTY', description: 'HAD - 5 second penalty (unsafe pit release)', drivers: ['HAD'] },
+        { lap: Math.round(totalLaps * 0.72), type: 'CRASH', description: 'BOT retires - rear-end collision damage', drivers: ['BOT'] },
+        { lap: Math.round(totalLaps * 0.80), type: 'VSC_DEPLOY', description: 'Virtual Safety Car - debris on track', drivers: [], flag: 'VSC', flagDuration: 3 },
+        { lap: Math.round(totalLaps * 0.80) + 3, type: 'VSC_END', description: 'VSC ending - racing resumes', drivers: [] },
         { lap: Math.round(totalLaps * 0.90), type: 'OVERTAKE', description: 'VER passes LEC for the lead', drivers: ['VER', 'LEC'] },
-        { lap: totalLaps - 2, type: 'FASTEST_LAP', description: 'VER sets fastest lap — 1:30.234', drivers: ['VER'] },
-        { lap: Math.round(totalLaps * 0.40), type: 'DNF', description: 'LIN retires — hydraulics failure', drivers: ['LIN'] },
+        { lap: totalLaps - 2, type: 'FASTEST_LAP', description: 'VER sets fastest lap - 1:30.234', drivers: ['VER'] },
+        { lap: Math.round(totalLaps * 0.40), type: 'DNF', description: 'LIN retires - hydraulics failure', drivers: ['LIN'] },
     ];
 }
 
-// ─── QUALIFYING GENERATOR ────────────────────────────────────────────────
+//  QUALIFYING GENERATOR 
 export function generateMockQualifying(circuitId: string = 'bahrain'): QualifyingData {
     const circuit = CIRCUITS_2026.find(c => c.id === circuitId) || CIRCUITS_2026[0];
     const baseTime = circuit.length * 15.2;
@@ -263,7 +263,7 @@ export function generateMockQualifying(circuitId: string = 'bahrain'): Qualifyin
     };
 }
 
-// ─── GRID GENERATOR (from qualifying results) ───────────────────────────
+//  GRID GENERATOR (from qualifying results) 
 export function generateGrid(qualifyingData: QualifyingData): GridPosition[] {
     return qualifyingData.results.map(r => ({
         position: r.position,
@@ -282,7 +282,7 @@ export function generateGrid(qualifyingData: QualifyingData): GridPosition[] {
     }));
 }
 
-// ─── RACE GENERATOR ─────────────────────────────────────────────────────
+//  RACE GENERATOR 
 export function generateMockRace(circuitId: string = 'bahrain', gridOrder?: GridPosition[]): FullRaceData {
     const circuit = CIRCUITS_2026.find(c => c.id === circuitId) || CIRCUITS_2026[0];
     const totalLaps = circuit.laps;

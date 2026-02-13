@@ -4,9 +4,9 @@ Enhanced pace model training script (v2).
 
 Fetches real FastF1 data from Supabase `fastf1_training_data` table
 (99K+ laps across 2022-2025) and trains:
-  1. Baseline lap-time model  → baseline_pace_model.pkl
-  2. Degradation model        → degradation_model.pkl
-  3. Label encoders            → label_encoders.pkl
+  1. Baseline lap-time model  -> baseline_pace_model.pkl
+  2. Degradation model        -> degradation_model.pkl
+  3. Label encoders            -> label_encoders.pkl
 
 Usage:
     cd backend
@@ -27,7 +27,7 @@ from sklearn.metrics import mean_squared_error, mean_absolute_error
 from sklearn.preprocessing import LabelEncoder
 from dotenv import load_dotenv
 
-# ── Paths ──
+#  Paths 
 ROOT = Path(__file__).resolve().parent.parent
 load_dotenv(ROOT / ".env")
 MODEL_DIR = ROOT / "app" / "models"
@@ -50,7 +50,7 @@ def fetch_training_data() -> pd.DataFrame:
     print("  Connecting to Supabase...")
     sb = create_client(SUPABASE_URL, SUPABASE_KEY)
 
-    # Supabase limits to 1000 rows per request — paginate
+    # Supabase limits to 1000 rows per request - paginate
     all_rows = []
     page_size = 1000
     offset = 0
@@ -95,7 +95,7 @@ def fetch_training_data() -> pd.DataFrame:
     }
     df = df.rename(columns=column_map)
 
-    # We need a Team column — derive from driver-team mapping in 2026_season.json
+    # We need a Team column - derive from driver-team mapping in 2026_season.json
     # or just use the driver as a proxy (the model learns per-driver anyway)
     # For now, use driver as team proxy since historical data doesn't have team
     if "Team" not in df.columns:
@@ -175,7 +175,7 @@ def train_baseline(df: pd.DataFrame) -> tuple:
     rmse = np.sqrt(mean_squared_error(y_val, preds))
     mae = mean_absolute_error(y_val, preds)
 
-    print(f"\n  ✅ Baseline Model Results:")
+    print(f"\n   Baseline Model Results:")
     print(f"     RMSE: {rmse:.4f}s")
     print(f"     MAE:  {mae:.4f}s")
 
@@ -184,7 +184,7 @@ def train_baseline(df: pd.DataFrame) -> tuple:
     sorted_imp = sorted(importance.items(), key=lambda x: x[1], reverse=True)
     print(f"\n  Feature Importance:")
     for feat, imp in sorted_imp:
-        print(f"    {feat:20s} → {imp}")
+        print(f"    {feat:20s} -> {imp}")
 
     return model, label_encoders, rmse, mae
 
@@ -211,25 +211,25 @@ def train_degradation(df: pd.DataFrame) -> dict:
 
     n_drivers = len(degradation_slopes)
     n_compounds = sum(len(v) for v in degradation_slopes.values())
-    print(f"  ✅ Degradation models: {n_drivers} drivers × {n_compounds} total slopes")
+    print(f"   Degradation models: {n_drivers} drivers × {n_compounds} total slopes")
 
     # Print sample
     sample_drivers = list(degradation_slopes.keys())[:5]
     for d in sample_drivers:
         slopes = degradation_slopes[d]
         parts = [f"{c}: {s:.3f}s/lap" for c, s in sorted(slopes.items())]
-        print(f"    {d:5s} → {', '.join(parts)}")
+        print(f"    {d:5s} -> {', '.join(parts)}")
 
     return degradation_slopes
 
 
 def main():
     print("=" * 60)
-    print("  F1 Pace Model v2 — Training on Real FastF1 Data")
+    print("  F1 Pace Model v2 - Training on Real FastF1 Data")
     print("=" * 60)
 
     if not SUPABASE_URL or not SUPABASE_KEY:
-        print("❌ Missing SUPABASE_URL or SUPABASE_KEY in .env")
+        print(" Missing SUPABASE_URL or SUPABASE_KEY in .env")
         sys.exit(1)
 
     # 1. Fetch data
@@ -255,13 +255,13 @@ def main():
     # 5. Save everything
     print("\n[5/5] Saving models...")
     joblib.dump(model, BASELINE_MODEL_PATH)
-    print(f"  → {BASELINE_MODEL_PATH}")
+    print(f"  -> {BASELINE_MODEL_PATH}")
 
     joblib.dump(label_encoders, LABEL_ENCODERS_PATH)
-    print(f"  → {LABEL_ENCODERS_PATH}")
+    print(f"  -> {LABEL_ENCODERS_PATH}")
 
     joblib.dump(degradation_slopes, DEGRADATION_MODEL_PATH)
-    print(f"  → {DEGRADATION_MODEL_PATH}")
+    print(f"  -> {DEGRADATION_MODEL_PATH}")
 
     # Save metadata
     meta = {
@@ -277,10 +277,10 @@ def main():
     }
     with open(META_PATH, "w") as f:
         json.dump(meta, f, indent=2)
-    print(f"  → {META_PATH}")
+    print(f"  -> {META_PATH}")
 
     print("\n" + "=" * 60)
-    print("  ✅ Training complete!")
+    print("   Training complete!")
     print(f"  RMSE: {rmse:.4f}s | MAE: {mae:.4f}s | Samples: {len(df)}")
     print("=" * 60)
 

@@ -10,11 +10,12 @@ import type {
     QualifyingData,
     GridPosition,
 } from '../types/simulation';
-import { generateMockRace, generateMockQualifying, generateGrid, getCircuitById } from '../data/simulationMockData';
+import { generateGrid, getCircuitById } from '../data/simulationMockData';
 import { api } from '../services/api';
+import type { DriverInput } from '../services/api';
 import { transformSimulationResult, transformQualifyingResult } from '../services/transformers';
 
-// ─── Adaptive Speed Config ────────────────────────────────────────────────
+//  Adaptive Speed Config 
 const SPEED = {
     NORMAL: 800,
     SC: 2200,
@@ -33,7 +34,7 @@ function getAdaptiveInterval(lap: RaceLap, totalLaps: number): number {
     return SPEED.NORMAL;
 }
 
-// ─── Store Interface ──────────────────────────────────────────────────────
+//  Store Interface 
 interface SimulationStore {
     // Phase state machine
     phase: SimulationPhase;
@@ -69,7 +70,10 @@ interface SimulationStore {
     // Selected driver for detail panel
     selectedDriver: string | null;
 
-    // ────── Actions ──────
+    // Error state
+    error: string | null;
+
+    //  Actions 
 
     // Phase navigation
     selectCircuit: (circuitId: string) => void;
@@ -97,13 +101,14 @@ interface SimulationStore {
     // Navigation
     backToCircuits: () => void;
     reset: () => void;
+    clearError: () => void;
 
     // Legacy compat
     status: 'IDLE' | 'LOADING' | 'READY' | 'PLAYING' | 'PAUSED' | 'FINISHED';
     loadRace: (circuitId: string) => void;
 }
 
-// ─── Playback Timer ──────────────────────────────────────────────────────
+//  Playback Timer 
 let playbackTimer: ReturnType<typeof setTimeout> | null = null;
 let qualiTimer: ReturnType<typeof setInterval> | null = null;
 
@@ -116,7 +121,7 @@ function clearQualiTimer() {
 
 
 
-// ─── Store ────────────────────────────────────────────────────────────────
+//  Store 
 export const useSimulationStore = create<SimulationStore>((set, get) => ({
     // Initial state
     phase: 'CIRCUIT_SELECT',
@@ -137,9 +142,10 @@ export const useSimulationStore = create<SimulationStore>((set, get) => ({
     playbackSpeed: 1,
     adaptiveInterval: SPEED.NORMAL,
     selectedDriver: null,
+    error: null,
     status: 'IDLE',
 
-    // ────── Phase Navigation ──────
+    //  Phase Navigation 
 
     selectCircuit: (circuitId: string) => {
         set({
@@ -153,15 +159,15 @@ export const useSimulationStore = create<SimulationStore>((set, get) => ({
         set({ phase: 'WEEKEND_INTRO' });
     },
 
-    // ────── Qualifying ──────
+    //  Qualifying 
 
     startQualifying: async () => {
         const { selectedCircuitId } = get();
         if (!selectedCircuitId) return;
 
-        set({ status: 'LOADING' });
+        set({ status: 'LOADING', error: null });
 
-        // Attempt backend API call, fall back to mock
+        // Call backend ML qualifying API — no mock fallback
         let qualData: QualifyingData;
         try {
             const backendResult = await api.runQualifying({
@@ -169,10 +175,16 @@ export const useSimulationStore = create<SimulationStore>((set, get) => ({
                 grid: 'current_2026',
             });
             qualData = transformQualifyingResult(backendResult);
-            console.log('[Qualifying] ✅ Using backend API data');
+            console.log('[Qualifying] ✅ Using backend ML data');
         } catch (err) {
-            console.warn('[Qualifying] ⚠️ Backend unavailable, using mock data:', err);
-            qualData = generateMockQualifying(selectedCircuitId);
+            const message = err instanceof Error ? err.message : 'Backend unavailable';
+            console.error('[Qualifying] ❌ Backend API failed:', message);
+            set({
+                phase: 'ERROR',
+                error: `Qualifying failed: ${message}. Make sure the backend is running at ${window.location.protocol}//localhost:8000`,
+                status: 'IDLE',
+            });
+            return;
         }
 
         set({
@@ -188,6 +200,8 @@ export const useSimulationStore = create<SimulationStore>((set, get) => ({
         clearQualiTimer();
         let revealCount = 0;
         const totalDrivers = qualData.results.length;
+        const q2Count_total = qualData.sessionTimes.q2.length;
+        const q3Count_total = qualData.sessionTimes.q3.length;
 
         qualiTimer = setInterval(() => {
             revealCount++;
@@ -204,7 +218,7 @@ export const useSimulationStore = create<SimulationStore>((set, get) => ({
                         let q2Count = 0;
                         qualiTimer = setInterval(() => {
                             q2Count++;
-                            if (q2Count >= 17) {
+                            if (q2Count >= q2Count_total) {
                                 clearQualiTimer();
                                 setTimeout(() => {
                                     const s2 = get();
@@ -215,7 +229,7 @@ export const useSimulationStore = create<SimulationStore>((set, get) => ({
                                         let q3Count = 0;
                                         qualiTimer = setInterval(() => {
                                             q3Count++;
-                                            if (q3Count >= 10) {
+                                            if (q3Count >= q3Count_total) {
                                                 clearQualiTimer();
                                                 setTimeout(() => get().finishQualifying(), 1500);
                                                 return;
@@ -257,7 +271,7 @@ export const useSimulationStore = create<SimulationStore>((set, get) => ({
         });
     },
 
-    // ────── Grid ──────
+    //  Grid 
 
     showGrid: () => {
         const { qualifyingData } = get();
@@ -271,27 +285,60 @@ export const useSimulationStore = create<SimulationStore>((set, get) => ({
         });
     },
 
-    // ────── Race ──────
+    //  Race 
 
     startRace: async () => {
-        const { selectedCircuitId, gridOrder } = get();
+        const { selectedCircuitId, qualifyingData } = get();
         if (!selectedCircuitId) return;
 
-        set({ phase: 'RACE_READY', status: 'LOADING' });
+        set({ phase: 'RACE_READY', status: 'LOADING', error: null });
 
         let data: FullRaceData;
         try {
             const circuit = getCircuitById(selectedCircuitId);
+
+            // Build drivers array from qualifying results for proper grid order
+            // This sends each driver with their qualifying-determined position
+            let drivers: DriverInput[] | undefined;
+            if (qualifyingData && qualifyingData.results.length > 0) {
+                // Map team ID back to display name the backend expects
+                const teamIdToName: Record<string, string> = {
+                    'red-bull': 'Red Bull Racing',
+                    'ferrari': 'Ferrari',
+                    'mclaren': 'McLaren',
+                    'mercedes': 'Mercedes',
+                    'aston-martin': 'Aston Martin',
+                    'alpine': 'Alpine',
+                    'williams': 'Williams',
+                    'racing-bulls': 'Racing Bulls',
+                    'haas': 'Haas',
+                    'audi': 'Audi',
+                    'cadillac': 'Cadillac',
+                };
+
+                drivers = qualifyingData.results.map(r => ({
+                    driver: r.driverCode,
+                    team: teamIdToName[r.teamId] || r.teamName,
+                    grid_position: r.position,
+                }));
+            }
+
             const backendResult = await api.runSimulation({
                 circuit_id: selectedCircuitId,
                 lap_count: circuit?.laps ?? 57,
-                grid: 'current_2026',
+                ...(drivers ? { drivers } : { grid: 'current_2026' }),
             });
             data = transformSimulationResult(backendResult, circuit || null);
-            console.log('[Race] ✅ Using backend simulation data');
+            console.log('[Race] ✅ Using backend ML simulation data');
         } catch (err) {
-            console.warn('[Race] ⚠️ Backend unavailable, using mock data:', err);
-            data = generateMockRace(selectedCircuitId, gridOrder.length > 0 ? gridOrder : undefined);
+            const message = err instanceof Error ? err.message : 'Backend unavailable';
+            console.error('[Race] ❌ Backend simulation failed:', message);
+            set({
+                phase: 'ERROR',
+                error: `Race simulation failed: ${message}. Make sure the backend is running at ${window.location.protocol}//localhost:8000`,
+                status: 'IDLE',
+            });
+            return;
         }
 
         const firstLap = data.laps[0];
@@ -449,7 +496,7 @@ export const useSimulationStore = create<SimulationStore>((set, get) => ({
         });
     },
 
-    // ────── Navigation ──────
+    //  Navigation 
 
     backToCircuits: () => {
         clearTimer();
@@ -471,6 +518,7 @@ export const useSimulationStore = create<SimulationStore>((set, get) => ({
             allPastEvents: [],
             isPlaying: false,
             selectedDriver: null,
+            error: null,
             status: 'IDLE',
         });
     },
@@ -479,7 +527,11 @@ export const useSimulationStore = create<SimulationStore>((set, get) => ({
         get().backToCircuits();
     },
 
-    // ────── Legacy compat ──────
+    clearError: () => {
+        set({ error: null, phase: 'CIRCUIT_SELECT', status: 'IDLE' });
+    },
+
+    //  Legacy compat 
     loadRace: (circuitId: string) => {
         get().selectCircuit(circuitId);
     },

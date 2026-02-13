@@ -12,16 +12,6 @@
             "color": "#FF8000"
         },
         {
-            "id": "mercedes",
-            "name": "Mercedes-AMG PETRONAS",
-            "archetype": "mercedes",
-            "performance_modifiers": {
-                "lap_time_bias": -0.15,
-                "reliability_score": 0.92
-            },
-            "color": "#00D2BE"
-        },
-        {
             "id": "red_bull",
             "name": "Oracle Red Bull Racing",
             "archetype": "red_bull",
@@ -29,7 +19,7 @@
                 "lap_time_bias": -0.05,
                 "reliability_score": 0.90
             },
-            "color": "#0600EF"
+            "color": "#3671C6"
         },
         {
             "id": "ferrari",
@@ -39,7 +29,17 @@
                 "lap_time_bias": 0.05,
                 "reliability_score": 0.88
             },
-            "color": "#DC0000"
+            "color": "#E8002D"
+        },
+        {
+            "id": "mercedes",
+            "name": "Mercedes-AMG PETRONAS F1 Team",
+            "archetype": "mercedes",
+            "performance_modifiers": {
+                "lap_time_bias": -0.15,
+                "reliability_score": 0.92
+            },
+            "color": "#27F4D2"
         },
         {
             "id": "williams",
@@ -49,27 +49,27 @@
                 "lap_time_bias": 0.05,
                 "reliability_score": 0.90
             },
-            "color": "#005AFF"
-        },
-        {
-            "id": "aston_martin",
-            "name": "Aston Martin F1 Team",
-            "archetype": "aston_martin",
-            "performance_modifiers": {
-                "lap_time_bias": 0.10,
-                "reliability_score": 0.85
-            },
-            "color": "#006F62"
+            "color": "#64C4FF"
         },
         {
             "id": "rb",
-            "name": "Visa Cash App RB",
+            "name": "Visa Cash App Racing Bulls",
             "archetype": "rb",
             "performance_modifiers": {
                 "lap_time_bias": 0.15,
                 "reliability_score": 0.88
             },
-            "color": "#2B4562"
+            "color": "#6692FF"
+        },
+        {
+            "id": "aston_martin",
+            "name": "Aston Martin Aramco F1 Team",
+            "archetype": "aston_martin",
+            "performance_modifiers": {
+                "lap_time_bias": 0.10,
+                "reliability_score": 0.85
+            },
+            "color": "#229971"
         },
         {
             "id": "haas",
@@ -79,7 +79,7 @@
                 "lap_time_bias": 0.20,
                 "reliability_score": 0.85
             },
-            "color": "#FFFFFF"
+            "color": "#B6BABD"
         },
         {
             "id": "audi",
@@ -89,7 +89,7 @@
                 "lap_time_bias": 0.30,
                 "reliability_score": 0.82
             },
-            "color": "#F2F2F2"
+            "color": "#000000"
         },
         {
             "id": "alpine",
@@ -99,17 +99,17 @@
                 "lap_time_bias": 0.35,
                 "reliability_score": 0.80
             },
-            "color": "#0090FF"
+            "color": "#0093CC"
         },
         {
             "id": "cadillac",
-            "name": "Cadillac Andretti F1",
+            "name": "Cadillac F1 Team",
             "archetype": "alpine",
             "performance_modifiers": {
                 "lap_time_bias": 0.40,
                 "reliability_score": 0.80
             },
-            "color": "#FFD700"
+            "color": "#1E3264"
         }
     ],
     "drivers": [
@@ -143,13 +143,13 @@
             "archetype": "verstappen",
             "performance_modifiers": {
                 "raw_pace": -0.35,
-                "consistency": 0.96
+                "consistency": 0.97
             }
         },
         {
             "id": "had",
             "code": "HAD",
-            "name": "Isak Hadjar",
+            "name": "Isack Hadjar",
             "team_id": "red_bull",
             "archetype": "perez",
             "performance_modifiers": {
@@ -193,12 +193,12 @@
         {
             "id": "ant",
             "code": "ANT",
-            "name": "Andrea Kimi Antonelli",
+            "name": "Kimi Antonelli",
             "team_id": "mercedes",
             "archetype": "piastri",
             "performance_modifiers": {
-                "raw_pace": -0.15,
-                "consistency": 0.85
+                "raw_pace": -0.1,
+                "consistency": 0.84
             }
         },
         {
@@ -219,7 +219,7 @@
             "team_id": "williams",
             "archetype": "sainz",
             "performance_modifiers": {
-                "raw_pace": -0.05,
+                "raw_pace": -0.15,
                 "consistency": 0.94
             }
         },
@@ -228,10 +228,10 @@
             "code": "LAW",
             "name": "Liam Lawson",
             "team_id": "rb",
-            "archetype": "tsunoda",
+            "archetype": "lawson",
             "performance_modifiers": {
                 "raw_pace": 0.0,
-                "consistency": 0.90
+                "consistency": 0.88
             }
         },
         {
@@ -241,8 +241,96 @@
             "team_id": "rb",
             "archetype": "lawson",
             "performance_modifiers": {
-                "raw_pace": 0.05,
-                "consistency": 0.85
+                "raw_pace": 0.1,
+                "consistency": 0.82
+            }
+        },
+        {
+            "id": "alo",
+            "code": "ALO",
+            "name": "Fernando Alonso",
+            "team_id": "aston_martin",
+            "archetype": "alonso",
+            "performance_modifiers": {
+                "raw_pace": -0.15,
+                "consistency": 0.94
+            }
+        },
+        {
+            "id": "str",
+            "code": "STR",
+            "name": "Lance Stroll",
+            "team_id": "aston_martin",
+            "archetype": "stroll",
+            "performance_modifiers": {
+                "raw_pace": 0.15,
+                "consistency": 0.80
+            }
+        },
+        {
+            "id": "oco",
+            "code": "OCO",
+            "name": "Esteban Ocon",
+            "team_id": "haas",
+            "archetype": "ocon",
+            "performance_modifiers": {
+                "raw_pace": 0.0,
+                "consistency": 0.88
+            }
+        },
+        {
+            "id": "bea",
+            "code": "BEA",
+            "name": "Oliver Bearman",
+            "team_id": "haas",
+            "archetype": "rookie_steady",
+            "performance_modifiers": {
+                "raw_pace": 0.1,
+                "consistency": 0.82
+            }
+        },
+        {
+            "id": "hul",
+            "code": "HUL",
+            "name": "Nico Hulkenberg",
+            "team_id": "audi",
+            "archetype": "hulkenberg",
+            "performance_modifiers": {
+                "raw_pace": -0.05,
+                "consistency": 0.90
+            }
+        },
+        {
+            "id": "bor",
+            "code": "BOR",
+            "name": "Gabriel Bortoleto",
+            "team_id": "audi",
+            "archetype": "rookie_steady",
+            "performance_modifiers": {
+                "raw_pace": 0.15,
+                "consistency": 0.80
+            }
+        },
+        {
+            "id": "gas",
+            "code": "GAS",
+            "name": "Pierre Gasly",
+            "team_id": "alpine",
+            "archetype": "gasly",
+            "performance_modifiers": {
+                "raw_pace": -0.05,
+                "consistency": 0.89
+            }
+        },
+        {
+            "id": "col",
+            "code": "COL",
+            "name": "Franco Colapinto",
+            "team_id": "alpine",
+            "archetype": "rookie_steady",
+            "performance_modifiers": {
+                "raw_pace": 0.15,
+                "consistency": 0.78
             }
         },
         {
@@ -252,30 +340,19 @@
             "team_id": "cadillac",
             "archetype": "bottas",
             "performance_modifiers": {
-                "raw_pace": 0.076,
-                "consistency": 0.82
+                "raw_pace": 0.05,
+                "consistency": 0.90
             }
         },
         {
-            "id": "checo",
+            "id": "per",
             "code": "PER",
             "name": "Sergio Perez",
             "team_id": "cadillac",
             "archetype": "perez",
             "performance_modifiers": {
-                "raw_pace": -0.054,
-                "consistency": 0.81
-            }
-        },
-        {
-            "id": "pal",
-            "code": "PAL",
-            "name": "Alex Palou",
-            "team_id": "audi",
-            "archetype": "rookie_steady",
-            "performance_modifiers": {
-                "raw_pace": 0.15,
-                "consistency": 0.88
+                "raw_pace": 0.0,
+                "consistency": 0.82
             }
         }
     ],

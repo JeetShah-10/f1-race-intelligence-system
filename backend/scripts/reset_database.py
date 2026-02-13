@@ -12,11 +12,11 @@ load_dotenv(env_path)
 from app.services.database_service import DatabaseService
 
 def reset_database():
-    print("🗑️  Resetting Historical Database (Clearing All Data)...")
+    print("  Resetting Historical Database (Clearing All Data)...")
     
     db = DatabaseService()
     if not db.supabase:
-        print("❌ Database connection failed.")
+        print(" Database connection failed.")
         return
 
     # Delete in order of dependency (Children first)
@@ -67,12 +67,12 @@ def reset_database():
                  pk = pk_map.get(t, "id")
                  db.supabase.table(t).delete().neq(pk, "xxxx").execute()
                  
-            print(f"   ✅ Cleared {t}.")
+            print(f"    Cleared {t}.")
             
         except Exception as e:
-            print(f"   ⚠️ Error clearing {t}: {e}")
+            print(f"   [!] Error clearing {t}: {e}")
 
-    print("\n✨ Database Reset Complete.")
+    print("\n Database Reset Complete.")
 
 if __name__ == "__main__":
     reset_database()

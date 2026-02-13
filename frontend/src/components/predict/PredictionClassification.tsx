@@ -37,7 +37,7 @@ export default function PredictionClassification({ drivers }: PredictionClassifi
                     Full Classification
                 </span>
                 <div className="ml-auto">
-                    <span className="text-[10px] font-mono text-white/20">P1 – P{drivers.length}</span>
+                    <span className="text-[10px] font-mono text-white/20">P1 - P{drivers.length}</span>
                 </div>
             </div>
 
@@ -150,7 +150,7 @@ export default function PredictionClassification({ drivers }: PredictionClassifi
                                             background: COMPOUND_COLORS[stint.compound]?.bg || '#666',
                                             color: COMPOUND_COLORS[stint.compound]?.text || '#fff',
                                         }}
-                                        title={`${stint.compound} — ${stint.laps} laps`}
+                                        title={`${stint.compound} - ${stint.laps} laps`}
                                     >
                                         {stint.compound[0]}
                                     </div>
@@ -160,7 +160,7 @@ export default function PredictionClassification({ drivers }: PredictionClassifi
                             {/* Pit stops */}
                             <div className="text-center">
                                 <span className="text-[11px] font-mono text-white/30">
-                                    {isDNF ? '—' : driver.pitStops}
+                                    {isDNF ? '-' : driver.pitStops}
                                 </span>
                             </div>
                         </motion.div>

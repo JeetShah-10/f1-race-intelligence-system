@@ -1,5 +1,5 @@
 /**
- * F1 Intelligence Platform — Unified 2026 Season Data
+ * F1 Intelligence Platform - Unified 2026 Season Data
  *
  * Single source of truth for all F1 entity data:
  *   - 22 drivers with local asset paths
@@ -10,9 +10,9 @@
  * All image paths are relative to /assets/ (served from public/assets/).
  */
 
-// ─────────────────────────────────────────────
+// 
 // TYPES
-// ─────────────────────────────────────────────
+// 
 
 export interface Driver2026 {
     id: string;
@@ -68,21 +68,21 @@ export interface TextureAsset {
     path: string;
 }
 
-// ─────────────────────────────────────────────
+// 
 // ASSET PATH HELPERS
-// ─────────────────────────────────────────────
+// 
 
 const d = (file: string) => `/assets/drivers/${file}`;
 const l = (file: string) => `/assets/logos/${file}`;
 const c = (file: string) => `/assets/cars/${file}`;
 const ci = (file: string) => `/assets/circuits/${file}`;
 
-// ─────────────────────────────────────────────
-// DRIVERS (22 — Confirmed 2026 Grid)
-// ─────────────────────────────────────────────
+// 
+// DRIVERS (22 - Confirmed 2026 Grid)
+// 
 
 export const DRIVERS_2026: Driver2026[] = [
-    // ── McLaren ──
+    //  McLaren 
     {
         id: 'lando-norris',
         code: 'NOR',
@@ -116,7 +116,7 @@ export const DRIVERS_2026: Driver2026[] = [
         },
     },
 
-    // ── Red Bull Racing ──
+    //  Red Bull Racing 
     {
         id: 'max-verstappen',
         code: 'VER',
@@ -150,7 +150,7 @@ export const DRIVERS_2026: Driver2026[] = [
         },
     },
 
-    // ── Ferrari ──
+    //  Ferrari 
     {
         id: 'charles-leclerc',
         code: 'LEC',
@@ -184,7 +184,7 @@ export const DRIVERS_2026: Driver2026[] = [
         },
     },
 
-    // ── Mercedes ──
+    //  Mercedes 
     {
         id: 'george-russell',
         code: 'RUS',
@@ -218,7 +218,7 @@ export const DRIVERS_2026: Driver2026[] = [
         },
     },
 
-    // ── Williams ──
+    //  Williams 
     {
         id: 'alex-albon',
         code: 'ALB',
@@ -252,7 +252,7 @@ export const DRIVERS_2026: Driver2026[] = [
         },
     },
 
-    // ── Racing Bulls ──
+    //  Racing Bulls 
     {
         id: 'liam-lawson',
         code: 'LAW',
@@ -286,7 +286,7 @@ export const DRIVERS_2026: Driver2026[] = [
         },
     },
 
-    // ── Aston Martin ──
+    //  Aston Martin 
     {
         id: 'fernando-alonso',
         code: 'ALO',
@@ -320,7 +320,7 @@ export const DRIVERS_2026: Driver2026[] = [
         },
     },
 
-    // ── Haas ──
+    //  Haas 
     {
         id: 'esteban-ocon',
         code: 'OCO',
@@ -354,7 +354,7 @@ export const DRIVERS_2026: Driver2026[] = [
         },
     },
 
-    // ── Audi ──
+    //  Audi 
     {
         id: 'nico-hulkenberg',
         code: 'HUL',
@@ -388,7 +388,7 @@ export const DRIVERS_2026: Driver2026[] = [
         },
     },
 
-    // ── Alpine ──
+    //  Alpine 
     {
         id: 'pierre-gasly',
         code: 'GAS',
@@ -422,7 +422,7 @@ export const DRIVERS_2026: Driver2026[] = [
         },
     },
 
-    // ── Cadillac ──
+    //  Cadillac 
     {
         id: 'valtteri-bottas',
         code: 'BOT',
@@ -457,9 +457,9 @@ export const DRIVERS_2026: Driver2026[] = [
     },
 ];
 
-// ─────────────────────────────────────────────
-// TEAMS (11 — Confirmed 2026 Grid)
-// ─────────────────────────────────────────────
+// 
+// TEAMS (11 - Confirmed 2026 Grid)
+// 
 
 export const TEAMS_2026: Team2026[] = [
     {
@@ -629,9 +629,9 @@ export const TEAMS_2026: Team2026[] = [
     },
 ];
 
-// ─────────────────────────────────────────────
-// CIRCUITS (24 — 2026 Calendar)
-// ─────────────────────────────────────────────
+// 
+// CIRCUITS (24 - 2026 Calendar)
+// 
 
 export const CIRCUITS_2026: Circuit2026[] = [
     {
@@ -972,9 +972,9 @@ export const CIRCUITS_2026: Circuit2026[] = [
     },
 ];
 
-// ─────────────────────────────────────────────
+// 
 // TEXTURES & MISCELLANEOUS ASSETS
-// ─────────────────────────────────────────────
+// 
 
 export const TEXTURES = {
     carbonForged: '/assets/textures/carbon-forged.png',
@@ -1013,16 +1013,16 @@ export const MISC_ASSETS = {
     },
 } as const;
 
-// ─────────────────────────────────────────────
+// 
 // BACKWARD COMPAT: Re-export as TEAMS_2026_DATA
-// ─────────────────────────────────────────────
+// 
 
 /** @deprecated Use TEAMS_2026 instead */
 export const TEAMS_2026_DATA = TEAMS_2026;
 
-// ─────────────────────────────────────────────
+// 
 // LOOKUP HELPERS
-// ─────────────────────────────────────────────
+// 
 
 /** Get a driver by their 3-letter code (e.g. 'VER') */
 export function getDriverByCode(code: string): Driver2026 | undefined {

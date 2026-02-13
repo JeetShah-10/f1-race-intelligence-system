@@ -12,7 +12,7 @@ from app.services.race_predictor_service import RacePredictorService
 # from app.config.database import SEASON_CONFIG_2026
 
 def run_preseason_test():
-    print("\n🏁 STARTING 2026 PRE-SEASON TESTING (BAHRAIN) 🏁")
+    print("\n STARTING 2026 PRE-SEASON TESTING (BAHRAIN) ")
     print("===================================================")
     
     # 1. Setup
@@ -20,7 +20,7 @@ def run_preseason_test():
     circuit_id = "bahrain"
     
     # 2. Calibration Check (Theoretical Pace)
-    print("\n📊 TEST SESSION 1: PACE CALIBRATION")
+    print("\n TEST SESSION 1: PACE CALIBRATION")
     print("   (Simulating 100 Qualifying Laps per Driver to find average theoretical pace)")
     
     drivers = quali_service.get_2026_drivers()
@@ -53,7 +53,7 @@ def run_preseason_test():
     results.sort(key=lambda x: x['avg_time'])
     
     # Display Hierarchy
-    print("\n🏆 PEFORMANCE HIERARCHY (One Lap Pace)")
+    print("\n PEFORMANCE HIERARCHY (One Lap Pace)")
     print(tabulate(results, headers="keys", floatfmt=".3f"))
     
     # Verify Gaps
@@ -63,14 +63,14 @@ def run_preseason_test():
     
     if audi:
          gap = audi['avg_time'] - ver_time
-         print(f"\n🔍 AUDI GAP: +{gap:.3f}s (Target: ~1.5s - 2.0s from pole)")
+         print(f"\n AUDI GAP: +{gap:.3f}s (Target: ~1.5s - 2.0s from pole)")
     
     if cadillac:
          gap = cadillac['avg_time'] - ver_time
-         print(f"🔍 CADILLAC GAP: +{gap:.3f}s (Target: ~2.0s+ from pole)")
+         print(f" CADILLAC GAP: +{gap:.3f}s (Target: ~2.0s+ from pole)")
 
     # 3. Race Simulation (Long Run)
-    print("\n🏎️ TEST SESSION 2: RACE SIMULATION (57 Laps)")
+    print("\n TEST SESSION 2: RACE SIMULATION (57 Laps)")
     predictor = RacePredictorService()
     race_result = predictor.predict_event_2026(circuit_id, weather="dry")
     
@@ -88,7 +88,7 @@ def run_preseason_test():
         f.write("- Conditions: Dry, 30°C\n")
         f.write("- Iterations: 50 Quali Simulations\n")
     
-    print(f"\n✅ Testing Complete. Report saved to {report_path}")
+    print(f"\n Testing Complete. Report saved to {report_path}")
 
 if __name__ == "__main__":
     run_preseason_test()

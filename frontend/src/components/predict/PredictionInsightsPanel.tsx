@@ -122,7 +122,7 @@ function InsightCard({ insight, index }: { insight: PredictionInsight; index: nu
                     </span>
                 </div>
 
-                {/* Content — varies by type */}
+                {/* Content - varies by type */}
                 {isConfidence ? (
                     <div className="flex items-center gap-4">
                         <RingChart percentage={insight.numericValue} color={insight.color} size={64} />

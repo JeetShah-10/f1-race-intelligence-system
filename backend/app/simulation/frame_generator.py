@@ -1,6 +1,6 @@
 # backend/app/simulation/frame_generator.py
 """
-Frame Generator — Converts lap-by-lap simulation output into
+Frame Generator - Converts lap-by-lap simulation output into
 0.1s interpolated position frames for frontend playback.
 
 The Master Plan specifies a pre-calculated frame format where every 0.1s,
@@ -22,7 +22,7 @@ class DriverFrame:
     id: str
     position: int
     gap: float
-    track_progress: float   # 0.0 → 1.0 within current lap
+    track_progress: float   # 0.0 -> 1.0 within current lap
     compound: str
     tyre_age: int
     pit_stops: int

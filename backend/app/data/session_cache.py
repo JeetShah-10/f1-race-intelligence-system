@@ -56,7 +56,7 @@ def get_session_with_cache(year: int, track: str, session_type: str = "R"):
             with open(cache_path, "rb") as f:
                 return pickle.load(f)
         except Exception:
-            # Corrupt cache — fall through to fresh fetch
+            # Corrupt cache - fall through to fresh fetch
             cache_path.unlink(missing_ok=True)
 
     # Fetch from FastF1 (uses its own HTTP cache layer)

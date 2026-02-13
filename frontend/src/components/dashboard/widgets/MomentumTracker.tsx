@@ -10,17 +10,18 @@ const teamColors: Record<string, string> = {
     'Aston Martin': '#229971',
     'Alpine': '#FF87BC',
     'Williams': '#64C4FF',
-    'RB': '#6692FF',
-    'Kick Sauber': '#52E252',
-    'Haas': '#B6BABD'
+    'Racing Bulls': '#6692FF',
+    'Audi': '#52E252',
+    'Haas': '#B6BABD',
+    'Cadillac': '#1E3D6F'
 };
 
 const trendConfig: Record<string, { icon: string; color: string; bgColor: string; label: string }> = {
-    dominant: { icon: '↑↑', color: 'text-emerald-400', bgColor: 'bg-emerald-400/10', label: 'Dominant' },
-    rising: { icon: '↑', color: 'text-green-400', bgColor: 'bg-green-400/10', label: 'Rising' },
-    stable: { icon: '→', color: 'text-white/50', bgColor: 'bg-white/5', label: 'Stable' },
-    volatile: { icon: '↕', color: 'text-amber-400', bgColor: 'bg-amber-400/10', label: 'Volatile' },
-    declining: { icon: '↓', color: 'text-red-400', bgColor: 'bg-red-400/10', label: 'Declining' }
+    dominant: { icon: '', color: 'text-emerald-400', bgColor: 'bg-emerald-400/10', label: 'Dominant' },
+    rising: { icon: '', color: 'text-green-400', bgColor: 'bg-green-400/10', label: 'Rising' },
+    stable: { icon: '->', color: 'text-white/50', bgColor: 'bg-white/5', label: 'Stable' },
+    volatile: { icon: '', color: 'text-amber-400', bgColor: 'bg-amber-400/10', label: 'Volatile' },
+    declining: { icon: '', color: 'text-red-400', bgColor: 'bg-red-400/10', label: 'Declining' }
 };
 
 export const MomentumTracker: React.FC = () => {

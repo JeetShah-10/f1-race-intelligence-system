@@ -8,7 +8,7 @@ sys.path.append(str(backend_path))
 from app.services.race_predictor_service import RacePredictorService
 
 def verify_predictor():
-    print("🔮 Verifying 2026 Race Predictor Service...")
+    print(" Verifying 2026 Race Predictor Service...")
     
     service = RacePredictorService()
     
@@ -24,7 +24,7 @@ def verify_predictor():
     print(result["analysis"])
     print("="*40 + "\n")
     
-    print("✅ Prediction Pipeline Verification Complete")
+    print(" Prediction Pipeline Verification Complete")
 
 if __name__ == "__main__":
     verify_predictor()

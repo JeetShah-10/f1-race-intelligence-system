@@ -16,7 +16,7 @@ import os
 from typing import List, Dict, Any, Optional
 from pathlib import Path
 
-# ── Cache Setup ──
+#  Cache Setup 
 CACHE_DIR = Path(__file__).resolve().parent.parent.parent / "cache" / "fastf1"
 CACHE_DIR.mkdir(parents=True, exist_ok=True)
 
@@ -35,7 +35,7 @@ class FastF1Service:
     def __init__(self):
         self._session_cache: Dict[str, Any] = {}
 
-    # ── Session Management ──
+    #  Session Management 
 
     def _cache_key(self, year: int, gp: str, session_type: str) -> str:
         return f"{year}_{gp}_{session_type}"
@@ -67,7 +67,7 @@ class FastF1Service:
             print(f"Error loading session: {e}")
             return None
 
-    # ── Lap Data ──
+    #  Lap Data 
 
     def get_lap_data(self, year: int, gp: str, session_type: str = "R") -> pd.DataFrame:
         """
@@ -91,7 +91,7 @@ class FastF1Service:
         available = [c for c in columns if c in laps.columns]
         return laps[available].dropna(subset=["LapTime"])
 
-    # ── Telemetry ──
+    #  Telemetry 
 
     def get_telemetry(
         self,
@@ -118,7 +118,7 @@ class FastF1Service:
 
         return target_lap.get_car_data().add_distance()
 
-    # ── Weather ──
+    #  Weather 
 
     def get_weather_data(self, year: int, gp: str, session_type: str = "R") -> Dict[str, Any]:
         """
@@ -146,7 +146,7 @@ class FastF1Service:
             "wind_speed": round(float(weather["WindSpeed"].mean()), 1),
         }
 
-    # ── Race Results ──
+    #  Race Results 
 
     def get_race_results(self, year: int, gp: str) -> List[Dict]:
         """Get race classification results."""
@@ -168,7 +168,7 @@ class FastF1Service:
             })
         return output
 
-    # ── Standings (Ergast) ──
+    #  Standings (Ergast) 
 
     def get_driver_standings(self, year: int) -> List[Dict]:
         """
@@ -200,7 +200,7 @@ class FastF1Service:
             print(f"Warning: Could not fetch constructor standings for {year}: {e}")
         return []
 
-    # ── Schedule ──
+    #  Schedule 
 
     def get_schedule(self, year: int) -> List[Dict]:
         """

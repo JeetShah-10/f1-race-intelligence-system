@@ -1,6 +1,6 @@
 # backend/app/simulation/race_engine.py
 """
-Deterministic F1 Race Simulation Engine — Sector-Based Architecture.
+Deterministic F1 Race Simulation Engine - Sector-Based Architecture.
 
 The engine processes each lap in 3 sector ticks. Within each sector:
   1. Calculate sector time using Hybrid Physics (ML + Game State)
@@ -17,13 +17,18 @@ Between laps, the engine:
 
 import random
 import math
+import logging
 from typing import List, Generator, Dict, Optional, Any
+
+logger = logging.getLogger(__name__)
 
 from app.simulation.driver_state import DriverState
 from app.simulation.lap_snapshot import LapSnapshot
 from app.simulation.simulation_context import SimulationContext
 from app.simulation.events import EventManager, SafetyCarEvent, VSCEvent
 from app.simulation.crash_model import CrashModel
+from app.simulation.random_event_injector import RandomEventInjector
+from app.services.driver_mapping import to_ml_driver_sector, to_ml_team_sector
 from app.simulation.overtake_model import OvertakeModel, apply_overtake
 from app.simulation.strategy_ai import StrategyAI, COMPOUND_DATA
 from app.services.season_config_service import SeasonConfigService
@@ -31,10 +36,10 @@ from app.schemas.ml_simulation_handoff import MLHandoff
 from app.schemas.simulation import DriverInput
 
 
-# ── Constants ──
+#  Constants 
 SECTORS_PER_LAP = 3
 FUEL_BURN_PER_LAP = 1.6        # kg
-DIRTY_AIR_THRESHOLD = 1.5      # seconds — within this gap, driver loses downforce
+DIRTY_AIR_THRESHOLD = 1.5      # seconds - within this gap, driver loses downforce
 DIRTY_AIR_PENALTY = 0.3        # seconds per lap penalty in dirty air
 SC_LAP_TIME = 120.0            # fixed slow pace during Safety Car
 VSC_PACE_MULTIPLIER = 1.40     # 40% slower during VSC
@@ -57,28 +62,29 @@ class RaceEngine:
         self.air_temp = getattr(ctx, 'air_temp', 25.0)
         self.current_lap = 0
 
-        # ── Centralized RNG for determinism ──
+        #  Centralized RNG for determinism 
         self.rng = random.Random()
 
-        # ── Race Flags ──
+        #  Race Flags 
         self.flags: Dict[str, bool] = {}
 
-        # ── Invariant checking ──
+        #  Invariant checking 
         self.CHECK_INVARIANTS = False
 
-        # ── State history ──
+        #  State history 
         self.snapshots: List[LapSnapshot] = []
 
-        # ── Event Manager ──
+        #  Event Manager 
         self.event_manager = EventManager()
 
-        # ── Logic Services ──
-        self.crash_model = CrashModel()
+        #  Logic Services 
+        self.crash_model = CrashModel(rng=self.rng)
+        self.random_events = RandomEventInjector(rng=self.rng)
         self.overtake_model = OvertakeModel(rng=self.rng)
         self.strategy_ai = StrategyAI(rng=self.rng)
         self.season_config = SeasonConfigService()
         
-        # ── ML Integration ──
+        #  ML Integration 
         from app.ml.tyre_model import BayesianTyreModel
         self.tyre_model = BayesianTyreModel()
         
@@ -86,7 +92,7 @@ class RaceEngine:
         # Fallback data if model is missing
         self.ml_data = {h.driver_id: h for h in ctx.ml_handoff} if ctx.ml_handoff else {}
 
-        # ── Initialize Drivers ──
+        #  Initialize Drivers 
         self.drivers: List[DriverState] = []
         for d in ctx.drivers:
             # Stats fallback
@@ -135,12 +141,12 @@ class RaceEngine:
 
         self.driver_map = {d.driver_id: d for d in self.drivers}
 
-    # ──────────────────────────────────────────────────────────────────────────
+    # 
     # PUBLIC API
-    # ──────────────────────────────────────────────────────────────────────────
+    # 
 
     def run(self):
-        """Batch Mode — run to completion and return final results."""
+        """Batch Mode - run to completion and return final results."""
         for _ in self.stream():
             pass
         return self.final_results()
@@ -172,9 +178,9 @@ class RaceEngine:
         if self.CHECK_INVARIANTS:
             self._check_invariants(lap_idx=self.lap_count, phase="finish")
 
-    # ──────────────────────────────────────────────────────────────────────────
+    # 
     # INITIALIZATION
-    # ──────────────────────────────────────────────────────────────────────────
+    # 
 
     def initialize_race(self):
         """Set up race start state: grid positions, initial gaps."""
@@ -186,9 +192,9 @@ class RaceEngine:
             # Grid start penalty
             driver.current_time += (driver.grid_position - 1) * GRID_START_PENALTY
 
-    # ──────────────────────────────────────────────────────────────────────────
+    # 
     # LAP LIFECYCLE
-    # ──────────────────────────────────────────────────────────────────────────
+    # 
 
     def _begin_lap(self, lap: int):
         self.current_lap = lap
@@ -202,10 +208,12 @@ class RaceEngine:
 
     def _process_events(self, lap: int):
         self.event_manager.process_scheduled_events(self, lap)
+        # Check for random events (SC/VSC/weather) independent of crashes
+        self.random_events.evaluate_lap(self, lap)
 
-    # ──────────────────────────────────────────────────────────────────────────
-    # CORE SIMULATION — SECTOR-BASED
-    # ──────────────────────────────────────────────────────────────────────────
+    # 
+    # CORE SIMULATION - SECTOR-BASED
+    # 
 
     def _process_lap(self, lap: int):
         """
@@ -219,9 +227,9 @@ class RaceEngine:
             if not driver.is_running:
                 continue
 
-            # ── Red Flag: Skip simulation ──
+            #  Red Flag: Skip simulation 
             if self.flags.get("RED_FLAG"):
-                # Effectively a caution lap — very slow
+                # Effectively a caution lap - very slow
                 sector_time = SC_LAP_TIME / SECTORS_PER_LAP
                 for s in range(1, SECTORS_PER_LAP + 1):
                     driver.record_sector(sector_time + self.rng.uniform(-0.1, 0.1))
@@ -229,7 +237,7 @@ class RaceEngine:
                 self._update_driver_state(driver, lap_time)
                 continue
 
-            # ── Safety Car Override ──
+            #  Safety Car Override 
             if self.flags.get("SC"):
                 sector_time = SC_LAP_TIME / SECTORS_PER_LAP
                 for s in range(1, SECTORS_PER_LAP + 1):
@@ -238,7 +246,7 @@ class RaceEngine:
                 self._update_driver_state(driver, lap_time)
                 continue
 
-            # ── Normal / VSC Lap ──
+            #  Normal / VSC Lap 
             # Check for crash BEFORE processing sectors
             if not self.flags.get("SC") and not self.flags.get("VSC"):
                 incident = self._check_incident(driver, lap)
@@ -248,14 +256,15 @@ class RaceEngine:
 
             # Process 3 sectors
             
-            # ── Bayesian Tyre Model Prediction (Per Lap) ──
+            #  Bayesian Tyre Model Prediction (Per Lap) 
             # Calculate lap performance impact once per lap
             pred_impact, uncertainty, tyre_info = self.tyre_model.predict_next_lap(
                  driver_id=driver.driver_id,
                  current_lap=lap,
                  compound=driver.tire_compound or "MEDIUM",
                  laps_on_tyre=driver.tire_age,
-                 track_condition=self.weather
+                 track_condition=self.weather,
+                 skip_fuel_penalty=self.pace_model is not None,
             )
             
             # Store for usage in sectors (divide by 3)
@@ -274,13 +283,13 @@ class RaceEngine:
 
             lap_time = sum(driver.sector_times)
 
-            # ── VSC Pace Cap ──
+            #  VSC Pace Cap 
             if self.flags.get("VSC"):
                 min_vsc_time = driver.base_pace * VSC_PACE_MULTIPLIER
                 if lap_time < min_vsc_time:
                     lap_time = min_vsc_time + self.rng.uniform(-0.3, 0.3)
 
-            # ── Pit Stop Penalty ──
+            #  Pit Stop Penalty 
             if driver.in_pit:
                 lap_time += driver.pit_penalty
                 driver.in_pit = False
@@ -288,7 +297,7 @@ class RaceEngine:
 
             self._update_driver_state(driver, lap_time)
 
-        # ── Post-lap: Fuel burn & tyre degradation ──
+        #  Post-lap: Fuel burn & tyre degradation 
         for driver in self.drivers:
             if not driver.is_running:
                 continue
@@ -300,13 +309,13 @@ class RaceEngine:
         """
         Calculate sector time using Hybrid Physics.
         
-        Method A (Sector ML Model — race_pace_v1 — Preferred):
+        Method A (Sector ML Model - race_pace_v1 - Preferred):
            T_sector = ML_Predict_Sector(Circuit, Compound, TyreAge, FuelLoad,
                                          TrafficIndex, Sector, Driver, Team)
                     + δ_traffic (game-state dirty-air on top)
                     + ε (noise)
 
-        Method B (Legacy ML — baseline_pace_model):
+        Method B (Legacy ML - baseline_pace_model):
            T_sector = ML_Predict_LapTime(Driver, Compound, ...) × sector_weight
                     + δ_traffic + ε
 
@@ -323,21 +332,23 @@ class RaceEngine:
         if driver.gap_to_car_ahead > 0.05 and driver.gap_to_car_ahead < DIRTY_AIR_THRESHOLD:
             traffic_index = min(1.0, 1.0 - (driver.gap_to_car_ahead / DIRTY_AIR_THRESHOLD))
 
-        # Sentinel — gets set by whichever method succeeds
+        # Sentinel - gets set by whichever method succeeds
         base_sector = None
         delta_tyre = 0.0
         delta_fuel = 0.0
         delta_driver = 0.0
 
-        # ── METHOD A: Sector ML Model (race_pace_v1) ──
+        #  METHOD A: Sector ML Model (race_pace_v1) 
         if base_sector is None and self.pace_model and getattr(self.pace_model, 'has_sector_model', False):
             try:
+                ml_driver = to_ml_driver_sector(driver.driver_id)
+                ml_team = to_ml_team_sector(driver.team)
                 base_sector = self.pace_model.predict_sector_time(
                     sector=sector,
-                    driver=driver.driver_id,
+                    driver=ml_driver,
                     compound=driver.tire_compound,
                     tyre_age=driver.tire_age,
-                    team=driver.team,
+                    team=ml_team,
                     circuit=self.circuit,
                     fuel_load=fuel_load_kg,
                     traffic_index=traffic_index,
@@ -345,14 +356,16 @@ class RaceEngine:
             except Exception:
                 base_sector = None  # Fall through to Method B
 
-        # ── METHOD B: Legacy ML (full lap model) ──
+        #  METHOD B: Legacy ML (full lap model) 
         if base_sector is None and self.pace_model:
             try:
+                ml_driver = to_ml_driver_sector(driver.driver_id)
+                ml_team = to_ml_team_sector(driver.team)
                 predicted_lap = self.pace_model.predict_lap_time(
-                    driver=driver.driver_id,
+                    driver=ml_driver,
                     compound=driver.tire_compound,
                     tyre_life=driver.tire_age,
-                    team=driver.team,
+                    team=ml_team,
                     speed_st=0,
                     speed_fl=0,
                     lap_number=lap
@@ -361,7 +374,7 @@ class RaceEngine:
             except Exception:
                 base_sector = None  # Fall through to Method C
 
-        # ── METHOD C: GLM Fallback (Enhanced with Bayesian Physics) ──
+        #  METHOD C: GLM Fallback (Enhanced with Bayesian Physics) 
         if base_sector is None:
             base_sector = driver.base_pace * sector_weights[sector - 1]
             
@@ -379,7 +392,7 @@ class RaceEngine:
             delta_tyre = 0.0
             delta_fuel = 0.0
 
-        # ── Game State Modifiers (Applied to ALL methods) ──
+        #  Game State Modifiers (Applied to ALL methods) 
 
         # δ_traffic: Dirty air penalty (on top of ML predictions)
         delta_traffic = 0.0
@@ -440,10 +453,12 @@ class RaceEngine:
             weather=self.weather,
             driver_consistency=driver.consistency,
             reliability_score=driver.reliability,
+            tyre_health=driver.tyre_health,
+            gap_ahead=driver.gap_to_car_ahead,
         )
 
         if incident == "CRASH":
-            print(f"💥 CRASH: {driver.driver_id} Lap {lap}")
+            logger.info("[CRASH] %s Lap %d", driver.driver_id, lap)
             driver.is_running = False
             driver.has_dnf = True
             driver.record_event("CRASH", lap)
@@ -466,7 +481,7 @@ class RaceEngine:
             return True
 
         elif incident == "MECHANICAL":
-            print(f"🔥 MECHANICAL: {driver.driver_id} Lap {lap}")
+            logger.info("[MECHANICAL] %s Lap %d", driver.driver_id, lap)
             driver.is_running = False
             driver.has_dnf = True
             driver.record_event("MECHANICAL", lap)
@@ -491,9 +506,9 @@ class RaceEngine:
         
         driver.degrade_tyres(wear_amount)
 
-    # ──────────────────────────────────────────────────────────────────────────
-    # STRATEGY — Integrated StrategyAI
-    # ──────────────────────────────────────────────────────────────────────────
+    # 
+    # STRATEGY - Integrated StrategyAI
+    # 
 
     def _evaluate_strategy(self, lap: int):
         """Evaluate pit strategy for all drivers using StrategyAI."""
@@ -513,9 +528,9 @@ class RaceEngine:
             if decision.should_pit:
                 self.strategy_ai.execute_pit(driver, decision, lap)
 
-    # ──────────────────────────────────────────────────────────────────────────
+    # 
     # STANDINGS & GAPS
-    # ──────────────────────────────────────────────────────────────────────────
+    # 
 
     def _update_standings(self, lap: int):
         """Update race order, gaps, intervals, and create snapshot."""
@@ -615,9 +630,9 @@ class RaceEngine:
         driver.lap_times.append(lap_time)
         driver.current_time += lap_time
 
-    # ──────────────────────────────────────────────────────────────────────────
+    # 
     # HELPERS
-    # ──────────────────────────────────────────────────────────────────────────
+    # 
 
     def _get_driver_at_position(self, position: int) -> Optional[DriverState]:
         """Find driver at a specific position."""
@@ -658,9 +673,9 @@ class RaceEngine:
             "results": results,
         }
 
-    # ──────────────────────────────────────────────────────────────────────────
+    # 
     # INVARIANT CHECKING
-    # ──────────────────────────────────────────────────────────────────────────
+    # 
 
     def _check_invariants(self, lap_idx: int, phase: str):
         """Pure internal consistency check."""

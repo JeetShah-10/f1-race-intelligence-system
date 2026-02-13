@@ -12,11 +12,11 @@ load_dotenv(env_path)
 from app.services.database_service import DatabaseService
 
 def verify_phase2_schema():
-    print("🔍 Verifying Phase 2 Schema (Race Results & Laps)...")
+    print(" Verifying Phase 2 Schema (Race Results & Laps)...")
     
     db = DatabaseService()
     if not db.supabase:
-        print("❌ Database connection failed.")
+        print(" Database connection failed.")
         return
 
     tables = ["race_results", "lap_times"]
@@ -26,17 +26,17 @@ def verify_phase2_schema():
         try:
             # Try to select from table
             response = db.supabase.table(t).select("*").limit(1).execute()
-            print(f"✅ Table '{t}' is accessible.")
+            print(f" Table '{t}' is accessible.")
         except Exception as e:
-            print(f"❌ Table '{t}' verification failed: {e}")
+            print(f" Table '{t}' verification failed: {e}")
             if "relation" in str(e) and "does not exist" in str(e):
                  print(f"   >> The SQL script for Phase 2 needs to be run for table {t}.")
             all_good = False
 
     if all_good:
-        print("\n✅ Phase 2 Schema is READY.")
+        print("\n Phase 2 Schema is READY.")
     else:
-        print("\n❌ Phase 2 Schema has issues.")
+        print("\n Phase 2 Schema has issues.")
 
 if __name__ == "__main__":
     verify_phase2_schema()

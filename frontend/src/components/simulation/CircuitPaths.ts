@@ -6,7 +6,7 @@ export interface CircuitSVG {
     mapImage?: string;
 }
 
-// ─── Circuit Image Lookup ─────────────────────────────────────────────────
+//  Circuit Image Lookup 
 // Maps circuit IDs to their asset filenames in /assets/circuits/
 const CIRCUIT_IMAGES: Record<string, { map: string; photo: string }> = {
     bahrain: { map: 'bahrain-grand-prix-map.png', photo: 'bahrain-grand-prix-circuit.webp' },
@@ -41,7 +41,7 @@ export function getCircuitImage(id: string): { map: string; photo: string } {
     return { map: '', photo: '' };
 }
 
-// ─── SVG Paths ────────────────────────────────────────────────────────────
+//  SVG Paths 
 // Each path is an approximate layout for driver dot animation.
 // These will be replaced by accurate FastF1 track coordinates from the backend.
 export const CIRCUIT_PATHS: Record<string, CircuitSVG> = {
@@ -167,7 +167,7 @@ export const CIRCUIT_PATHS: Record<string, CircuitSVG> = {
     },
 };
 
-// ─── Helpers ──────────────────────────────────────────────────────────────
+//  Helpers 
 
 export function getCircuitPath(id: string): CircuitSVG {
     if (CIRCUIT_PATHS[id]) return CIRCUIT_PATHS[id];

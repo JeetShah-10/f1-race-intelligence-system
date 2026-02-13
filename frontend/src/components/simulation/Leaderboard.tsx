@@ -2,7 +2,7 @@ import { useSimulationStore } from '../../store/useSimulationStore';
 import { motion, AnimatePresence } from 'framer-motion';
 import type { DriverStanding, TireCompound, SectorStatus } from '../../types/simulation';
 
-// ─── Constants ────────────────────────────────────────────────────────────
+//  Constants 
 const TYRE_CONFIG: Record<TireCompound, { label: string; bg: string; text: string }> = {
     SOFT: { label: 'S', bg: '#FF3333', text: '#fff' },
     MEDIUM: { label: 'M', bg: '#FFC906', text: '#000' },
@@ -18,7 +18,7 @@ const SECTOR_DOT_COLORS: Record<SectorStatus, string> = {
     NONE: '#555',
 };
 
-// ─── Sub-Components ──────────────────────────────────────────────────────
+//  Sub-Components 
 
 function TyreBadge({ compound }: { compound: TireCompound }) {
     const cfg = TYRE_CONFIG[compound];
@@ -86,7 +86,7 @@ function TimingRow({
                 <div className="w-[14px] flex justify-center">
                     {driver.positionChange !== 0 && (
                         <span className={`text-[8px] font-bold leading-none ${driver.positionChange > 0 ? 'text-green-500' : 'text-red-500'}`}>
-                            {driver.positionChange > 0 ? '▲' : '▼'}
+                            {driver.positionChange > 0 ? '' : ''}
                         </span>
                     )}
                 </div>
@@ -140,7 +140,7 @@ function TimingRow({
     );
 }
 
-// ─── Main Component ──────────────────────────────────────────────────────
+//  Main Component 
 export function Leaderboard() {
     const { currentStandings, selectedDriver, setSelectedDriver, raceConfig, currentLap, currentFlag } = useSimulationStore();
 
@@ -159,7 +159,7 @@ export function Leaderboard() {
                 <div className="relative z-10 flex justify-between items-center">
                     <div>
                         <div className="text-[8px] font-ui uppercase tracking-[0.2em] text-white/40 mb-0.5">
-                            {currentFlag === 'SC' ? '⚠ SAFETY CAR' : currentFlag === 'VSC' ? '⚠ VSC' : 'TIMING'}
+                            {currentFlag === 'SC' ? '[!] SAFETY CAR' : currentFlag === 'VSC' ? '[!] VSC' : 'TIMING'}
                         </div>
                         <div className="flex items-center gap-2">
                             <span className="text-lg font-racing text-white leading-none">

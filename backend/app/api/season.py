@@ -2,7 +2,7 @@
 """
 Season championship simulation API.
 
-POST /api/season/simulate — Simulate an entire F1 season
+POST /api/season/simulate - Simulate an entire F1 season
 with full point scoring, constructor standings, and progression.
 """
 
@@ -59,7 +59,7 @@ CALENDAR_2026 = [
 ]
 
 
-# ── Schemas ──
+#  Schemas 
 
 class SeasonRequest(BaseModel):
     num_races: int = 24

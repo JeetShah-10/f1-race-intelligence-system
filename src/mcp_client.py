@@ -95,7 +95,7 @@ class MCPClientManager:
         config_file = Path(self.config_path)
 
         if not config_file.exists():
-            print(f"   ⚠️ MCP config file not found: {config_file}")
+            print(f"   [!] MCP config file not found: {config_file}")
             return []
 
         try:
@@ -112,10 +112,10 @@ class MCPClientManager:
             return configs
 
         except json.JSONDecodeError as e:
-            print(f"   ❌ Invalid JSON in MCP config: {e}")
+            print(f"    Invalid JSON in MCP config: {e}")
             return []
         except Exception as e:
-            print(f"   ❌ Error loading MCP config: {e}")
+            print(f"    Error loading MCP config: {e}")
             return []
 
     async def initialize(self) -> None:
@@ -132,15 +132,15 @@ class MCPClientManager:
                 return
 
             if not settings.MCP_ENABLED:
-                print("   ℹ️ MCP integration is disabled")
+                print("    MCP integration is disabled")
                 return
 
-            print("🔌 Initializing MCP Client Manager...")
+            print(" Initializing MCP Client Manager...")
 
             configs = self._load_server_configs()
 
             if not configs:
-                print("   ℹ️ No MCP servers configured")
+                print("    No MCP servers configured")
                 return
 
             for config in configs:
@@ -149,8 +149,8 @@ class MCPClientManager:
             connected_count = sum(1 for s in self.servers.values() if s.connected)
             total_tools = sum(len(s.tools) for s in self.servers.values())
 
-            print(f"   ✅ Connected to {connected_count}/{len(configs)} MCP servers")
-            print(f"   📦 Discovered {total_tools} MCP tools")
+            print(f"    Connected to {connected_count}/{len(configs)} MCP servers")
+            print(f"    Discovered {total_tools} MCP tools")
 
             self._initialized = True
 
@@ -165,7 +165,7 @@ class MCPClientManager:
 
         try:
             print(
-                f"   🔗 Connecting to MCP server: {config.name} ({config.transport})..."
+                f"    Connecting to MCP server: {config.name} ({config.transport})..."
             )
 
             if config.transport == "stdio":
@@ -181,17 +181,17 @@ class MCPClientManager:
             if connection.connected and connection.session:
                 await self._discover_tools(connection)
                 print(
-                    f"      ✓ {config.name}: {len(connection.tools)} tools discovered"
+                    f"      [OK] {config.name}: {len(connection.tools)} tools discovered"
                 )
 
         except ImportError as e:
             connection.error = f"MCP library not installed: {e}"
             print(
-                f"      ⚠️ {config.name}: MCP library not installed. Run: pip install 'mcp[cli]'"
+                f"      [!] {config.name}: MCP library not installed. Run: pip install 'mcp[cli]'"
             )
         except Exception as e:
             connection.error = str(e)
-            print(f"      ⚠️ {config.name}: Connection failed - {e}")
+            print(f"      [!] {config.name}: Connection failed - {e}")
 
         self.servers[config.name] = connection
 
@@ -299,7 +299,7 @@ class MCPClientManager:
                 connection.tools.append(mcp_tool)
 
         except Exception as e:
-            print(f"      ⚠️ Error discovering tools: {e}")
+            print(f"      [!] Error discovering tools: {e}")
 
     def get_all_tools(self) -> List[MCPTool]:
         """
@@ -448,7 +448,7 @@ Input Schema:
         """
         Gracefully close all MCP server connections.
         """
-        print("🔌 Shutting down MCP connections...")
+        print(" Shutting down MCP connections...")
 
         for name, connection in self.servers.items():
             try:
@@ -456,9 +456,9 @@ Input Schema:
                     await connection.session.__aexit__(None, None, None)
                 if hasattr(connection, "_client_cm"):
                     await connection._client_cm.__aexit__(None, None, None)
-                print(f"   ✓ Disconnected from {name}")
+                print(f"   [OK] Disconnected from {name}")
             except Exception as e:
-                print(f"   ⚠️ Error disconnecting from {name}: {e}")
+                print(f"   [!] Error disconnecting from {name}: {e}")
 
         self.servers.clear()
         self._initialized = False

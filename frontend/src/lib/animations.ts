@@ -1,9 +1,9 @@
 import type { Variants } from 'framer-motion';
 import { springs } from './springs';
 
-// ═══════════════════════════════════════════════════════════════════
+// 
 // FADE VARIANTS
-// ═══════════════════════════════════════════════════════════════════
+// 
 
 export const fadeIn: Variants = {
     hidden: { opacity: 0 },
@@ -20,9 +20,9 @@ export const fadeInScale: Variants = {
     visible: { opacity: 1, scale: 1, transition: springs.gentle },
 };
 
-// ═══════════════════════════════════════════════════════════════════
+// 
 // STAGGER CONTAINERS
-// ═══════════════════════════════════════════════════════════════════
+// 
 
 export const staggerContainer: Variants = {
     hidden: { opacity: 0 },
@@ -46,18 +46,18 @@ export const staggerDramatic: Variants = {
     },
 };
 
-// ═══════════════════════════════════════════════════════════════════
+// 
 // SCROLL REVEAL (for word-by-word text)
-// ═══════════════════════════════════════════════════════════════════
+// 
 
 export const scrollWord: Variants = {
     hidden: { opacity: 0.2, y: 20 },
     visible: { opacity: 1, y: 0, transition: springs.gentle },
 };
 
-// ═══════════════════════════════════════════════════════════════════
+// 
 // CARD VARIANTS
-// ═══════════════════════════════════════════════════════════════════
+// 
 
 export const cardHover: Variants = {
     idle: { scale: 1, y: 0 },
@@ -69,9 +69,9 @@ export const glassCard: Variants = {
     visible: { opacity: 1, y: 0, scale: 1, transition: springs.smooth },
 };
 
-// ═══════════════════════════════════════════════════════════════════
+// 
 // TIMING TOWER VARIANTS
-// ═══════════════════════════════════════════════════════════════════
+// 
 
 export const timingRow: Variants = {
     hidden: { opacity: 0, x: -20 },
@@ -87,9 +87,9 @@ export const gapBar: Variants = {
     visible: { scaleX: 1, transition: { duration: 0.8, ease: [0.17, 0.84, 0.44, 1] } },
 };
 
-// ═══════════════════════════════════════════════════════════════════
+// 
 // CTA GLOW
-// ═══════════════════════════════════════════════════════════════════
+// 
 
 export const glowPulse: Variants = {
     idle: { boxShadow: '0 0 20px rgba(225, 6, 0, 0.3)' },

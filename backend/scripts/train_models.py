@@ -3,9 +3,9 @@
 Train production ML models using multi-circuit data.
 
 Trains:
-  1. Baseline pace model (LightGBM) — predicts full lap time
+  1. Baseline pace model (LightGBM) - predicts full lap time
   2. Tyre degradation model per compound × circuit
-  3. Sector-time model (race_pace_v1) — predicts S1/S2/S3 individually
+  3. Sector-time model (race_pace_v1) - predicts S1/S2/S3 individually
 
 Usage:
     python scripts/train_models.py [--data-dir data/raw]
@@ -34,7 +34,7 @@ def load_all_data(data_dir: str) -> pd.DataFrame:
         # Try the old single-file format
         legacy_path = os.path.join(data_dir, 'Bahrain_2021_2023_laps.parquet')
         if os.path.exists(legacy_path):
-            print(f"  📂 Using legacy data: {legacy_path}")
+            print(f"   Using legacy data: {legacy_path}")
             return pd.read_parquet(legacy_path)
         return pd.DataFrame()
 
@@ -43,13 +43,13 @@ def load_all_data(data_dir: str) -> pd.DataFrame:
         try:
             df = pd.read_parquet(f)
             frames.append(df)
-            print(f"  📂 Loaded {os.path.basename(f)}: {len(df)} laps")
+            print(f"   Loaded {os.path.basename(f)}: {len(df)} laps")
         except Exception as e:
-            print(f"  ❌ Error loading {f}: {e}")
+            print(f"   Error loading {f}: {e}")
 
     if frames:
         combined = pd.concat(frames, ignore_index=True)
-        print(f"\n  📊 Total dataset: {len(combined)} laps from {len(frames)} files")
+        print(f"\n   Total dataset: {len(combined)} laps from {len(frames)} files")
         return combined
 
     return pd.DataFrame()
@@ -82,25 +82,25 @@ def clean_data(df: pd.DataFrame) -> pd.DataFrame:
             df['LapTimeSeconds'] = df['LapTime']
         df = df[(df['LapTimeSeconds'] > 60) & (df['LapTimeSeconds'] < 150)].copy()
 
-    print(f"  🧹 Cleaned: {initial_count} → {len(df)} laps")
+    print(f"   Cleaned: {initial_count} -> {len(df)} laps")
     return df
 
 
 def train_production_models(data_dir: str):
     """Train all production models."""
-    print("🧠 Starting Production Model Training...")
+    print(" Starting Production Model Training...")
     print(f"   Data directory: {data_dir}\n")
 
     # 1. Load Data
     df = load_all_data(data_dir)
     if df.empty:
-        print("❌ No data found. Run fetch_training_data.py first.")
+        print(" No data found. Run fetch_training_data.py first.")
         return
 
     # 2. Clean Data
     df = clean_data(df)
     if df.empty:
-        print("❌ No valid data after cleaning.")
+        print(" No valid data after cleaning.")
         return
 
     # 3. Train Models
@@ -109,16 +109,16 @@ def train_production_models(data_dir: str):
     print("\n[1/3] Training Baseline Pace Model...")
     try:
         model.train_baseline_model(df)
-        print("  ✅ Baseline model trained and saved.")
+        print("   Baseline model trained and saved.")
     except Exception as e:
-        print(f"  ❌ Error training baseline model: {e}")
+        print(f"   Error training baseline model: {e}")
 
     print("\n[2/3] Training Degradation Model...")
     try:
         model.fit_degradation_model(df)
-        print("  ✅ Degradation model trained and saved.")
+        print("   Degradation model trained and saved.")
     except Exception as e:
-        print(f"  ❌ Error training degradation model: {e}")
+        print(f"   Error training degradation model: {e}")
 
     print("\n[3/3] Training Sector-Time Model (race_pace_v1)...")
     try:
@@ -134,19 +134,19 @@ def train_production_models(data_dir: str):
 
             if not sector_df.empty and len(sector_df) > 100:
                 model.train_sector_model(sector_df)
-                print("  ✅ Sector model (race_pace_v1) trained and saved.")
+                print("   Sector model (race_pace_v1) trained and saved.")
             else:
-                print(f"  ⚠️ Not enough valid sector data ({len(sector_df)} rows). Skipping.")
+                print(f"  [!] Not enough valid sector data ({len(sector_df)} rows). Skipping.")
         else:
-            print("  ⚠️ Sector time columns not found in data. Skipping sector model.")
+            print("  [!] Sector time columns not found in data. Skipping sector model.")
             print("     Re-run fetch_training_data.py to include Sector1Time/2/3.")
     except Exception as e:
-        print(f"  ❌ Error training sector model: {e}")
+        print(f"   Error training sector model: {e}")
         import traceback
         traceback.print_exc()
 
     model_dir = os.path.join(ROOT_DIR, 'app', 'models')
-    print(f"\n✅ Training Complete. Models saved to {model_dir}/")
+    print(f"\n Training Complete. Models saved to {model_dir}/")
 
     # List saved files
     if os.path.isdir(model_dir):

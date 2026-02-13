@@ -13,7 +13,7 @@ from app.schemas.simulation import DriverInput
 from app.schemas.ml_simulation_handoff import MLHandoff
 
 def verify_pipeline():
-    print("🚀 Starting 2026 Simulation Pipeline Verification")
+    print(" Starting 2026 Simulation Pipeline Verification")
     
     # 1. Run Qualifying
     print("\n--- Phase 1: Qualifying (Monaco) ---")
@@ -86,13 +86,13 @@ def verify_pipeline():
     print(f"Total DNFs: {len(dnfs)}")
     
     for dnf in dnfs:
-        print(f"❌ DNF: {dnf['driver_id']} ({dnf['team']}) - Status: {dnf['status']}")
+        print(f" DNF: {dnf['driver_id']} ({dnf['team']}) - Status: {dnf['status']}")
         
     # Check for Safety Car Events
     sc_events = [e for e in engine.event_manager.events if "SafetyCar" in str(e.__class__)]
     print(f"Safety Car Deployments: {len(sc_events)}")
     
-    print("\n✅ Verification Complete")
+    print("\n Verification Complete")
 
 if __name__ == "__main__":
     verify_pipeline()

@@ -1,4 +1,4 @@
-// ─── Tyre & Sector Enums ──────────────────────────────────────────────────
+//  Tyre & Sector Enums 
 export type TireCompound = 'SOFT' | 'MEDIUM' | 'HARD' | 'INTER' | 'WET';
 export type TyreCompound = TireCompound;
 
@@ -19,7 +19,7 @@ export const SECTOR_COLORS: Record<SectorStatus, string> = {
     NONE: '#FFFFFF',
 };
 
-// ─── Race Flag ────────────────────────────────────────────────────────────
+//  Race Flag 
 export type RaceFlag = 'GREEN' | 'YELLOW' | 'SC' | 'VSC' | 'RED';
 
 export const FLAG_COLORS: Record<RaceFlag, string> = {
@@ -30,7 +30,7 @@ export const FLAG_COLORS: Record<RaceFlag, string> = {
     RED: '#FF1744',
 };
 
-// ─── Race Event Types ─────────────────────────────────────────────────────
+//  Race Event Types 
 export type RaceEventType =
     | 'OVERTAKE'
     | 'PIT_STOP'
@@ -48,7 +48,7 @@ export type RaceEventType =
 export type WeatherCondition = 'DRY' | 'LIGHT_RAIN' | 'WET';
 export type DriverStatus = 'RUNNING' | 'PIT' | 'OUT';
 
-// ─── Penalty Types ────────────────────────────────────────────────────────
+//  Penalty Types 
 export type PenaltyType =
     | '5_SEC'
     | '10_SEC'
@@ -62,7 +62,7 @@ export interface Penalty {
     seconds: number;
 }
 
-// ─── Core Data Structures ─────────────────────────────────────────────────
+//  Core Data Structures 
 export interface DriverStanding {
     position: number;
     driverCode: string;
@@ -116,7 +116,7 @@ export interface FullRaceData {
     laps: RaceLap[];
 }
 
-// ─── Circuit ──────────────────────────────────────────────────────────────
+//  Circuit 
 export interface Circuit {
     id: string;
     name: string;
@@ -127,7 +127,7 @@ export interface Circuit {
     drsZones: number;
 }
 
-// ─── Qualifying ───────────────────────────────────────────────────────────
+//  Qualifying 
 export type QualifyingSession = 'Q1' | 'Q2' | 'Q3';
 
 export interface QualifyingResult {
@@ -157,7 +157,7 @@ export interface QualifyingData {
     };
 }
 
-// ─── Grid Position ────────────────────────────────────────────────────────
+//  Grid Position 
 export interface GridPosition {
     position: number;
     driverCode: string;
@@ -170,7 +170,7 @@ export interface GridPosition {
     driverPhoto?: string;
 }
 
-// ─── Simulation Phase (expanded state machine) ───────────────────────────
+//  Simulation Phase (expanded state machine) 
 export type SimulationPhase =
     | 'CIRCUIT_SELECT'
     | 'WEEKEND_INTRO'
@@ -180,7 +180,8 @@ export type SimulationPhase =
     | 'RACE_READY'
     | 'RACE_PLAYING'
     | 'RACE_PAUSED'
-    | 'RACE_FINISHED';
+    | 'RACE_FINISHED'
+    | 'ERROR';
 
-// ─── Simulation Status (kept for backwards compat) ───────────────────────
+//  Simulation Status (kept for backwards compat) 
 export type SimulationStatus = 'IDLE' | 'LOADING' | 'READY' | 'PLAYING' | 'PAUSED' | 'FINISHED';

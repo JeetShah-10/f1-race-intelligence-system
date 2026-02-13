@@ -47,10 +47,10 @@ class GeminiAgent:
             self._initialize_mcp()
 
         print(
-            f"🤖 Initializing {self.settings.AGENT_NAME} with model {self.settings.GEMINI_MODEL_NAME}..."
+            f" Initializing {self.settings.AGENT_NAME} with model {self.settings.GEMINI_MODEL_NAME}..."
         )
         print(
-            f"   📦 Discovered {len(self.available_tools)} tools: {', '.join(list(self.available_tools.keys())[:10])}{'...' if len(self.available_tools) > 10 else ''}"
+            f"    Discovered {len(self.available_tools)} tools: {', '.join(list(self.available_tools.keys())[:10])}{'...' if len(self.available_tools) > 10 else ''}"
         )
 
         # Initialize the GenAI client if credentials are available. Some test
@@ -88,14 +88,14 @@ class GeminiAgent:
                     if self.settings.OPENAI_BASE_URL:
                         self.use_openai_backend = True
                         print(
-                            f"🔄 Using OpenAI-compatible backend at {self.settings.OPENAI_BASE_URL} "
+                            f" Using OpenAI-compatible backend at {self.settings.OPENAI_BASE_URL} "
                             f"with model {self.settings.OPENAI_MODEL}"
                         )
                         self.client = None  # Not used when proxying to OpenAI
                     else:
                         raise ValueError("No GOOGLE_API_KEY or OPENAI_BASE_URL configured")
             except Exception as e:
-                print(f"⚠️ genai client not initialized: {e}")
+                print(f"[!] genai client not initialized: {e}")
 
                 class _DummyClientFallback:
                     class _Models:
@@ -124,7 +124,7 @@ class GeminiAgent:
             from src.mcp_client import MCPClientManagerSync
             from src.tools.mcp_tools import _set_mcp_manager
 
-            print("🔌 Initializing MCP integration...")
+            print(" Initializing MCP integration...")
 
             # Create and initialize the MCP manager
             self.mcp_manager = MCPClientManagerSync()
@@ -138,13 +138,13 @@ class GeminiAgent:
 
             if mcp_tools:
                 self.available_tools.update(mcp_tools)
-                print(f"   🔧 Loaded {len(mcp_tools)} MCP tools")
+                print(f"    Loaded {len(mcp_tools)} MCP tools")
 
         except ImportError as e:
-            print(f"   ⚠️ MCP library not installed: {e}")
+            print(f"   [!] MCP library not installed: {e}")
             print("      To enable MCP, run: pip install 'mcp[cli]'")
         except Exception as e:
-            print(f"   ⚠️ Failed to initialize MCP: {e}")
+            print(f"   [!] Failed to initialize MCP: {e}")
 
     def _load_tools(self) -> Dict[str, Callable[..., Any]]:
         """
@@ -164,7 +164,7 @@ class GeminiAgent:
         tools_dir = Path(__file__).parent / "tools"
 
         if not tools_dir.exists():
-            print(f"⚠️ Tools directory not found: {tools_dir}")
+            print(f"[!] Tools directory not found: {tools_dir}")
             return tools
 
         # Iterate through all Python files in the tools directory
@@ -192,10 +192,10 @@ class GeminiAgent:
                             and obj.__module__ == f"src.tools.{module_name}"
                         ):
                             tools[name] = obj
-                            print(f"   ✓ Loaded tool: {name} from {module_name}.py")
+                            print(f"   [OK] Loaded tool: {name} from {module_name}.py")
 
             except Exception as e:
-                print(f"   ⚠️ Failed to load tools from {tool_file.name}: {e}")
+                print(f"   [!] Failed to load tools from {tool_file.name}: {e}")
 
         return tools
 
@@ -225,10 +225,10 @@ class GeminiAgent:
                 content = context_file.read_text(encoding="utf-8")
                 context_parts.append(f"\n--- {context_file.name} ---\n{content}")
             except Exception as e:
-                print(f"   ⚠️ Failed to load context from {context_file.name}: {e}")
+                print(f"   [!] Failed to load context from {context_file.name}: {e}")
 
         if context_parts:
-            print(f"   📚 Loaded context from {len(context_parts)} file(s)")
+            print(f"    Loaded context from {len(context_parts)} file(s)")
 
         return "\n".join(context_parts)
 
@@ -363,7 +363,7 @@ class GeminiAgent:
             summarizer=self.summarize_memory,
         )
 
-        print(f"\n🤔 <thought> Analyzing task: '{task}'")
+        print(f"\n <thought> Analyzing task: '{task}'")
         print(f"   - Loaded context messages: {len(context_window)}")
         print("   - Checking mission context...")
         print("   - Identifying necessary tools...")
@@ -405,7 +405,7 @@ class GeminiAgent:
             formatted_context = self._format_context_messages(context_messages)
             initial_prompt = f"{formatted_context}\n\nCurrent Task: {task}"
 
-            print("💬 Sending request to Gemini...")
+            print(" Sending request to Gemini...")
             first_reply = self._call_gemini(initial_prompt)
             tool_name, tool_args = self._extract_tool_call(first_reply)
 
@@ -440,7 +440,7 @@ class GeminiAgent:
                     "Use the observation above to craft the final answer for the user. "
                     "Do not request additional tool calls."
                 )
-                print(f"💬 Sending follow-up with observation from '{tool_name}'...")
+                print(f" Sending follow-up with observation from '{tool_name}'...")
                 final_response = self._call_gemini(follow_up_prompt)
 
             self.memory.add_entry("assistant", final_response)
@@ -448,7 +448,7 @@ class GeminiAgent:
 
         except Exception as e:
             response = f"Error generating response: {str(e)}"
-            print(f"❌ API Error: {e}")
+            print(f" API Error: {e}")
             return response
 
     def reflect(self):
@@ -460,9 +460,9 @@ class GeminiAgent:
 
     def run(self, task: str):
         """Main entry point for the agent."""
-        print(f"🚀 Starting Task: {task}")
+        print(f" Starting Task: {task}")
         result = self.act(task)
-        print(f"📦 Result: {result}")
+        print(f" Result: {result}")
         self.reflect()
 
     def shutdown(self) -> None:
@@ -474,9 +474,9 @@ class GeminiAgent:
         server connections.
         """
         if self.mcp_manager:
-            print("🔌 Shutting down MCP connections...")
+            print(" Shutting down MCP connections...")
             self.mcp_manager.shutdown()
-        print("👋 Agent shutdown complete.")
+        print(" Agent shutdown complete.")
 
     def get_mcp_status(self) -> Dict[str, Any]:
         """

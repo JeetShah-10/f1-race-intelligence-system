@@ -1,6 +1,6 @@
 import { API_BASE_URL } from '../config';
 
-// ─── Backend Response Types ───────────────────────────────────────────────
+//  Backend Response Types 
 
 export interface Driver {
     driverId: string;
@@ -13,7 +13,7 @@ export interface Driver {
     permanentNumber?: string;
 }
 
-// ─── Simulation Request/Response (matches backend schema) ─────────────────
+//  Simulation Request/Response (matches backend schema) 
 
 export interface DriverInput {
     driver: string;
@@ -73,7 +73,7 @@ export interface BackendSimulationResult {
     results: BackendDriverResult[];
 }
 
-// ─── Qualifying Request/Response ──────────────────────────────────────────
+//  Qualifying Request/Response 
 
 export interface QualifyingRequest {
     circuit_id: string;
@@ -102,7 +102,7 @@ export interface BackendQualifyingResult {
     results: BackendQualifyingResultItem[];
 }
 
-// ─── Calendar / Circuit Responses ─────────────────────────────────────────
+//  Calendar / Circuit Responses 
 
 export interface BackendCalendarEntry {
     raceId: number;
@@ -132,7 +132,7 @@ export interface BackendCircuit {
     length_km: number | null;
 }
 
-// ─── Predict Request/Response ─────────────────────────────────────────────
+//  Predict Request/Response 
 
 export interface PredictEventRequest {
     circuit_id: string;
@@ -140,10 +140,10 @@ export interface PredictEventRequest {
     weather?: string;
 }
 
-// ─── API Client ───────────────────────────────────────────────────────────
+//  API Client 
 
 export const api = {
-    // ── Existing endpoints ────────────────────────────────────────────────
+    //  Existing endpoints 
 
     async getDrivers(season: number = 2025): Promise<Driver[]> {
         const response = await fetch(`${API_BASE_URL}/api/drivers?year=${season}`);
@@ -196,7 +196,7 @@ export const api = {
         }
     },
 
-    // ── NEW: Simulation ───────────────────────────────────────────────────
+    //  NEW: Simulation 
 
     async runSimulation(req: SimulationRequest): Promise<BackendSimulationResult> {
         const response = await fetch(`${API_BASE_URL}/api/simulate/simulate`, {
@@ -211,7 +211,7 @@ export const api = {
         return await response.json();
     },
 
-    // ── NEW: Qualifying ───────────────────────────────────────────────────
+    //  NEW: Qualifying 
 
     async runQualifying(req: QualifyingRequest): Promise<BackendQualifyingResult> {
         const response = await fetch(`${API_BASE_URL}/api/qualifying/qualify`, {
@@ -226,7 +226,7 @@ export const api = {
         return await response.json();
     },
 
-    // ── NEW: Calendar ─────────────────────────────────────────────────────
+    //  NEW: Calendar 
 
     async getCalendar(year: number = 2026): Promise<BackendCalendarEntry[]> {
         const response = await fetch(`${API_BASE_URL}/api/calendar/${year}`);
@@ -237,7 +237,7 @@ export const api = {
         return data.calendar || data.races || [];
     },
 
-    // ── NEW: Circuits ─────────────────────────────────────────────────────
+    //  NEW: Circuits 
 
     async getCircuits(): Promise<BackendCircuit[]> {
         const response = await fetch(`${API_BASE_URL}/api/circuits/`);
@@ -256,7 +256,7 @@ export const api = {
         return await response.json();
     },
 
-    // ── NEW: Predict Event ────────────────────────────────────────────────
+    //  NEW: Predict Event 
 
     async predictEvent(req: PredictEventRequest) {
         const response = await fetch(`${API_BASE_URL}/api/predict/event`, {

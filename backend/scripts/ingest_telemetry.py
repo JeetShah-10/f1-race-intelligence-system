@@ -24,21 +24,21 @@ def setup_fastf1():
     fastf1.Cache.enable_cache(CACHE_DIR)
 
 def ingest_telemetry():
-    print("🚀 Starting Phase 3: Telemetry Ingestion (High Volume)...")
+    print(" Starting Phase 3: Telemetry Ingestion (High Volume)...")
     setup_fastf1()
     
     db = DatabaseService()
     if not db.supabase:
-        print("❌ Database connection failed.")
+        print(" Database connection failed.")
         return
 
     # 1. Get Races
     try:
         races_db = db.supabase.table("races").select("race_id, year, round, name").execute().data
-        print(f"📅 Found {len(races_db)} races. Limiting to 1 for VERIFICATION.")
+        print(f" Found {len(races_db)} races. Limiting to 1 for VERIFICATION.")
         races_db = races_db[:1]
     except Exception as e:
-        print(f"❌ Failed to fetch races: {e}")
+        print(f" Failed to fetch races: {e}")
         return
 
     for race_meta in races_db:
@@ -117,27 +117,27 @@ def ingest_telemetry():
                         if len(batch) >= TELEMETRY_BATCH_SIZE:
                             try:
                                 db.supabase.table("telemetry").upsert(batch).execute()
-                                print(f"      🔹 Upserted {len(batch)} pts for {driver_id}")
+                                print(f"       Upserted {len(batch)} pts for {driver_id}")
                                 batch = []
                             except Exception as e:
-                                print(f"      ⚠️ Batch insert error: {e}")
+                                print(f"      [!] Batch insert error: {e}")
                                 batch = [] # discard failed batch to continue?
                     
                     # Final batch
                     if batch:
                         try:
                             db.supabase.table("telemetry").upsert(batch).execute()
-                            print(f"      🔹 Upserted {len(batch)} pts for {driver_id}")
+                            print(f"       Upserted {len(batch)} pts for {driver_id}")
                         except Exception as e:
-                            print(f"      ⚠️ Final batch error: {e}")
+                            print(f"      [!] Final batch error: {e}")
 
                 except Exception as e:
-                    print(f"   ⚠️ Driver {driver_id} tel error: {e}")
+                    print(f"   [!] Driver {driver_id} tel error: {e}")
 
         except Exception as e:
-            print(f"   ❌ Race error: {e}")
+            print(f"    Race error: {e}")
 
-    print("\n✅ Phase 3 Ingestion Complete!")
+    print("\n Phase 3 Ingestion Complete!")
 
 if __name__ == "__main__":
     ingest_telemetry()

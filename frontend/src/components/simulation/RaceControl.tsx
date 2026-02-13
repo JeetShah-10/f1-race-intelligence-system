@@ -3,7 +3,7 @@ import { useEffect } from 'react';
 
 const SPEED_OPTIONS = [0.5, 1, 2, 4] as const;
 
-// ─── Playback Controls ───────────────────────────────────────────────────
+//  Playback Controls 
 export function RaceControl() {
     const {
         status,
@@ -69,7 +69,7 @@ export function RaceControl() {
                 onClick={() => seekToLap(Math.max(currentLap - 1, 0))}
                 disabled={!isReady}
                 className="w-8 h-8 rounded-lg flex items-center justify-center text-white/40 hover:text-white hover:bg-white/10 transition-all disabled:opacity-20 disabled:cursor-not-allowed"
-                title="Previous Lap (←)"
+                title="Previous Lap"
             >
                 <svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor">
                     <path d="M19 20L9 12l10-8v16zM7 19V5H5v14h2z" />
@@ -111,7 +111,7 @@ export function RaceControl() {
                 onClick={() => seekToLap(Math.min(currentLap + 1, totalLaps))}
                 disabled={!isReady}
                 className="w-8 h-8 rounded-lg flex items-center justify-center text-white/40 hover:text-white hover:bg-white/10 transition-all disabled:opacity-20 disabled:cursor-not-allowed"
-                title="Next Lap (→)"
+                title="Next Lap (&rarr;)"
             >
                 <svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor">
                     <path d="M5 4l10 8-10 8V4zm12-1v18h2V3h-2z" />

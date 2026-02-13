@@ -28,8 +28,8 @@ def list_mcp_servers() -> str:
     Example:
         >>> list_mcp_servers()
         "MCP Servers Status:
-         1. github (stdio) - Connected ✓ - 15 tools
-         2. database (http) - Disconnected ✗ - Error: Connection refused"
+         1. github (stdio) - Connected [OK] - 15 tools
+         2. database (http) - Disconnected [X] - Error: Connection refused"
     """
     try:
         from src.mcp_client import MCPClientManager
@@ -51,10 +51,10 @@ def list_mcp_servers() -> str:
         if not status.get("servers"):
             return "No MCP servers configured. Add servers to mcp_servers.json"
 
-        lines = ["📡 MCP Servers Status:\n"]
+        lines = [" MCP Servers Status:\n"]
 
         for i, (name, info) in enumerate(status["servers"].items(), 1):
-            status_icon = "✅" if info["connected"] else "❌"
+            status_icon = "" if info["connected"] else ""
             status_text = "Connected" if info["connected"] else "Disconnected"
 
             line = f"  {i}. {name} ({info['transport']}) - {status_text} {status_icon}"
@@ -119,7 +119,7 @@ def list_mcp_tools(server_name: Optional[str] = None) -> str:
         if not tools_by_server:
             return f"No tools found for server: {server_name}"
 
-        lines = ["🔧 Available MCP Tools:\n"]
+        lines = [" Available MCP Tools:\n"]
 
         for srv_name, srv_tools in tools_by_server.items():
             lines.append(f"\n[{srv_name}] {len(srv_tools)} tool(s):")
@@ -179,7 +179,7 @@ def get_mcp_tool_help(tool_name: str) -> str:
 
             if prefixed_name == search_name or tool.original_name == tool_name:
                 lines = [
-                    f"📖 Tool: {prefixed_name}",
+                    f" Tool: {prefixed_name}",
                     f"   Server: {tool.server_name}",
                     f"   Original Name: {tool.original_name}",
                     "",
@@ -219,33 +219,33 @@ def mcp_health_check() -> str:
         manager = _get_mcp_manager()
 
         if manager is None:
-            return "❌ MCP integration is not initialized."
+            return " MCP integration is not initialized."
 
         status = manager.get_status()
 
         if not status.get("enabled"):
-            return "⚠️ MCP integration is disabled."
+            return "[!] MCP integration is disabled."
 
         servers = status.get("servers", {})
 
         if not servers:
-            return "⚠️ No MCP servers configured."
+            return "[!] No MCP servers configured."
 
         connected = sum(1 for s in servers.values() if s["connected"])
         total = len(servers)
 
         lines = [
-            f"🏥 MCP Health Check",
+            f" MCP Health Check",
             f"   Status: {connected}/{total} servers connected",
             "",
         ]
 
         for name, info in servers.items():
             if info["connected"]:
-                lines.append(f"   ✅ {name}: Healthy ({info['tools_count']} tools)")
+                lines.append(f"    {name}: Healthy ({info['tools_count']} tools)")
             else:
                 error = info.get("error", "Unknown error")
-                lines.append(f"   ❌ {name}: Unhealthy - {error}")
+                lines.append(f"    {name}: Unhealthy - {error}")
 
         return "\n".join(lines)
 

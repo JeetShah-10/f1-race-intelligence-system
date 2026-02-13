@@ -61,28 +61,41 @@ class SimulationRequest(BaseModel):
 
         # Populate grid preset if drivers list is empty
         if not self.drivers and self.grid == "current_2026":
-            # 2026 Projected Grid (based on 2025/2026 contracts)
+            # 2026 Official Grid - Source of truth: frontend/src/data/f1-data.ts
             self.drivers = [
-                DriverInput(driver="VER", team="Red Bull Racing", grid_position=1, compound="MEDIUM"),
-                DriverInput(driver="HAM", team="Ferrari", grid_position=2, compound="MEDIUM"),
-                DriverInput(driver="LEC", team="Ferrari", grid_position=3, compound="MEDIUM"),
-                DriverInput(driver="NOR", team="McLaren", grid_position=4, compound="MEDIUM"),
-                DriverInput(driver="PIA", team="McLaren", grid_position=5, compound="MEDIUM"),
-                DriverInput(driver="RUS", team="Mercedes", grid_position=6, compound="MEDIUM"),
-                DriverInput(driver="ANT", team="Mercedes", grid_position=7, compound="HARD"),  # Antonelli
-                DriverInput(driver="ALO", team="Aston Martin", grid_position=8, compound="HARD"),
-                DriverInput(driver="STR", team="Aston Martin", grid_position=9, compound="HARD"),
-                DriverInput(driver="TSU", team="RB", grid_position=10, compound="HARD"),
-                DriverInput(driver="LAW", team="RB", grid_position=11, compound="HARD"),
-                DriverInput(driver="HUL", team="Kick Sauber", grid_position=12, compound="HARD"),
-                DriverInput(driver="BOR", team="Kick Sauber", grid_position=13, compound="HARD"), # Bortoleto
-                DriverInput(driver="ALB", team="Williams", grid_position=14, compound="HARD"),
-                DriverInput(driver="SAI", team="Williams", grid_position=15, compound="HARD"),
-                DriverInput(driver="GAS", team="Alpine", grid_position=16, compound="HARD"),
-                DriverInput(driver="DOO", team="Alpine", grid_position=17, compound="HARD"), # Doohan
-                DriverInput(driver="BEA", team="Haas", grid_position=18, compound="HARD"), # Bearman
-                DriverInput(driver="OCO", team="Haas", grid_position=19, compound="HARD"),
-                DriverInput(driver="HAD", team="Red Bull Racing", grid_position=20, compound="HARD"), # Hadjar (Hypothetical)
+                # McLaren
+                DriverInput(driver="NOR", team="McLaren", grid_position=1, compound="MEDIUM"),
+                DriverInput(driver="PIA", team="McLaren", grid_position=2, compound="MEDIUM"),
+                # Red Bull Racing
+                DriverInput(driver="VER", team="Red Bull Racing", grid_position=3, compound="MEDIUM"),
+                DriverInput(driver="HAD", team="Red Bull Racing", grid_position=4, compound="MEDIUM"),
+                # Ferrari
+                DriverInput(driver="LEC", team="Ferrari", grid_position=5, compound="MEDIUM"),
+                DriverInput(driver="HAM", team="Ferrari", grid_position=6, compound="MEDIUM"),
+                # Mercedes
+                DriverInput(driver="RUS", team="Mercedes", grid_position=7, compound="HARD"),
+                DriverInput(driver="ANT", team="Mercedes", grid_position=8, compound="HARD"),
+                # Williams
+                DriverInput(driver="ALB", team="Williams", grid_position=9, compound="HARD"),
+                DriverInput(driver="SAI", team="Williams", grid_position=10, compound="HARD"),
+                # Racing Bulls
+                DriverInput(driver="LAW", team="Racing Bulls", grid_position=11, compound="HARD"),
+                DriverInput(driver="LIN", team="Racing Bulls", grid_position=12, compound="HARD"),
+                # Aston Martin
+                DriverInput(driver="ALO", team="Aston Martin", grid_position=13, compound="HARD"),
+                DriverInput(driver="STR", team="Aston Martin", grid_position=14, compound="HARD"),
+                # Haas
+                DriverInput(driver="OCO", team="Haas", grid_position=15, compound="HARD"),
+                DriverInput(driver="BEA", team="Haas", grid_position=16, compound="HARD"),
+                # Audi
+                DriverInput(driver="HUL", team="Audi", grid_position=17, compound="HARD"),
+                DriverInput(driver="BOR", team="Audi", grid_position=18, compound="HARD"),
+                # Alpine
+                DriverInput(driver="GAS", team="Alpine", grid_position=19, compound="HARD"),
+                DriverInput(driver="COL", team="Alpine", grid_position=20, compound="HARD"),
+                # Cadillac
+                DriverInput(driver="BOT", team="Cadillac", grid_position=21, compound="HARD"),
+                DriverInput(driver="PER", team="Cadillac", grid_position=22, compound="HARD"),
             ]
 
 

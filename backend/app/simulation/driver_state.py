@@ -34,11 +34,11 @@ class DriverState:
         defending_skill: float = 0.5,
         overtaking_skill: float = 0.5,
     ):
-        # ── Identity ──
+        #  Identity 
         self.driver_id = driver_id
         self.team = team
 
-        # ── Skills & Ratings (static per race) ──
+        #  Skills & Ratings (static per race) 
         self.consistency = consistency
         self.reliability = reliability
         self.aggression = aggression          # 0.0 = conservative, 1.0 = ultra-aggressive
@@ -46,50 +46,50 @@ class DriverState:
         self.defending_skill = defending_skill # 0.0 = easy to pass, 1.0 = impenetrable
         self.overtaking_skill = overtaking_skill # 0.0 = hesitant, 1.0 = clinical
 
-        # ── Race Position ──
+        #  Race Position 
         self.grid_position = grid_position
         self.position = grid_position
 
-        # ── Pace (from ML baseline) ──
+        #  Pace (from ML baseline) 
         self.base_pace = base_pace
         self.tyre_degradation_slope = 0.0
 
-        # ── Time Tracking ──
+        #  Time Tracking 
         self.current_time = 0.0
         self.last_lap_time: Optional[float] = None
         self.lap_times: List[float] = []
 
-        # ── Tyre State ──
+        #  Tyre State 
         self.tire_compound: Optional[str] = None
         self.tire_age = 0
         self.current_stint = 1
         self.tyre_health = 1.0               # 1.0 = fresh, 0.0 = destroyed (non-linear)
         self.total_pit_stops = 0
 
-        # ── Fuel State ──
+        #  Fuel State 
         self.fuel_load = 110.0                # kg at race start (F1 typical ~110kg)
 
-        # ── Sector Tracking (reset each lap) ──
+        #  Sector Tracking (reset each lap) 
         self.current_sector = 0               # 0 = not started, 1/2/3 during lap
         self.sector_times: List[float] = []   # [S1, S2, S3] for the current lap
         self.best_sector_times: List[Optional[float]] = [None, None, None]
 
-        # ── Proximity / DRS ──
+        #  Proximity / DRS 
         self.gap_to_car_ahead = 999.0         # seconds
         self.is_in_drs = False
         self.laps_behind_car = 0              # consecutive laps stuck behind car ahead
 
-        # ── Status Flags ──
+        #  Status Flags 
         self.is_running = True
         self.has_dnf = False
         self.in_pit = False
         self.pit_penalty = 0.0
 
-        # ── Event History ──
+        #  Event History 
         self.pit_stops: List[dict] = []
         self.events: List[dict] = []
 
-    # ── Helper Methods ──
+    #  Helper Methods 
 
     def reset_sectors(self):
         """Reset sector data for a new lap."""
@@ -143,7 +143,7 @@ class DriverState:
         return min(penalty, 10.0)  # cap at 10s to prevent runaway
 
     def __repr__(self):
-        status = "🟢" if self.is_running else "🔴"
+        status = "" if self.is_running else ""
         return (
             f"{status} P{self.position} {self.driver_id} "
             f"[{self.tire_compound or '?'} age:{self.tire_age} hp:{self.tyre_health:.0%}] "

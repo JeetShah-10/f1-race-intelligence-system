@@ -9,46 +9,54 @@ class QualifyingService:
         
     def get_2026_drivers(self) -> List[Dict[str, Any]]:
         """
-        Returns the full list of drivers for the 2026 season.
+        Returns the full list of 22 drivers for the 2026 season.
+        Source of truth: frontend/src/data/f1-data.ts
         """
-        # This list should ideally come from a master driver list service
         driver_roster = [
-            {"id": "ver", "team": "red_bull"},
+            #  McLaren 
             {"id": "nor", "team": "mclaren"},
-            {"id": "lec", "team": "ferrari"},
-            {"id": "ham", "team": "ferrari"}, # Lewis to Ferrari
             {"id": "pia", "team": "mclaren"},
+            #  Red Bull Racing 
+            {"id": "ver", "team": "red_bull"},
+            {"id": "had", "team": "red_bull"},
+            #  Ferrari 
+            {"id": "lec", "team": "ferrari"},
+            {"id": "ham", "team": "ferrari"},
+            #  Mercedes 
             {"id": "rus", "team": "mercedes"},
-            {"id": "ant", "team": "mercedes"}, # Antonelli (2026)
-            {"id": "had", "team": "red_bull"}, # Hadjar (Promoted 2026)
-            {"id": "alo", "team": "aston_martin"},
-            {"id": "str", "team": "aston_martin"},
-            {"id": "gas", "team": "alpine"},
-            {"id": "doo", "team": "alpine"}, # Doohan
-            {"id": "pal", "team": "audi"},     # Palou to Audi (Swap)
-            {"id": "hul", "team": "audi"},
-            {"id": "per", "team": "cadillac"}, # Perez (2026)
-            {"id": "bot", "team": "cadillac"}, # Bottas to Cadillac
+            {"id": "ant", "team": "mercedes"},
+            #  Williams 
             {"id": "alb", "team": "williams"},
             {"id": "sai", "team": "williams"},
-            {"id": "law", "team": "rb"}, # Lawson 
-            {"id": "lin", "team": "rb"}, # Lindblad
-            {"id": "bea", "team": "haas"}, # Bearman
-            {"id": "oco", "team": "haas"}
+            #  Racing Bulls 
+            {"id": "law", "team": "rb"},
+            {"id": "lin", "team": "rb"},
+            #  Aston Martin 
+            {"id": "alo", "team": "aston_martin"},
+            {"id": "str", "team": "aston_martin"},
+            #  Haas 
+            {"id": "oco", "team": "haas"},
+            {"id": "bea", "team": "haas"},
+            #  Audi 
+            {"id": "hul", "team": "audi"},
+            {"id": "bor", "team": "audi"},
+            #  Alpine 
+            {"id": "gas", "team": "alpine"},
+            {"id": "col", "team": "alpine"},
+            #  Cadillac 
+            {"id": "bot", "team": "cadillac"},
+            {"id": "per", "team": "cadillac"},
         ]
         return driver_roster
 
     def predict_grid(self, circuit_id: str, weather: str = "dry") -> List[Dict[str, Any]]:
         """
         Predicts the starting grid for a generic 2026 race at the given circuit.
-        Returns a list of driver dictionaries sorted by Position 1..20.
+        Returns a list of driver dictionaries sorted by Position 1..22.
         """
         grid = []
         
-        # 1. Get all 2026 drivers
-        # drivers_cfg = self.config_service.config.get("drivers", [])
-        
-        # 2. Base Tier Logic for 2026
+        # 1. Base Tier Logic for 2026
         tiers = {
             "tier1": 80.0, # seconds
             "tier2": 81.0,
@@ -63,11 +71,11 @@ class QualifyingService:
             "mercedes": tiers["tier1"] + 0.2,
             "aston_martin": tiers["tier2"],
             "alpine": tiers["tier2"],
-            "audi": tiers["tier3"] + 0.2, # As per config
-            "cadillac": tiers["tier3"] + 0.4, # As per config
-            "williams": tiers["tier2"] + 0.5,
-            "rb": tiers["tier2"] + 0.5,
-            "haas": tiers["tier3"]
+            "williams": tiers["tier2"] + 0.3,
+            "rb": tiers["tier2"] + 0.3,
+            "haas": tiers["tier3"],
+            "audi": tiers["tier3"] + 0.2,
+            "cadillac": tiers["tier3"] + 0.4,
         }
         
         driver_roster = self.get_2026_drivers()
@@ -84,21 +92,19 @@ class QualifyingService:
                 base_perf += team_cfg.get("performance_modifiers", {}).get("lap_time_bias", 0.0)
             
             team_perf = base_perf
-            # Check 2026 config for specific modifiers
             driver_perf_mod = 0.0
             
             # Check if this driver has 2026 config
-            # We search by ID or Code. The roster uses IDs effectively.
             d_config = self.config_service.get_driver_config(d["id"])
             if d_config:
                 mods = d_config.get("performance_modifiers", {})
                 driver_perf_mod += mods.get("raw_pace", 0.0)
             else:
-                 # Generic logic for others
-                 if d["id"] in ["ver", "nor", "lec", "alo"]:
-                     driver_perf_mod -= 0.3 # Elite bonus
-                 elif d["id"] in ["str", "zhou", "lat"]: # slower drivers
-                     driver_perf_mod += 0.3
+                # Fallback tiers for drivers without JSON config
+                if d["id"] in ["ver", "nor", "lec", "ham", "alo"]:
+                    driver_perf_mod -= 0.3  # Elite bonus
+                elif d["id"] in ["str", "lin", "bor", "col"]:
+                    driver_perf_mod += 0.3  # Less experienced / slower
             
             # 3. Random Variance (Qualifying run execution)
             variance = random.uniform(-0.15, 0.15)
@@ -123,6 +129,6 @@ class QualifyingService:
 if __name__ == "__main__":
     qs = QualifyingService()
     grid = qs.predict_grid("monaco")
-    print("🏁 Predicted 2026 Grid 🏁")
+    print(" Predicted 2026 Grid (22 Drivers) ")
     for d in grid:
         print(f"P{d['position']}: {d['driver_id'].upper()} ({d['team']}) - {d['qualifying_time']}s")

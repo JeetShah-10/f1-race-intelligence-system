@@ -30,7 +30,7 @@ export function RaceResults() {
                     {raceConfig?.circuitName || 'Grand Prix'}
                 </h1>
                 <div className="text-xs text-white/20 tracking-widest mt-1">
-                    🏁 CLASSIFICATION • {raceConfig?.year || 2026}
+                     CLASSIFICATION • {raceConfig?.year || 2026}
                 </div>
             </motion.div>
 

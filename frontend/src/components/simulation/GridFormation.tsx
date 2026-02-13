@@ -23,7 +23,7 @@ export function GridFormation() {
                     onClick={backToCircuits}
                     className="text-white/40 hover:text-white/80 text-sm tracking-wider transition-colors"
                 >
-                    ← BACK
+                    &larr; BACK
                 </button>
                 <div className="text-center">
                     <div className="text-[10px] text-white/30 tracking-[0.3em] font-medium">STARTING GRID</div>
@@ -38,7 +38,7 @@ export function GridFormation() {
             <div className="flex-1 min-h-0 overflow-y-auto px-4 py-6">
                 <div className="max-w-3xl mx-auto">
 
-                    {/* Grid rows — F1 style staggered two-column */}
+                    {/* Grid rows - F1 style staggered two-column */}
                     {gridOrder.map((driver, idx) => {
                         const isOdd = idx % 2 === 0; // P1 left, P2 right, P3 left...
                         const row = Math.floor(idx / 2);
@@ -90,7 +90,7 @@ export function GridFormation() {
                     whileTap={{ scale: 0.97 }}
                 >
                     <span className="flex items-center gap-3">
-                        🏁 LIGHTS OUT — START RACE
+                        LIGHTS OUT - START RACE
                     </span>
                 </motion.button>
             </motion.div>

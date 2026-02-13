@@ -213,7 +213,7 @@ export const DashboardHeader: React.FC = () => {
                     </svg>
                     <span className="text-white/40 text-sm flex-1 text-left">Search drivers, races...</span>
                     <kbd className="hidden md:flex items-center gap-0.5 px-1.5 py-0.5 rounded bg-white/[0.06] text-white/30 text-[10px] font-mono">
-                        <span>⌘</span>
+                        <span></span>
                         <span>K</span>
                     </kbd>
                 </motion.button>
@@ -329,7 +329,7 @@ export const DashboardHeader: React.FC = () => {
                                                     </span>
 
                                                     {selectedIndex === index && (
-                                                        <kbd className="text-white/30 text-xs font-mono">↵</kbd>
+                                                        <kbd className="text-white/30 text-xs font-mono"></kbd>
                                                     )}
                                                 </motion.button>
                                             ))}
@@ -344,11 +344,11 @@ export const DashboardHeader: React.FC = () => {
                                 <div className="px-4 py-3 border-t border-white/[0.08] flex items-center justify-between text-white/30 text-xs">
                                     <div className="flex items-center gap-3">
                                         <span className="flex items-center gap-1">
-                                            <kbd className="px-1.5 py-0.5 rounded bg-white/[0.06] font-mono">↑↓</kbd>
+                                            <kbd className="px-1.5 py-0.5 rounded bg-white/[0.06] font-mono"></kbd>
                                             navigate
                                         </span>
                                         <span className="flex items-center gap-1">
-                                            <kbd className="px-1.5 py-0.5 rounded bg-white/[0.06] font-mono">↵</kbd>
+                                            <kbd className="px-1.5 py-0.5 rounded bg-white/[0.06] font-mono"></kbd>
                                             select
                                         </span>
                                     </div>

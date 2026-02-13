@@ -4,7 +4,7 @@ const supabaseUrl = import.meta.env.VITE_SUPABASE_URL
 const supabaseAnonKey = import.meta.env.VITE_SUPABASE_ANON_KEY
 
 if (!supabaseUrl || !supabaseAnonKey) {
-    console.warn('⚠️ Supabase credentials not found. Auth will not work.')
+    console.warn('[!] Supabase credentials not found. Auth will not work.')
     console.warn('Create frontend/.env.local with VITE_SUPABASE_URL and VITE_SUPABASE_ANON_KEY')
 }
 

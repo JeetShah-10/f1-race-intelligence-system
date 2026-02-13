@@ -9,7 +9,7 @@ const blocks = [
         icon: Sparkles,
         subtitle: 'Predict',
         title: 'See the race before lights out',
-        description: 'AI-driven outcome predictions for every round. Lap-time estimates, podium odds, and strategy windows—all in one place.',
+        description: 'AI-driven outcome predictions for every round. Lap-time estimates, podium odds, and strategy windows-all in one place.',
         href: '/predict',
         image: '/assets/ui/f1_predict_ui.png',
         imageAlt: 'Predict dashboard',

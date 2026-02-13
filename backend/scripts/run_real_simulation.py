@@ -18,14 +18,14 @@ from app.simulation.simulation_context import SimulationContext
 from app.simulation.race_engine import RaceEngine
 
 def run_real_simulation():
-    print("🏎️  Starting REAL Simulation (Circuit: Bahrain)...")
+    print("  Starting REAL Simulation (Circuit: Bahrain)...")
     
     # 1. Initialize Services
     ml_service = PredictionService()
     db_service = DatabaseService()
     
     if not db_service.supabase:
-        print("❌ DatabaseService failed to initialize. Check .env variables.")
+        print(" DatabaseService failed to initialize. Check .env variables.")
         return
 
     # 2. Define Drivers (2024 Grid)
@@ -49,13 +49,13 @@ def run_real_simulation():
     )
     
     # 4. Run ML Pipeline (Get Physics Params)
-    print("📊 Fetching ML Parameters (Pace & Degradation)...") 
+    print(" Fetching ML Parameters (Pace & Degradation)...") 
     # Note: access private method or run the public one?
     # PredictionService.get_simulation_handoff is the public API.
     handoffs = ml_service.get_simulation_handoff(req)
     
     # 5. Build Context & Run Engine
-    print(f"🚦 Lights Out! Simulating {req.lap_count} laps...")
+    print(f" Lights Out! Simulating {req.lap_count} laps...")
     ctx = SimulationContext(
         circuit=req.circuit_id,
         year=req.year,
@@ -107,15 +107,15 @@ def run_real_simulation():
     )
     
     # 7. Persist
-    print("💾 Saving results to Supabase...")
+    print(" Saving results to Supabase...")
     sim_id = db_service.save_simulation(final_result, session_type="REAL_SIMULATION_SCRIPT", year=2024)
     
     if sim_id:
-        print(f"✅ Success! Data saved.")
+        print(f" Success! Data saved.")
         print(f"   Simulation ID: {sim_id}")
         print(f"   Check your 'simulation_results' table.")
     else:
-        print("❌ Save failed.")
+        print(" Save failed.")
 
 if __name__ == "__main__":
     run_real_simulation()

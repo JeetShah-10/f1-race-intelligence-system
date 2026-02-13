@@ -4,7 +4,7 @@ ORM model stub for simulation results.
 
 Provides a minimal SQLAlchemy model so that simulate.py can import
 SimulationResult without breaking. The /api/simulate/generate endpoint
-does NOT use this model — it returns JSON directly.
+does NOT use this model - it returns JSON directly.
 """
 
 from sqlalchemy import Column, Integer, String, Text

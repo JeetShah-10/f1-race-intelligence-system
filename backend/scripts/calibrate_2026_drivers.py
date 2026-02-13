@@ -13,7 +13,7 @@ def get_driver_stats(driver_code, year=2024):
     Fetches aggregate stats for a driver from a season.
     Returns: { 'raw_pace': float, 'consistency': float }
     """
-    print(f"📊 Analyzing {driver_code} ({year})...")
+    print(f" Analyzing {driver_code} ({year})...")
     
     # We'll sample 5 representative races to be concise but accurate
     # Bahrain, Suzuka, Silverstone, Monza, Abu Dhabi
@@ -61,7 +61,7 @@ def get_driver_stats(driver_code, year=2024):
             consistency_scores.append(score)
             
         except Exception as e:
-            print(f"   ⚠️  Skipping round {r}: {e}")
+            print(f"   [!]  Skipping round {r}: {e}")
             continue
             
     if not pace_deficits:
@@ -82,7 +82,7 @@ def get_driver_stats(driver_code, year=2024):
     }
 
 def main():
-    print("🏎️  Calibrating 2026 Drivers...")
+    print("  Calibrating 2026 Drivers...")
     
     # 1. Real Data Extraction
     perez_stats = get_driver_stats("PER", 2024)
@@ -90,7 +90,7 @@ def main():
     
     # 2. Proxy Data Extraction (Lindblad -> Piastri 2023 Rookie Season as Proxy)
     # Lindblad is a high-potential rookie, similar hype to Piastri?
-    print("🔍 Using PIA (2023) as proxy for Arvid Lindblad...")
+    print(" Using PIA (2023) as proxy for Arvid Lindblad...")
     lindblad_stats = get_driver_stats("PIA", 2023)
     
     # 3. Construct Cadillac Team Stats
@@ -98,14 +98,14 @@ def main():
     cadillac_reliability = 0.82 # New entry
     cadillac_pace_bias = (perez_stats['raw_pace'] + bottas_stats['raw_pace']) / 2 + 0.3 # +0.3s drag for new car
     
-    print("\n📊 CALIBRATION RESULTS:")
+    print("\n CALIBRATION RESULTS:")
     print(f"PER (Perez): {perez_stats}")
     print(f"BOT (Bottas): {bottas_stats}")
     print(f"LIN (Lindblad/PIA Proxy): {lindblad_stats}")
     print(f"Cadillac Team: Pace Bias={cadillac_pace_bias:.3f}, Reliability={cadillac_reliability}")
 
     # Generate JSON Snippet
-    print("\n📋 JSON Configuration to Apply:")
+    print("\n JSON Configuration to Apply:")
     
     updates = {
         "per": {

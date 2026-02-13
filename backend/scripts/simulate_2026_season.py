@@ -30,7 +30,7 @@ def simulate_season():
     constructor_standings = {} # Team ID -> Points
     race_results_log = []
     
-    print(f"🚀 Starting 2026 Season Simulation ({len(CALENDAR)} Races)")
+    print(f" Starting 2026 Season Simulation ({len(CALENDAR)} Races)")
     
     for round_num, (circuit, weather) in enumerate(CALENDAR, 1):
         print(f"\n--- Round {round_num}: {circuit.upper()} ({weather}) ---")
@@ -46,7 +46,7 @@ def simulate_season():
         # Analyze Points
         results = event_result["race_result"]["results"]
         winner = results[0]
-        print(f"   🏆 Winner: {winner['driver_id'].upper()}")
+        print(f"    Winner: {winner['driver_id'].upper()}")
         
         # Log Result
         race_results_log.append({
@@ -71,7 +71,7 @@ def simulate_season():
 
     # Final Report
     print("\n" + "="*40)
-    print("🏆 2026 WORLD CHAMPIONSHIP STANDINGS 🏆")
+    print(" 2026 WORLD CHAMPIONSHIP STANDINGS ")
     print("="*40)
     
     # Sort WDC
@@ -79,7 +79,7 @@ def simulate_season():
     for i, (d, pts) in enumerate(wdc_sorted, 1):
         print(f"{i}. {d.upper()}: {pts} pts")
         
-    print("\n🏆 CONSTRUCTORS STANDINGS")
+    print("\n CONSTRUCTORS STANDINGS")
     wcc_sorted = sorted(constructor_standings.items(), key=lambda x: x[1], reverse=True)
     for i, (t, pts) in enumerate(wcc_sorted, 1):
         print(f"{i}. {t.upper()}: {pts} pts")
@@ -89,24 +89,24 @@ def simulate_season():
 
 def generate_markdown_report(wdc, wcc, logs):
     lines = []
-    lines.append("# 🏆 2026 F1 World Championship Report")
+    lines.append("#  2026 F1 World Championship Report")
     lines.append("## Executive Summary")
     lines.append(f"**World Champion**: {wdc[0][0].upper()} ({wdc[0][1]} pts)")
     lines.append(f"**Constructors Champion**: {wcc[0][0].upper()} ({wcc[0][1]} pts)")
     
-    lines.append("\n## 📋 Drivers Standings")
+    lines.append("\n##  Drivers Standings")
     lines.append("| Pos | Driver | Points |")
     lines.append("| :--- | :--- | :--- |")
     for i, (d, pts) in enumerate(wdc, 1):
          lines.append(f"| {i} | {d.upper()} | {pts} |")
 
-    lines.append("\n## 🏎️ Constructors Standings")
+    lines.append("\n##  Constructors Standings")
     lines.append("| Pos | Team | Points |")
     lines.append("| :--- | :--- | :--- |")
     for i, (t, pts) in enumerate(wcc, 1):
          lines.append(f"| {i} | {t.upper()} | {pts} |")
          
-    lines.append("\n## 🏁 Race Results")
+    lines.append("\n##  Race Results")
     lines.append("| Round | Circuit | Winner | Podium |")
     lines.append("| :--- | :--- | :--- | :--- |")
     for r in logs:

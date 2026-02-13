@@ -15,24 +15,24 @@ def inspect():
         print("3. Session loaded.")
         
         if session.results is None or session.results.empty:
-            print("⚠️ Session results are empty.")
+            print("[!] Session results are empty.")
             return
 
         cols = session.results.columns.tolist()
-        print(f"\n📊 Available Columns: {cols}")
+        print(f"\n Available Columns: {cols}")
         
         with open("backend/scripts/debug_columns.txt", "w") as f:
             f.write(str(cols))
             f.write("\n\nFirst Row:\n")
             f.write(str(session.results.iloc[0].to_dict()))
             
-        print("✅ Columns written to backend/scripts/debug_columns.txt")
+        print(" Columns written to backend/scripts/debug_columns.txt")
         
     except Exception as e:
-        print(f"❌ Error: {e}")
+        print(f" Error: {e}")
         import traceback
         traceback.print_exc()
 
 if __name__ == "__main__":
-    print("🚀 Starting inspection...")
+    print(" Starting inspection...")
     inspect()

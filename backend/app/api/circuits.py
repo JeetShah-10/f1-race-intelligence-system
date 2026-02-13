@@ -1,6 +1,6 @@
 # backend/app/api/circuits.py
 """
-Circuit detail endpoint — reads from Supabase `circuits` table.
+Circuit detail endpoint - reads from Supabase `circuits` table.
 """
 
 from fastapi import APIRouter, HTTPException

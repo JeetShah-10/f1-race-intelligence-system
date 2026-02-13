@@ -1,6 +1,6 @@
 # backend/scripts/ingest_fastf1.py
 """
-FastF1 ETL Pipeline — Ingest historical F1 data into Supabase.
+FastF1 ETL Pipeline - Ingest historical F1 data into Supabase.
 
 Usage:
     python scripts/ingest_fastf1.py                     # Default: 2023-2024
@@ -37,7 +37,7 @@ CACHE_DIR.mkdir(exist_ok=True)
 fastf1.Cache.enable_cache(str(CACHE_DIR))
 
 BATCH_SIZE = 500  # Supabase insert batch limit
-DELAY_BETWEEN_RACES = 8  # seconds — stay under 500 calls/h
+DELAY_BETWEEN_RACES = 8  # seconds - stay under 500 calls/h
 
 
 def get_supabase():
@@ -138,12 +138,12 @@ def load_session_safe(year: int, round_num: int):
             return session
         except fastf1.req.RateLimitExceededError:
             wait = 60 * (attempt + 1)  # 60s, 120s, 180s
-            log.warning(f"  ⏳ Rate limited! Waiting {wait}s before retry {attempt+1}/{max_retries}...")
+            log.warning(f"   Rate limited! Waiting {wait}s before retry {attempt+1}/{max_retries}...")
             time.sleep(wait)
         except Exception as e:
             log.warning(f"  Skipping {year} R{round_num}: {e}")
             return None
-    log.error(f"  ❌ Failed after {max_retries} retries for {year} R{round_num}")
+    log.error(f"   Failed after {max_retries} retries for {year} R{round_num}")
     return None
 
 
@@ -154,7 +154,7 @@ def ingest_session(sb, session, year: int, round_num: int) -> int:
     cid = circuit_id_from_name(circuit_loc)
     race_id = f"{year}_R{round_num:02d}"
 
-    log.info(f"  Processing {event_name} ({race_id}) — {cid}")
+    log.info(f"  Processing {event_name} ({race_id}) - {cid}")
 
     try:
         laps = session.laps
@@ -165,7 +165,7 @@ def ingest_session(sb, session, year: int, round_num: int) -> int:
         log.warning(f"  No lap data for {race_id}")
         return 0
 
-    # Weather info — safely handle missing/unloaded data
+    # Weather info - safely handle missing/unloaded data
     avg_air_temp = None
     avg_track_temp = None
     has_rain = False
@@ -225,12 +225,12 @@ def ingest_session(sb, session, year: int, round_num: int) -> int:
         except Exception as e:
             err_str = str(e)
             if "duplicate" in err_str.lower() or "unique" in err_str.lower():
-                log.warning(f"  Duplicate batch {i//BATCH_SIZE} — already ingested, skipping")
+                log.warning(f"  Duplicate batch {i//BATCH_SIZE} - already ingested, skipping")
                 total_inserted += len(batch)
             else:
                 log.error(f"  Insert error at batch {i//BATCH_SIZE}: {e}")
 
-    log.info(f"  → Inserted {total_inserted} laps for {race_id}")
+    log.info(f"  -> Inserted {total_inserted} laps for {race_id}")
     return total_inserted
 
 
@@ -261,7 +261,7 @@ def ingest_results(sb, session, year: int, round_num: int):
     if rows:
         try:
             sb.table("race_results").insert(rows).execute()
-            log.info(f"  → Inserted {len(rows)} results for {race_id}")
+            log.info(f"  -> Inserted {len(rows)} results for {race_id}")
         except Exception as e:
             err_str = str(e)
             if "duplicate" in err_str.lower() or "unique" in err_str.lower():
@@ -306,16 +306,16 @@ def main():
             # Ingest lap data (ML training features)
             n = ingest_session(sb, session, year, rnd)
             total_laps += n
-            # NOTE: race_results skipped — FK constraints to races/drivers
+            # NOTE: race_results skipped - FK constraints to races/drivers
             # tables don't have historical entries. fastf1_training_data
             # is sufficient for ML model training.
             # ingest_results(sb, session, year, rnd)
 
             # Delay between races to avoid rate limit
-            log.info(f"  💤 Waiting {DELAY_BETWEEN_RACES}s to avoid rate limit...")
+            log.info(f"   Waiting {DELAY_BETWEEN_RACES}s to avoid rate limit...")
             time.sleep(DELAY_BETWEEN_RACES)
 
-    log.info(f"\n✅ Done! Total laps ingested: {total_laps}")
+    log.info(f"\n Done! Total laps ingested: {total_laps}")
 
 
 if __name__ == "__main__":

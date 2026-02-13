@@ -1,5 +1,5 @@
 /**
- * Transformer Layer — Backend → Frontend Schema Bridge
+ * Transformer Layer - Backend -> Frontend Schema Bridge
  *
  * Converts flat backend SimulationResult / QualifyingResult
  * into the per-lap / per-session format the frontend playback engine expects.
@@ -23,11 +23,10 @@ import type {
     BackendDriverResult,
     BackendLapData,
     BackendQualifyingResult,
-    BackendQualifyingResultItem,
 } from './api';
 import { DRIVERS_2026 as DRIVERS_DATA, TEAMS_2026 as TEAMS_DATA } from '../data/f1-data';
 
-// ─── Helper lookups ───────────────────────────────────────────────────────
+//  Helper lookups 
 
 function getTeamColor(teamName: string): string {
     // Backend uses team names like "Red Bull Racing", "Ferrari", "McLaren"
@@ -98,13 +97,7 @@ function validCompound(c: string): TireCompound {
     return 'MEDIUM';
 }
 
-function formatQualTime(seconds: number): string {
-    const mins = Math.floor(seconds / 60);
-    const secs = seconds % 60;
-    return `${mins}:${secs.toFixed(3).padStart(6, '0')}`;
-}
-
-// ─── Simulation Result Transformer ───────────────────────────────────────
+//  Simulation Result Transformer 
 
 export function transformSimulationResult(
     backend: BackendSimulationResult,
@@ -347,7 +340,7 @@ export function transformSimulationResult(
     };
 }
 
-// ─── Event Type Mapping ──────────────────────────────────────────────────
+//  Event Type Mapping 
 
 function mapEventType(backendType: string): RaceEvent['type'] {
     const map: Record<string, RaceEvent['type']> = {
@@ -377,7 +370,7 @@ function mapEventType(backendType: string): RaceEvent['type'] {
     return map[backendType] || 'OVERTAKE';
 }
 
-// ─── Qualifying Result Transformer ───────────────────────────────────────
+//  Qualifying Result Transformer 
 
 export function transformQualifyingResult(
     backend: BackendQualifyingResult,

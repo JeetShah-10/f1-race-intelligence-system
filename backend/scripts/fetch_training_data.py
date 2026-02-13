@@ -16,7 +16,7 @@ import sys
 import argparse
 from datetime import datetime
 
-# ── Setup Paths ──
+#  Setup Paths 
 ROOT_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 CACHE_DIR = os.path.join(ROOT_DIR, 'cache', 'fastf1')
 DATA_DIR = os.path.join(ROOT_DIR, 'data', 'raw')
@@ -26,7 +26,7 @@ os.makedirs(CACHE_DIR, exist_ok=True)
 os.makedirs(DATA_DIR, exist_ok=True)
 fastf1.Cache.enable_cache(CACHE_DIR)
 
-# ── Columns to Extract ──
+#  Columns to Extract 
 COLUMNS_TO_KEEP = [
     'Time', 'Driver', 'DriverNumber', 'LapTime', 'LapNumber', 'Stint',
     'PitOutTime', 'PitInTime',
@@ -48,7 +48,7 @@ def get_schedule(year: int) -> pd.DataFrame:
         schedule = fastf1.get_event_schedule(year)
         return schedule
     except Exception as e:
-        print(f"  ❌ Could not get schedule for {year}: {e}")
+        print(f"   Could not get schedule for {year}: {e}")
         return pd.DataFrame()
 
 
@@ -90,7 +90,7 @@ def fetch_session_data(year: int, gp_name: str, session_type: str = 'R') -> pd.D
         return laps[available]
         
     except Exception as e:
-        print(f"  ❌ Error loading {year} {gp_name}: {e}")
+        print(f"   Error loading {year} {gp_name}: {e}")
         return pd.DataFrame()
 
 
@@ -104,7 +104,7 @@ def fetch_all_data(years: list, circuit_filter: list = None) -> dict:
     
     for year in years:
         print(f"\n{'='*60}")
-        print(f"📅 Processing {year} Season")
+        print(f" Processing {year} Season")
         print(f"{'='*60}")
         
         schedule = get_schedule(year)
@@ -123,7 +123,7 @@ def fetch_all_data(years: list, circuit_filter: list = None) -> dict:
                 if not any(f.lower() in circuit_key for f in circuit_filter):
                     continue
             
-            print(f"\n  🏎️  {gp_name} {year}...", end=" ")
+            print(f"\n    {gp_name} {year}...", end=" ")
             
             df = fetch_session_data(year, gp_name, 'R')
             
@@ -138,10 +138,10 @@ def fetch_all_data(years: list, circuit_filter: list = None) -> dict:
             all_data[circuit_key].append(df)
             laps_count = len(df)
             total_laps += laps_count
-            print(f"✅ {laps_count} laps")
+            print(f" {laps_count} laps")
     
     print(f"\n{'='*60}")
-    print(f"📊 Total: {total_laps} laps across {len(all_data)} circuits")
+    print(f" Total: {total_laps} laps across {len(all_data)} circuits")
     print(f"{'='*60}")
     
     return all_data
@@ -161,14 +161,14 @@ def save_data(all_data: dict):
         filename = f"{circuit_key}_laps.parquet"
         filepath = os.path.join(DATA_DIR, filename)
         combined.to_parquet(filepath, index=False)
-        print(f"  💾 {filename}: {len(combined)} laps")
+        print(f"   {filename}: {len(combined)} laps")
     
     # Save combined dataset
     if combined_frames:
         full_dataset = pd.concat(combined_frames, ignore_index=True)
         combined_path = os.path.join(DATA_DIR, f"all_circuits_laps_{timestamp}.parquet")
         full_dataset.to_parquet(combined_path, index=False)
-        print(f"\n  💾 Combined: {combined_path} ({len(full_dataset)} total laps)")
+        print(f"\n   Combined: {combined_path} ({len(full_dataset)} total laps)")
 
 
 def main():
@@ -182,7 +182,7 @@ def main():
     years = [int(y.strip()) for y in args.years.split(',')]
     circuits = [c.strip() for c in args.circuits.split(',')] if args.circuits else None
     
-    print(f"🏁 F1 Data Ingestion Pipeline")
+    print(f" F1 Data Ingestion Pipeline")
     print(f"   Years: {years}")
     print(f"   Circuits: {circuits or 'ALL'}")
     print(f"   Cache: {CACHE_DIR}")
@@ -192,9 +192,9 @@ def main():
     
     if all_data:
         save_data(all_data)
-        print("\n✅ Data ingestion complete!")
+        print("\n Data ingestion complete!")
     else:
-        print("\n⚠️ No data fetched.")
+        print("\n[!] No data fetched.")
 
 
 if __name__ == "__main__":

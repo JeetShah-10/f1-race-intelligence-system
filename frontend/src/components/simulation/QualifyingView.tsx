@@ -136,7 +136,7 @@ export function QualifyingView() {
                     style={{ border: '1px solid rgba(255,255,255,0.1)' }}
                     whileHover={{ borderColor: 'rgba(255,255,255,0.3)' }}
                 >
-                    SKIP TO RESULTS →
+                    SKIP TO RESULTS &rarr;
                 </motion.button>
             </div>
 
@@ -184,7 +184,7 @@ export function QualifyingView() {
                 {sessionConfig.eliminated > 0 && sortedRevealed.length > eliminationZone && (
                     <div className="shrink-0 px-4 py-1.5 text-center" style={{ background: 'rgba(255,23,68,0.15)' }}>
                         <span className="text-[10px] font-bold tracking-[0.2em] text-[#FF1744]">
-                            ▼ ELIMINATION ZONE ▼
+                            ELIMINATION ZONE
                         </span>
                     </div>
                 )}

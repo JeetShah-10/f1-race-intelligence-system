@@ -16,7 +16,7 @@ from dataclasses import dataclass
 from typing import Dict, Tuple, Optional
 
 
-# ── Compound Profiles ──
+#  Compound Profiles 
 
 COMPOUND_PROFILES: Dict[str, Dict] = {
     "SOFT": {
@@ -130,20 +130,20 @@ class TyreDegradationModel:
         base_pace = profile["base_pace_delta"]
 
         if tyre_life <= scrub_end:
-            # Phase 1: Scrub-in — tyres warming up
+            # Phase 1: Scrub-in - tyres warming up
             # Starts ~0.3s slow, converges to base pace
             warmup_remaining = (scrub_end - tyre_life) / scrub_end
             pace_delta = base_pace + 0.3 * warmup_remaining
             phase = "scrub_in"
 
         elif tyre_life <= optimal_end:
-            # Phase 2: Optimal window — minimal degradation
+            # Phase 2: Optimal window - minimal degradation
             laps_in_phase = tyre_life - scrub_end
             pace_delta = base_pace + laps_in_phase * 0.003 * multiplier
             phase = "optimal"
 
         elif tyre_life <= cliff_start:
-            # Phase 3: Linear degradation — steady dropoff
+            # Phase 3: Linear degradation - steady dropoff
             laps_in_optimal = optimal_end - scrub_end
             optimal_deg = laps_in_optimal * 0.003 * multiplier
             laps_in_linear = tyre_life - optimal_end
@@ -152,7 +152,7 @@ class TyreDegradationModel:
             phase = "linear"
 
         else:
-            # Phase 4: Cliff — exponential degradation
+            # Phase 4: Cliff - exponential degradation
             laps_in_optimal = optimal_end - scrub_end
             optimal_deg = laps_in_optimal * 0.003 * multiplier
             laps_in_linear = cliff_start - optimal_end

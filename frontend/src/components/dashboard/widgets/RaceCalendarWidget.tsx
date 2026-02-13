@@ -70,7 +70,7 @@ export const RaceCalendarWidget: React.FC = () => {
 
             <div className="px-4 py-2 border-t border-white/[0.06] bg-white/[0.01] flex-shrink-0">
                 <Link to="/calendar" className="w-full text-center text-white/40 text-xs hover:text-[#E10600] transition-colors font-medium block py-1">
-                    View Full Calendar →
+                    View Full Calendar &rarr;
                 </Link>
             </div>
         </GlassCard>

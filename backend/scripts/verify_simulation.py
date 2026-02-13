@@ -25,7 +25,7 @@ async def verify_simulation_logic():
         track_temp=30.0,
         air_temp=25.0,
         events=[
-            EventConfig(type="SC", start_lap=10, duration=5) # 💉 API INJECTION
+            EventConfig(type="SC", start_lap=10, duration=5) #  API INJECTION
         ]
     )
     

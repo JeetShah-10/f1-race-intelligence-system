@@ -1,6 +1,6 @@
 # backend/app/api/generate.py
 """
-POST /api/simulate/generate — Pre-calculated simulation endpoint.
+POST /api/simulate/generate - Pre-calculated simulation endpoint.
 
 Returns the entire race as a pre-computed set of 0.1s frames,
 suitable for client-side playback using requestAnimationFrame.
@@ -50,7 +50,7 @@ def generate_simulation(request: SimulationRequest):
             pace_model=pace_model,
         )
 
-        # 3. Run Simulation (batch mode — collect all snapshots)
+        # 3. Run Simulation (batch mode - collect all snapshots)
         engine = RaceEngine(ctx)
         engine.run()
 

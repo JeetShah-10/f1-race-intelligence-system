@@ -1,7 +1,10 @@
 {
-  "version": "v2",
-  "trained_on": "Supabase fastf1_training_data",
-  "samples": 98383,
+  "version": "v3",
+  "trained_on": "Supabase fastf1_training_data (99K+ rows)",
+  "trained_at": "2026-02-13T10:33:01.752639",
+  "total_samples": 99735,
+  "cleaned_samples": 98383,
+  "sector_samples": 292339,
   "years": [
     2022,
     2023,
@@ -10,9 +13,19 @@
   ],
   "circuits": 25,
   "drivers": 31,
-  "rmse": 7.1569,
-  "mae": 5.0164,
-  "features": [
+  "baseline": {
+    "rmse": 7.138,
+    "mae": 5.0021
+  },
+  "sector": {
+    "rmse": 2.6041,
+    "mae": 1.2832
+  },
+  "rank": {
+    "train_r2": 0.8462,
+    "test_r2": 0.6673
+  },
+  "features_baseline": [
     "Compound",
     "TyreLife",
     "Driver",
@@ -20,5 +33,15 @@
     "SpeedST",
     "SpeedFL",
     "LapNumber"
+  ],
+  "features_sector": [
+    "CircuitKey",
+    "Compound",
+    "TyreAge",
+    "FuelLoad",
+    "TrafficIndex",
+    "Sector",
+    "Driver",
+    "Team"
   ]
 }

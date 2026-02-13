@@ -13,10 +13,10 @@ import type { PredictionState, PredictionResult } from '../types/prediction';
 import '../styles/predict.css';
 
 const WEATHER_ICONS: Record<string, string> = {
-    SUNNY: '☀️',
-    CLOUDY: '⛅',
-    LIGHT_RAIN: '🌧️',
-    HEAVY_RAIN: '⛈️',
+    SUNNY: '',
+    CLOUDY: '',
+    LIGHT_RAIN: '',
+    HEAVY_RAIN: '',
 };
 
 const pageTransition = {
@@ -171,7 +171,7 @@ export function PredictPage() {
                             </div>
                         </div>
 
-                        {/* Results layout — Bento grid */}
+                        {/* Results layout - Bento grid */}
                         <div className="max-w-[1400px] mx-auto px-4 sm:px-6">
                             {/* Row 1: Podium + Insights */}
                             <div className="grid grid-cols-1 lg:grid-cols-[1fr_380px] gap-4 sm:gap-6 mb-4 sm:mb-6">
