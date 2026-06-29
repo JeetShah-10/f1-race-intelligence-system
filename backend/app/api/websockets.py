@@ -46,10 +46,10 @@ async def websocket_endpoint(websocket: WebSocket):
         # 2. Build Context
         ctx = SimulationContext(
             drivers=simulation_request.drivers,
-            weather=simulation_request.event_config.weather if simulation_request.event_config else "dry",
+            weather=simulation_request.events.weather if simulation_request.events else "dry",
             circuit=simulation_request.circuit_id,
             year=2024,
-            lap_count=simulation_request.laps,
+            lap_count=simulation_request.lap_count,
             track_temp=simulation_request.track_temp,
             air_temp=simulation_request.air_temp,
             ml_handoff=ml_handoff,

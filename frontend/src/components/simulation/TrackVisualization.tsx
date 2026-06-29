@@ -200,8 +200,8 @@ export function TrackVisualization() {
 
             {/* Track Map Layer - visible background */}
             <div className="relative w-[85%] h-[85%] flex items-center justify-center">
-                {/* Map Image */}
-                {circuitConfig.mapImage && (
+                {/* Map Image — only for circuits WITHOUT accurate path */}
+                {circuitConfig.mapImage && !circuitConfig.hasAccuratePath && (
                     <img
                         src={circuitConfig.mapImage}
                         alt="Circuit Map"
@@ -227,8 +227,61 @@ export function TrackVisualization() {
                     />
                 </svg>
 
-                {/* SVG Track outline (subtle, only when no map image) */}
-                {!circuitConfig.mapImage && (
+                {/* Accurate SVG Track Outline — visible for circuits with real path data */}
+                {circuitConfig.hasAccuratePath && (
+                    <svg
+                        viewBox={circuitConfig.viewBox}
+                        className="absolute w-full h-full"
+                        preserveAspectRatio="xMidYMid meet"
+                    >
+                        <defs>
+                            <linearGradient id="accurateTrackGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+                                <stop offset="0%" stopColor="rgba(0,230,118,0.6)" />
+                                <stop offset="50%" stopColor="rgba(255,255,255,0.4)" />
+                                <stop offset="100%" stopColor="rgba(0,176,255,0.6)" />
+                            </linearGradient>
+                            <filter id="trackGlow">
+                                <feGaussianBlur in="SourceGraphic" stdDeviation="4" result="blur" />
+                                <feMerge>
+                                    <feMergeNode in="blur" />
+                                    <feMergeNode in="SourceGraphic" />
+                                </feMerge>
+                            </filter>
+                        </defs>
+                        {/* Outer ambient glow */}
+                        <path
+                            d={circuitConfig.path}
+                            fill="none"
+                            stroke="rgba(0,230,118,0.06)"
+                            strokeWidth={22}
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                            style={{ filter: 'blur(8px)' }}
+                        />
+                        {/* Track surface (wide, dark) */}
+                        <path
+                            d={circuitConfig.path}
+                            fill="none"
+                            stroke="rgba(255,255,255,0.08)"
+                            strokeWidth={14}
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                        />
+                        {/* Track center line (neon) */}
+                        <path
+                            d={circuitConfig.path}
+                            fill="none"
+                            stroke="url(#accurateTrackGradient)"
+                            strokeWidth={3}
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                            filter="url(#trackGlow)"
+                        />
+                    </svg>
+                )}
+
+                {/* Fallback SVG Track outline (when no map image and no accurate path) */}
+                {!circuitConfig.mapImage && !circuitConfig.hasAccuratePath && (
                     <svg
                         viewBox={circuitConfig.viewBox}
                         className="absolute w-full h-full"

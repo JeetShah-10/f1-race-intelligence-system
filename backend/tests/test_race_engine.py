@@ -470,7 +470,7 @@ class TestRaceEngine:
         results = engine.run()
         
         assert results["circuit"] == "bahrain"
-        assert results["laps"] == 5
+        assert results["total_laps"] == 5
         assert len(results["results"]) == 4
 
     def test_sector_times_generated(self):
@@ -580,6 +580,7 @@ class TestRaceEngine:
         engine1.overtake_model.rng = random.Random(12345)
         engine1.strategy_ai.rng = random.Random(12345)
         engine1.crash_model.rng = random.Random(12345)
+        engine1.random_events.rng = random.Random(12345)
         results1 = engine1.run()
 
         ctx2 = make_test_context(num_drivers=4, lap_count=10)
@@ -588,12 +589,13 @@ class TestRaceEngine:
         engine2.overtake_model.rng = random.Random(12345)
         engine2.strategy_ai.rng = random.Random(12345)
         engine2.crash_model.rng = random.Random(12345)
+        engine2.random_events.rng = random.Random(12345)
         results2 = engine2.run()
 
         for r1, r2 in zip(results1["results"], results2["results"]):
             assert r1["driver_id"] == r2["driver_id"]
             assert r1["position"] == r2["position"]
-            assert r1["time"] == pytest.approx(r2["time"], abs=0.001)
+            assert r1["total_time"] == pytest.approx(r2["total_time"], abs=0.001)
 
     def test_invariant_checking(self):
         """Enabling invariant checks should not break the simulation."""

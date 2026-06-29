@@ -24,6 +24,7 @@ import type {
     BackendLapData,
     BackendQualifyingResult,
 } from './api';
+import type { LapUpdateFrame } from './websocket';
 import { DRIVERS_2026 as DRIVERS_DATA, TEAMS_2026 as TEAMS_DATA } from '../data/f1-data';
 
 //  Helper lookups 
@@ -63,7 +64,7 @@ function getTeamId(teamName: string): string {
     return team?.id || teamName.toLowerCase().replace(/\s+/g, '-');
 }
 
-function getDriverInfo(driverCode: string) {
+export function getDriverInfo(driverCode: string) {
     return DRIVERS_DATA.find(d => d.code === driverCode);
 }
 
@@ -438,5 +439,163 @@ export function transformQualifyingResult(
             q2: q2Results,
             q3: q3Results,
         },
+    };
+}
+
+export function transformLapUpdate(
+    frame: LapUpdateFrame,
+    bestLapTimes: Record<string, number>,
+    pitStopCounts: Record<string, number>,
+    previousPositions: Record<string, number>,
+    globalFastest: { driver: string; time: number }
+): RaceLap {
+    const standings: DriverStanding[] = [];
+    const lapNum = frame.lap;
+
+    // Collect sector times for sector status classification
+    const allSector1 = frame.drivers.map(d => d.sector_times[0] ?? null);
+    const allSector2 = frame.drivers.map(d => d.sector_times[1] ?? null);
+    const allSector3 = frame.drivers.map(d => d.sector_times[2] ?? null);
+
+    // Sort running drivers by position (position is 1-indexed in frame)
+    const sortedRunning = [...frame.drivers].sort((a, b) => a.position - b.position);
+
+    let position = 1;
+    for (const dr of sortedRunning) {
+        const driverInfo = getDriverInfo(dr.driver_id);
+        const gap = dr.gap_to_leader;
+        
+        // Update best lap time
+        if (dr.last_lap_time > 0 && dr.last_lap_time < (bestLapTimes[dr.driver_id] || Infinity)) {
+            bestLapTimes[dr.driver_id] = dr.last_lap_time;
+        }
+
+        // Update global fastest lap
+        if (dr.last_lap_time > 0 && dr.last_lap_time < globalFastest.time) {
+            globalFastest.time = dr.last_lap_time;
+            globalFastest.driver = dr.driver_id;
+        }
+
+        // Track pit stops
+        const prevPits = pitStopCounts[dr.driver_id] || 0;
+        pitStopCounts[dr.driver_id] = dr.pit_stops;
+
+        const s1 = dr.sector_times[0] ?? 0;
+        const s2 = dr.sector_times[1] ?? 0;
+        const s3 = dr.sector_times[2] ?? 0;
+
+        const prevPos = previousPositions[dr.driver_id] ?? position;
+        const posChange = prevPos - position;
+        previousPositions[dr.driver_id] = position; // Update for next lap
+
+        const isPitting = dr.pit_stops > prevPits;
+
+        standings.push({
+            position,
+            driverCode: dr.driver_id,
+            driverName: driverInfo?.name || dr.driver_id,
+            driverNumber: driverInfo?.number || 0,
+            teamId: getTeamId(driverInfo?.teamId || 'unknown'),
+            teamName: getTeamShortName(driverInfo?.teamId || 'unknown'),
+            teamColor: getTeamColor(driverInfo?.teamId || 'unknown'),
+            gapToLeader: formatGapStr(gap),
+            interval: position === 1 ? '---' : `+${dr.interval.toFixed(3)}`,
+            lastLapTime: parseFloat(dr.last_lap_time.toFixed(3)),
+            bestLapTime: bestLapTimes[dr.driver_id] && bestLapTimes[dr.driver_id] !== Infinity ? parseFloat(bestLapTimes[dr.driver_id].toFixed(3)) : 0,
+            isFastestLap: dr.driver_id === globalFastest.driver,
+            compound: validCompound(dr.tyre_compound),
+            tyreAge: dr.tyre_age,
+            pitStops: dr.pit_stops,
+            status: isPitting ? 'PIT' : 'RUNNING',
+            speed: Math.round(280 + Math.random() * 60),
+            sectors: [
+                parseFloat(s1.toFixed(3)),
+                parseFloat(s2.toFixed(3)),
+                parseFloat(s3.toFixed(3)),
+            ],
+            sectorStatus: [
+                classifySector(dr.sector_times[0] ?? null, allSector1),
+                classifySector(dr.sector_times[1] ?? null, allSector2),
+                classifySector(dr.sector_times[2] ?? null, allSector3),
+            ],
+            positionChange: posChange,
+            driverPhoto: driverInfo?.images.cutout,
+        });
+
+        position++;
+    }
+
+    // Handle retired drivers
+    const participatingDrivers = Object.keys(previousPositions);
+    const runningCodes = new Set(sortedRunning.map(d => d.driver_id));
+    const retiredCodes = participatingDrivers.filter(code => !runningCodes.has(code));
+
+    for (const code of retiredCodes) {
+        const driverInfo = getDriverInfo(code);
+        standings.push({
+            position,
+            driverCode: code,
+            driverName: driverInfo?.name || code,
+            driverNumber: driverInfo?.number || 0,
+            teamId: getTeamId(driverInfo?.teamId || 'unknown'),
+            teamName: getTeamShortName(driverInfo?.teamId || 'unknown'),
+            teamColor: getTeamColor(driverInfo?.teamId || 'unknown'),
+            gapToLeader: 'OUT',
+            interval: 'OUT',
+            lastLapTime: 0,
+            bestLapTime: bestLapTimes[code] && bestLapTimes[code] !== Infinity ? parseFloat(bestLapTimes[code].toFixed(3)) : 0,
+            isFastestLap: false,
+            compound: 'MEDIUM',
+            tyreAge: 0,
+            pitStops: pitStopCounts[code] || 0,
+            status: 'OUT',
+            speed: 0,
+            sectors: [0, 0, 0],
+            sectorStatus: ['NONE', 'NONE', 'NONE'],
+            positionChange: 0,
+            driverPhoto: driverInfo?.images.cutout,
+        });
+        position++;
+    }
+
+    // Determine flag
+    let flag: RaceFlag = 'GREEN';
+    if (frame.sc_status === 'SC') {
+        flag = 'SC';
+    } else if (frame.sc_status === 'VSC') {
+        flag = 'VSC';
+    }
+
+    // Generate events
+    const events: RaceEvent[] = [];
+    
+    // Add DNF events for any drivers in frame.dnf
+    for (const dnfDriver of frame.dnf) {
+        events.push({
+            type: 'DNF',
+            lap: lapNum,
+            description: `${dnfDriver} has retired from the race`,
+            drivers: [dnfDriver],
+        });
+    }
+
+    // Add Pit events if pitting
+    for (const dr of sortedRunning) {
+        const prevPits = pitStopCounts[dr.driver_id] || 0;
+        if (dr.pit_stops > prevPits) {
+            events.push({
+                type: 'PIT_STOP',
+                lap: lapNum,
+                description: `${dr.driver_id} pits for new tyres`,
+                drivers: [dr.driver_id],
+            });
+        }
+    }
+
+    return {
+        lap: lapNum,
+        flag,
+        standings,
+        events,
     };
 }

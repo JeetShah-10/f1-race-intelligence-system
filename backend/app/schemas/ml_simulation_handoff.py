@@ -25,8 +25,8 @@ class MLHandoff(BaseModel):
     # Reliability / DNF Model
     dnf_probability: float = 0.001
     
-    class Config:
-        json_schema_extra = {
+    model_config = {
+        "json_schema_extra": {
             "example": {
                 "driver_id": "VER",
                 "baseline_lap_time": 91.5,
@@ -38,3 +38,4 @@ class MLHandoff(BaseModel):
                 "dnf_probability": 0.0001
             }
         }
+    }

@@ -60,7 +60,7 @@ class TestMLIntegration:
             driver="VER",
             compound="MEDIUM",
             tyre_life=0,  # Starts at 0
-            team="red_bull",
+            team="Red Bull Racing",
             speed_st=0,
             speed_fl=0,
             lap_number=1
@@ -115,9 +115,9 @@ class TestMLIntegration:
             # Run simulation
             results = engine.run()
             
-            assert results["laps"] == 3
+            assert results["total_laps"] == 3
             assert len(results["results"]) == 1
-            assert results["results"][0]["time"] > 0
+            assert results["results"][0]["total_time"] > 0
         except Exception:
             import traceback
             traceback.print_exc()

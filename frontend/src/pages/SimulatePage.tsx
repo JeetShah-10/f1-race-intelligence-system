@@ -81,6 +81,11 @@ export function SimulatePage() {
         return <RaceResults />;
     }
 
+    //  PHASE: Error 
+    if (phase === 'ERROR') {
+        return <ErrorScreen />;
+    }
+
     return <CircuitSelector onSelect={selectCircuit} />;
 }
 
@@ -210,6 +215,60 @@ function QualiResultsTransition() {
                 >
                     VIEW STARTING GRID &rarr;
                 </motion.button>
+            </motion.div>
+        </div>
+    );
+}
+
+//  Error Screen 
+function ErrorScreen() {
+    const { error, clearError, selectedCircuitId, startQualifying } = useSimulationStore();
+
+    return (
+        <div className="h-screen flex flex-col items-center justify-center" style={{ background: '#0a0a0f' }}>
+            <motion.div
+                className="text-center max-w-lg px-6"
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+            >
+                {/* Error icon */}
+                <div className="w-16 h-16 rounded-full mx-auto mb-6 flex items-center justify-center"
+                    style={{ background: 'rgba(225,6,0,0.12)', border: '1px solid rgba(225,6,0,0.3)' }}>
+                    <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#E10600" strokeWidth="2">
+                        <circle cx="12" cy="12" r="10" />
+                        <line x1="12" y1="8" x2="12" y2="12" />
+                        <line x1="12" y1="16" x2="12.01" y2="16" />
+                    </svg>
+                </div>
+
+                <h2 className="text-xl font-bold text-white mb-3">Simulation Error</h2>
+                <p className="text-sm text-white/50 mb-8 leading-relaxed">
+                    {error || 'An unexpected error occurred. Please ensure the backend server is running.'}
+                </p>
+
+                <div className="flex items-center gap-3 justify-center">
+                    <button
+                        onClick={clearError}
+                        className="px-5 py-2.5 rounded-lg text-sm font-medium text-white/70 hover:text-white transition-colors"
+                        style={{ background: 'rgba(255,255,255,0.06)', border: '1px solid rgba(255,255,255,0.1)' }}
+                    >
+                        Back to Circuits
+                    </button>
+                    {selectedCircuitId && (
+                        <button
+                            onClick={() => {
+                                startQualifying();
+                            }}
+                            className="px-5 py-2.5 rounded-lg text-sm font-bold text-white tracking-wider"
+                            style={{
+                                background: 'linear-gradient(135deg, #E10600 0%, #B80000 100%)',
+                                boxShadow: '0 0 20px rgba(225,6,0,0.2)',
+                            }}
+                        >
+                            Retry
+                        </button>
+                    )}
+                </div>
             </motion.div>
         </div>
     );

@@ -12,8 +12,9 @@ import type {
 } from '../types/simulation';
 import { generateGrid, getCircuitById } from '../data/simulationMockData';
 import { api } from '../services/api';
-import type { DriverInput } from '../services/api';
-import { transformSimulationResult, transformQualifyingResult } from '../services/transformers';
+import type { DriverInput, SimulationRequest } from '../services/api';
+import { transformSimulationResult, transformQualifyingResult, transformLapUpdate } from '../services/transformers';
+import { wsService } from '../services/websocket';
 
 //  Adaptive Speed Config 
 const SPEED = {
@@ -97,6 +98,7 @@ interface SimulationStore {
     setPlaybackSpeed: (speed: number) => void;
     setSelectedDriver: (code: string | null) => void;
     tick: () => void;
+    connectWebSocket: () => void;
 
     // Navigation
     backToCircuits: () => void;
@@ -288,73 +290,193 @@ export const useSimulationStore = create<SimulationStore>((set, get) => ({
     //  Race 
 
     startRace: async () => {
-        const { selectedCircuitId, qualifyingData } = get();
+        const { selectedCircuitId } = get();
         if (!selectedCircuitId) return;
 
         set({ phase: 'RACE_READY', status: 'LOADING', error: null });
 
-        let data: FullRaceData;
-        try {
-            const circuit = getCircuitById(selectedCircuitId);
+        const circuit = getCircuitById(selectedCircuitId);
 
-            // Build drivers array from qualifying results for proper grid order
-            // This sends each driver with their qualifying-determined position
-            let drivers: DriverInput[] | undefined;
-            if (qualifyingData && qualifyingData.results.length > 0) {
-                // Map team ID back to display name the backend expects
-                const teamIdToName: Record<string, string> = {
-                    'red-bull': 'Red Bull Racing',
-                    'ferrari': 'Ferrari',
-                    'mclaren': 'McLaren',
-                    'mercedes': 'Mercedes',
-                    'aston-martin': 'Aston Martin',
-                    'alpine': 'Alpine',
-                    'williams': 'Williams',
-                    'racing-bulls': 'Racing Bulls',
-                    'haas': 'Haas',
-                    'audi': 'Audi',
-                    'cadillac': 'Cadillac',
-                };
+        // Initialize empty FullRaceData structure
+        const initialRaceData: FullRaceData = {
+            raceId: `sim-${selectedCircuitId}-${Date.now()}`,
+            config: {
+                circuitId: selectedCircuitId,
+                circuitName: circuit?.name || selectedCircuitId,
+                country: circuit?.country || '',
+                totalLaps: circuit?.laps ?? 57,
+                year: 2026,
+            },
+            laps: [],
+        };
 
-                drivers = qualifyingData.results.map(r => ({
-                    driver: r.driverCode,
-                    team: teamIdToName[r.teamId] || r.teamName,
-                    grid_position: r.position,
-                }));
-            }
+        // Disconnect any active connections
+        wsService.disconnect();
 
-            const backendResult = await api.runSimulation({
-                circuit_id: selectedCircuitId,
-                lap_count: circuit?.laps ?? 57,
-                ...(drivers ? { drivers } : { grid: 'current_2026' }),
-            });
-            data = transformSimulationResult(backendResult, circuit || null);
-            console.log('[Race] ✅ Using backend ML simulation data');
-        } catch (err) {
-            const message = err instanceof Error ? err.message : 'Backend unavailable';
-            console.error('[Race] ❌ Backend simulation failed:', message);
-            set({
-                phase: 'ERROR',
-                error: `Race simulation failed: ${message}. Make sure the backend is running at ${window.location.protocol}//localhost:8000`,
-                status: 'IDLE',
-            });
-            return;
-        }
-
-        const firstLap = data.laps[0];
+        // Build Lap 0 standings from gridOrder
+        const activeGrid = get().gridOrder;
+        const initialStandings: DriverStanding[] = activeGrid.map(g => {
+            return {
+                position: g.position,
+                driverCode: g.driverCode,
+                driverName: g.driverName,
+                driverNumber: g.driverNumber,
+                teamId: g.teamId,
+                teamName: g.teamName,
+                teamColor: g.teamColor,
+                gapToLeader: '0.000',
+                interval: '---',
+                lastLapTime: 0,
+                bestLapTime: 0,
+                isFastestLap: false,
+                compound: 'MEDIUM',
+                tyreAge: 0,
+                pitStops: 0,
+                status: 'RUNNING',
+                speed: 0,
+                sectors: [0, 0, 0],
+                sectorStatus: ['NONE', 'NONE', 'NONE'],
+                positionChange: 0,
+                driverPhoto: g.driverPhoto,
+            };
+        });
 
         set({
             phase: 'RACE_READY',
-            fullRaceData: data,
-            raceConfig: data.config,
+            fullRaceData: initialRaceData,
+            raceConfig: initialRaceData.config,
             currentLap: 0,
-            currentStandings: firstLap?.standings || [],
+            currentStandings: initialStandings,
             currentFlag: 'GREEN',
             currentEvents: [],
             allPastEvents: [],
             isPlaying: false,
             selectedDriver: null,
             status: 'READY',
+        });
+    },
+
+    connectWebSocket: () => {
+        const { selectedCircuitId, qualifyingData, raceConfig } = get();
+        if (!selectedCircuitId || !raceConfig) return;
+
+        set({ isPlaying: true, phase: 'RACE_PLAYING', status: 'PLAYING', error: null });
+
+        const circuit = getCircuitById(selectedCircuitId);
+
+        let drivers: DriverInput[] | undefined;
+        if (qualifyingData && qualifyingData.results.length > 0) {
+            const teamIdToName: Record<string, string> = {
+                'red-bull': 'Red Bull Racing',
+                'ferrari': 'Ferrari',
+                'mclaren': 'McLaren',
+                'mercedes': 'Mercedes',
+                'aston-martin': 'Aston Martin',
+                'alpine': 'Alpine',
+                'williams': 'Williams',
+                'racing-bulls': 'Racing Bulls',
+                'haas': 'Haas',
+                'audi': 'Audi',
+                'cadillac': 'Cadillac',
+            };
+
+            drivers = qualifyingData.results.map(r => ({
+                driver: r.driverCode,
+                team: teamIdToName[r.teamId] || r.teamName,
+                grid_position: r.position,
+            }));
+        }
+
+        const simRequest: SimulationRequest = {
+            circuit_id: selectedCircuitId,
+            lap_count: circuit?.laps ?? 57,
+            ...(drivers ? { drivers } : { grid: 'current_2026' }),
+        };
+
+        // Track states
+        const bestLapTimes: Record<string, number> = {};
+        const pitStopCounts: Record<string, number> = {};
+        const previousPositions: Record<string, number> = {};
+        const globalFastest = { driver: '', time: Infinity };
+
+        const participatingDrivers = drivers ? drivers.map(d => d.driver) : [];
+        if (participatingDrivers.length === 0 && qualifyingData) {
+            participatingDrivers.push(...qualifyingData.results.map(r => r.driverCode));
+        }
+        const defaultRoster = ["NOR", "PIA", "VER", "HAD", "LEC", "HAM", "RUS", "ANT", "ALB", "SAI", "LAW", "LIN", "ALO", "STR", "OCO", "BEA", "HUL", "BOR", "GAS", "COL", "BOT", "PER"];
+        if (participatingDrivers.length === 0) {
+            participatingDrivers.push(...defaultRoster);
+        }
+
+        participatingDrivers.forEach((code, idx) => {
+            previousPositions[code] = idx + 1;
+        });
+
+        const initialRaceData = get().fullRaceData || {
+            raceId: `sim-${selectedCircuitId}-${Date.now()}`,
+            config: raceConfig,
+            laps: [],
+        };
+
+        wsService.connect(simRequest, {
+            onFrame: (frame) => {
+                const currentStoreState = get();
+                if (currentStoreState.phase === 'CIRCUIT_SELECT' || currentStoreState.phase === 'ERROR') {
+                    wsService.disconnect();
+                    return;
+                }
+
+                const transformedLap = transformLapUpdate(
+                    frame,
+                    bestLapTimes,
+                    pitStopCounts,
+                    previousPositions,
+                    globalFastest
+                );
+
+                const store = get();
+                const updatedLaps = [...(store.fullRaceData?.laps || []), transformedLap];
+                const flag = transformedLap.flag;
+
+                const newRaceData = {
+                    ...initialRaceData,
+                    laps: updatedLaps,
+                };
+
+                const isCaughtUp = store.isPlaying && (store.currentLap === updatedLaps.length - 1 || store.currentLap === 0);
+
+                if (isCaughtUp) {
+                    set({
+                        fullRaceData: newRaceData,
+                        currentLap: frame.lap,
+                        currentStandings: transformedLap.standings,
+                        currentFlag: flag,
+                        currentEvents: transformedLap.events,
+                        allPastEvents: [...store.allPastEvents, ...transformedLap.events],
+                    });
+                } else {
+                    set({
+                        fullRaceData: newRaceData,
+                    });
+                }
+            },
+            onComplete: (results) => {
+                const completeRaceData = transformSimulationResult(results, circuit || null);
+                set({
+                    fullRaceData: completeRaceData,
+                    isPlaying: false,
+                    phase: 'RACE_FINISHED',
+                    status: 'FINISHED',
+                });
+            },
+            onError: (errorMessage) => {
+                console.error('[WS] Error:', errorMessage);
+                set({
+                    phase: 'ERROR',
+                    error: `Simulation failed: ${errorMessage}. Please check your backend connection.`,
+                    status: 'IDLE',
+                });
+            }
         });
     },
 
@@ -365,6 +487,11 @@ export const useSimulationStore = create<SimulationStore>((set, get) => ({
 
         clearTimer();
         set({ isPlaying: true, phase: 'RACE_PLAYING', status: 'PLAYING' });
+
+        if (state.currentLap === 0 && state.fullRaceData.laps.length === 0) {
+            get().connectWebSocket();
+            return;
+        }
 
         const scheduleNext = () => {
             const s = get();
@@ -378,7 +505,7 @@ export const useSimulationStore = create<SimulationStore>((set, get) => ({
             }
 
             const lapData = s.fullRaceData.laps[nextLap - 1];
-            if (!lapData) return;
+            if (!lapData) return; // Wait for incoming WS frames if caught up
 
             const interval = getAdaptiveInterval(lapData, s.fullRaceData.config.totalLaps);
             set({ adaptiveInterval: interval });
@@ -501,6 +628,7 @@ export const useSimulationStore = create<SimulationStore>((set, get) => ({
     backToCircuits: () => {
         clearTimer();
         clearQualiTimer();
+        wsService.disconnect();
         set({
             phase: 'CIRCUIT_SELECT',
             selectedCircuitId: null,
