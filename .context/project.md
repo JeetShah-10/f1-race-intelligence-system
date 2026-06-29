@@ -42,13 +42,7 @@ An async FastAPI backend for predictions and physics-based simulations.
 - **`app/db/`**: Connection config and SQLAlchemy models.
 - **`app/services/`**: Support services (database, prediction, config mapping).
 
-### 🤖 3. Developer Swarm (`src/`)
-A local multi-agent automation framework.
-- **Not a website feature.**
-- Used by AI assistants (like Antigravity) to run heavy background tasks, research, and coding operations.
-- Comprises specialized agents: Router (`src/agents/router_agent.py`), Researcher, Coder, Reviewer.
-
-### 📂 4. Shared Resources
+### 📂 3. Shared Resources
 - **`docs/`**: Technical specs, PRDs, and UX plans.
 - **`ml_data/`**: Datasets for machine learning model training.
 - **`3D-model-and-references/`**: Visual assets and reference files.

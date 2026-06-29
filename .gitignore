@@ -66,3 +66,7 @@ f1-race-prediction/
 3D-model-backup/
 notebooks/
 ml_notebooks/
+
+# Developer Swarm (untracked)
+src/
+
