@@ -269,4 +269,35 @@ export const api = {
         }
         return await response.json();
     },
+
+    //  NEW: Dashboard Stats & Public endpoints
+
+    async getDashboardStats(): Promise<any> {
+        const response = await fetch(`${API_BASE_URL}/api/dashboard/stats`);
+        if (!response.ok) {
+            throw new Error(`Failed to fetch dashboard stats: ${response.statusText}`);
+        }
+        return await response.json();
+    },
+
+    async subscribeToNewsletter(email: string): Promise<{ success: boolean; message: string }> {
+        const response = await fetch(`${API_BASE_URL}/api/newsletter`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ email }),
+        });
+        if (!response.ok) {
+            throw new Error(`Subscription failed: ${response.statusText}`);
+        }
+        return await response.json();
+    },
+
+    async get2026Stats(): Promise<any> {
+        const response = await fetch(`${API_BASE_URL}/api/stats/2026`);
+        if (!response.ok) {
+            throw new Error(`Failed to fetch 2026 stats: ${response.statusText}`);
+        }
+        return await response.json();
+    },
 };
+

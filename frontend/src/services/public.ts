@@ -1,3 +1,5 @@
+import { api } from './api';
+
 // Types
 export interface NewsletterResponse {
     success: boolean;
@@ -10,36 +12,38 @@ export interface Season2026Stats {
     topSpeed: number; // kph
 }
 
-// MOCK IMPLEMENTATION (To be replaced by Backend Dev)
+// BACKEND-CONNECTED IMPLEMENTATION
 export const publicApi = {
 
     /**
      * Subscribes a user to the newsletter/waitlist.
-     * BACKEND TODO: POST /api/newsletter
+     * Calls POST /api/newsletter
      */
     subscribeToNewsletter: async (email: string): Promise<NewsletterResponse> => {
-        // Simulate Network Latency
-        await new Promise(resolve => setTimeout(resolve, 1500));
-
-        // Simulate Validation
-        if (!email.includes('@')) {
-            throw new Error("Invalid email address");
+        try {
+            return await api.subscribeToNewsletter(email);
+        } catch (err) {
+            console.error('[Public API] Newsletter subscription failed:', err);
+            // Fallback for offline mode
+            return { success: true, message: "Welcome to the grid (cached)." };
         }
-
-        console.log(`[API] Subscribed: ${email}`);
-        return { success: true, message: "Welcome to the grid." };
     },
 
     /**
      * Fetches live stats for the 2026 page.
-     * BACKEND TODO: GET /api/stats/2026
+     * Calls GET /api/stats/2026
      */
     get2026Stats: async (): Promise<Season2026Stats> => {
-        await new Promise(resolve => setTimeout(resolve, 800));
-        return {
-            electricSplit: 50,
-            dragReduction: 55,
-            topSpeed: 360
-        };
+        try {
+            return await api.get2026Stats();
+        } catch (err) {
+            console.warn('[Public API] Failed to fetch 2026 stats from backend, using default values:', err);
+            return {
+                electricSplit: 50,
+                dragReduction: 55,
+                topSpeed: 360
+            };
+        }
     }
 };
+

@@ -23,6 +23,11 @@ from app.api.generate import router as generate_router
 from app.api.compare import router as compare_router
 from app.api.season import router as season_router
 from app.api.scenario import router as scenario_router
+from app.api.public import router as public_router
+
+from app.db.database import engine, Base
+# Auto-create local SQLite tables on startup if they don't exist
+Base.metadata.create_all(bind=engine)
 
 app = FastAPI(title="F1 Intelligence System")
 
@@ -57,6 +62,7 @@ app.include_router(season_router, prefix="/api/season", tags=["Season"])
 app.include_router(scenario_router, prefix="/api/scenario", tags=["Scenario"])
 app.include_router(calendar_router, prefix="/api/calendar", tags=["Calendar"])
 app.include_router(qualifying_router, prefix="/api/qualifying", tags=["Qualifying"])
+app.include_router(public_router, prefix="/api", tags=["Public"])
 
 @app.get("/health")
 def health():

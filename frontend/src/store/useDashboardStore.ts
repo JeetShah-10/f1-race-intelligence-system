@@ -465,6 +465,22 @@ export const useDashboardStore = create<DashboardState>((set, get) => ({
                 meta: { ...get().meta, status: 'Offline' },
             });
         }
+
+        try {
+            // Fetch real-time dashboard analytics
+            const stats = await api.getDashboardStats();
+            if (stats) {
+                set({
+                    momentum: stats.momentum || get().momentum,
+                    rivalries: stats.rivalries || get().rivalries,
+                    insights: stats.insights || get().insights,
+                    scenarios: stats.scenarios || get().scenarios,
+                });
+                console.log('[Dashboard]  Analytics stats loaded from backend');
+            }
+        } catch (err) {
+            console.warn('[Dashboard] [!] Backend analytics stats unavailable, using mock data:', err);
+        }
     },
 }));
 
