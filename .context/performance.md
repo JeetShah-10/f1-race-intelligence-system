@@ -1,92 +1,53 @@
-# 60 FPS Performance Guide
+# F1 Race Intelligence - 60 FPS Performance Guide
 
 ## Core Principle
-> Every frame has 16.67ms. Every animation must complete within budget.
+Every animation, transition, and UI update must complete within 16.67ms to maintain a fluid 60 FPS experience on consumer devices.
 
-## GPU-Accelerated Properties (USE THESE)
-- `transform` (translate, scale, rotate)
+---
+
+## Animation Rules (GPU vs. CPU)
+
+### ⚡ GPU-Accelerated Properties (Always Use)
+- `transform` (translates, scales, rotations)
 - `opacity`
-- `filter` (blur, brightness)
+- `filter` (blurs, brightness adjustments)
 
-## CPU-Heavy Properties (AVOID)
-- `width`, `height`
-- `top`, `left`, `right`, `bottom`
-- `margin`, `padding`
-- `border-radius` (during animation)
-
----
-
-## React Performance Checklist
-
-### Components
-- [ ] Heavy components wrapped in `React.memo()`
-- [ ] Expensive calculations in `useMemo()`
-- [ ] Event handlers in `useCallback()`
-- [ ] Large lists use virtualization (`react-window`)
-
-### Images
-- [ ] All images use WebP format
-- [ ] `loading="lazy"` on below-fold images
-- [ ] `srcset` with 1x, 2x, 4K variants
-- [ ] Proper `width`/`height` to prevent CLS
-
-### Videos
-- [ ] WebM format (VP9 codec)
-- [ ] `preload="metadata"` not `auto`
-- [ ] `poster` image always set
-- [ ] `playsInline muted loop` for backgrounds
-
-### Three.js/3D
-- [ ] Models use GLTF + Draco compression
-- [ ] Dispose geometry/materials/textures on unmount
-- [ ] Use `instancedMesh` for repeated objects
-- [ ] Implement LOD for complex scenes
+### ⚠️ CPU-Heavy Properties (Never Animate Directly)
+- `width` / `height` (triggers layout reflows)
+- `top` / `left` / `right` / `bottom` (use `translate` instead)
+- `margin` / `padding` / `border-radius`
 
 ---
 
-## Bundle Size Targets
+## React Component Optimization
+- **Memoization:** Wrap compute-intensive or nested UI components in `React.memo()`.
+- **Reference Stability:** Memoize expensive calculations with `useMemo()` and callback handlers with `useCallback()` to prevent unnecessary child re-renders.
+- **List Virtualization:** For long telemetry lists or large datasets, use virtualization patterns (such as `react-window`) to only render visible items.
 
-| Category | Target | Action if Over |
-|----------|--------|----------------|
-| Initial JS | < 200KB | Code split more |
-| Initial CSS | < 50KB | Purge unused |
-| Per-route JS | < 100KB | Lazy load components |
-| Total assets | < 2MB | Compress images |
+---
 
-## Commands
+## Asset Loading Guidelines
 
-```bash
-# Analyze bundle
-npm run build -- --report
+### 1. Images & Background Videos
+- **Image Formats:** Serve images in WebP format with `loading="lazy"` for below-fold content. Define dimensions explicitly to prevent Cumulative Layout Shift (CLS).
+- **Video Optimization:** Preload metadata only (`preload="metadata"`). Set static placeholder posters and declare `playsInline muted loop` to ensure autoplay compatibility.
 
-# Test performance
-npm run preview
-# Open DevTools > Performance > Record scroll
+### 2. 3D Elements (Three.js / React Three Fiber)
+- **Model Formats:** Use GLTF models compressed with Draco compression.
+- **Instancing:** Render repeated track details or cars using `instancedMesh` to reduce draw calls.
+- **Memory Hygiene:** Dispose of unused geometries, materials, and textures on component unmount to prevent GPU memory leaks.
 
-# Lighthouse
-npx lighthouse http://localhost:4173 --view
-```
+---
 
-## Framer Motion Patterns
+## Bundle size Targets
 
-```tsx
-// ✅ Good - GPU accelerated
-<motion.div
-  initial={{ opacity: 0, y: 20 }}
-  animate={{ opacity: 1, y: 0 }}
-  transition={{ duration: 0.3, ease: "easeOut" }}
-/>
+- **Initial Javascript Bundle:** < 200KB. Route-based code-splitting is mandatory.
+- **Initial CSS Stylesheet:** < 50KB. Purge unused styles.
+- **Asset Overhead:** < 2MB total assets. Compress designs and scale images appropriately.
 
-// ❌ Bad - causes layout thrash
-<motion.div
-  initial={{ height: 0 }}
-  animate={{ height: "auto" }}
-/>
+---
 
-// ✅ Fix - use transform
-<motion.div
-  initial={{ scaleY: 0 }}
-  animate={{ scaleY: 1 }}
-  style={{ transformOrigin: "top" }}
-/>
-```
+## Diagnostic & Audit Commands
+- **Bundle Analysis:** Run build analyzer plugins (`npm run build -- --report`) to detect heavy node modules.
+- **Scrolling Performance:** Use DevTools Performance Panel to record scroll frames and identify paint bottlenecks.
+- **Lighthouse Audits:** Generate local performance profiles using `npx lighthouse` to evaluate LCP, FID, and CLS scores.

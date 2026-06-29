@@ -1,129 +1,48 @@
-# F1 Intelligence - Coding Style Guide
+# F1 Race Intelligence - Coding Style Guide
 
-## TypeScript/React Standards
+## TypeScript & React Standards
 
-### Component Structure
-```tsx
-// 1. Imports (grouped: react, external libs, internal, styles)
-import { useState, useEffect, memo, useCallback } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
-import { useStore } from '@/store/useStore';
-import styles from './Component.module.css';
+### 1. Component Structure & Order
+Write components with a predictable, structured layout:
+1. **Imports Grouping:** Group imports in this order:
+   - React core hooks and libraries.
+   - External dependencies (e.g. Framer Motion, Zustand).
+   - Internal imports (components, stores, utils, config).
+   - Stylesheet/CSS modules.
+2. **Prop Interfaces:** Always define a TypeScript interface for props (e.g. `interface DashboardCardProps`).
+3. **Component Definition:** Export named components. Use `React.memo` for heavy rendering components.
+4. **Hooks Order:** Hooks first, followed by state, Zustand store selectors, memoized callbacks (`useCallback`), and side effects (`useEffect`).
+5. **Render Logic:** Return JSX at the bottom. Keep JSX clean by extracting complex render functions or child components.
 
-// 2. Types/Interfaces
-interface ComponentProps {
-  title: string;
-  onAction?: () => void;
-}
+### 2. Component Performance Guidelines
+- **Lazy Loading:** Dynamically import heavy components (e.g., D3 charts, 3D Canvas scenes) using `lazy` and wrap them in a `Suspense` block with a loading placeholder.
+- **Visual Asset Optimization:**
+  - Images: Use WebP formats, specify `srcset` for 1x/2x displays, and use `loading="lazy"` for below-the-fold content.
+  - Videos: Preload only metadata (`preload="metadata"`), set a poster image, and use `playsInline muted loop` attributes for background tracks.
 
-// 3. Component (memoized if needed)
-export const Component = memo(function Component({ title, onAction }: ComponentProps) {
-  // Hooks first
-  const [state, setState] = useState(false);
-  const data = useStore((s) => s.data);
-  
-  // Memoized callbacks
-  const handleClick = useCallback(() => {
-    onAction?.();
-  }, [onAction]);
-  
-  // Effects
-  useEffect(() => {
-    // ...
-  }, []);
-  
-  // Render
-  return (
-    <motion.div
-      initial={{ opacity: 0 }}
-      animate={{ opacity: 1 }}
-    >
-      {title}
-    </motion.div>
-  );
-});
-```
+### 3. GPU-Accelerated Animations
+- **Properties:** Animate only properties that can be offloaded to the GPU to maintain a 60 FPS target: `transform` (translates, scales, rotations) and `opacity`.
+- **Constraint:** Never animate layout-affecting properties (such as `width`, `height`, `top`, `left`, `margin`, `padding`) as they trigger browser layout cycles and cause thrashing.
 
-### Performance Patterns
-```tsx
-// ✅ Lazy load heavy components
-const ThreeScene = lazy(() => import('./components/3d/Scene'));
+---
 
-// ✅ Use Suspense with fallback
-<Suspense fallback={<LoadingSpinner />}>
-  <ThreeScene />
-</Suspense>
+## Python & FastAPI Standards
 
-// ✅ Image optimization
-<img
-  src={smallImage}
-  srcSet={`${smallImage} 1x, ${largeImage} 2x`}
-  loading="lazy"
-  alt="..."
-/>
+### 1. API Endpoint Design
+- **Routing:** Organize endpoints into distinct routers (`APIRouter`) with modular prefixes and documentation tags.
+- **Asynchronous Code:** Declare endpoints with `async def` to utilize non-blocking ASGI features.
+- **Data Schemas:** Use Pydantic models for validation of both incoming payloads (`BaseModel`) and outgoing responses (`response_model`).
+- **Docstrings:** Document endpoints with Google-style docstrings describing the endpoint's purpose, parameters, and returns.
 
-// ✅ Video optimization
-<video
-  poster={posterImage}
-  preload="metadata"
-  playsInline
-  muted
-  loop
->
-  <source src={videoWebm} type="video/webm" />
-  <source src={videoMp4} type="video/mp4" />
-</video>
-```
-
-### Animation Standards (60 FPS)
-```tsx
-// ✅ Use transform, opacity (GPU-accelerated)
-const variants = {
-  hidden: { opacity: 0, y: 20 },
-  visible: { opacity: 1, y: 0 }
-};
-
-// ✅ Use layout prop for smooth re-layouts
-<motion.div layout layoutId="unique-id">
-
-// ❌ NEVER animate width, height, top, left directly
-```
-
-## Python/FastAPI Standards
-
-### Async Endpoints
-```python
-from fastapi import APIRouter, HTTPException
-from pydantic import BaseModel
-
-router = APIRouter(prefix="/api", tags=["predictions"])
-
-class PredictionResponse(BaseModel):
-    driver_id: str
-    position: int
-    confidence: float
-
-@router.get("/predictions/{race_id}", response_model=list[PredictionResponse])
-async def get_predictions(race_id: str) -> list[PredictionResponse]:
-    """
-    Get race predictions for a specific race.
-    
-    Args:
-        race_id: The unique race identifier
-        
-    Returns:
-        List of predicted positions with confidence scores
-    """
-    results = await prediction_service.predict(race_id)
-    return results
-```
+---
 
 ## File Naming Conventions
 
-| Type | Convention | Example |
-|------|------------|---------|
+| File Type | Case Style | Example |
+| :--- | :--- | :--- |
 | React Component | PascalCase | `DashboardCard.tsx` |
-| Hook | camelCase + use prefix | `useRaceData.ts` |
-| Utility | camelCase | `formatLapTime.ts` |
-| Types | PascalCase | `types/Race.ts` |
-| Python module | snake_case | `prediction_service.py` |
+| Custom React Hook | camelCase with `use` prefix | `useRaceData.ts` |
+| Utility Function | camelCase | `formatLapTime.ts` |
+| Type Definition | PascalCase | `types/Race.ts` |
+| Python Module/File | snake_case | `prediction_service.py` |
+| Database Model | PascalCase | `db/models.py` |

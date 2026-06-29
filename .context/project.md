@@ -1,120 +1,77 @@
 # F1 Race Intelligence System - Project Context
 
-## Project Structure
+## Project Architecture
+The F1 Race Intelligence System is a full-stack analytics platform comprising a React frontend, a Python FastAPI backend, and a database layer powered by Supabase Postgres.
 
-```
-F1-Intelligence-Model/
-├── frontend/                    # React + TypeScript + Vite
-│   ├── src/
-│   │   ├── components/          # React components
-│   │   │   ├── 3d/             # Three.js 3D scene components
-│   │   │   ├── cinematic/      # Cinematic hero sections
-│   │   │   ├── dashboard/      # Dashboard widgets & charts
-│   │   │   ├── hud/            # Racing HUD overlays
-│   │   │   ├── landing/        # Landing page sections
-│   │   │   ├── simulation/     # Race simulation components
-│   │   │   └── ui/             # Shared UI components
-│   │   ├── pages/              # Route pages
-│   │   │   ├── DashboardPage.tsx
-│   │   │   ├── PredictPage.tsx
-│   │   │   ├── SimulatePage.tsx
-│   │   │   └── analyze/        # Analysis sub-pages
-│   │   ├── store/              # Zustand state stores
-│   │   └── hooks/              # Custom React hooks
-│   └── public/assets/          # Static assets
-│       ├── cars/               # F1 car images
-│       ├── circuits/           # Track maps & images
-│       ├── drivers/            # Driver portraits
-│       ├── logos/              # Team logos
-│       ├── videos/             # Background videos
-│       └── fonts/              # Custom typography
-│
-├── backend/                     # FastAPI backend
-│   └── app/
-│       ├── main.py             # FastAPI app entry
-│       ├── routers/            # API route handlers
-│       ├── models/             # Pydantic models
-│       └── services/           # Business logic
-│
-├── F1_Intelligence_Model/       # ML model code
-│   ├── data/                   # Training data
-│   ├── models/                 # Trained model weights
-│   └── training/               # Training scripts
-│
-└── docs/                        # Documentation
-    ├── product/                # PRDs, specs
-    ├── ux/                     # Design docs
-    └── tech/                   # Technical architecture
-```
+---
 
-## Frontend Tech Stack
+## Workspace Directory Map
 
-| Technology | Purpose |
-|------------|---------|
-| **React 18** | UI framework |
-| **TypeScript** | Type safety |
-| **Vite** | Build tool |
-| **Tailwind CSS** | Styling |
-| **Framer Motion** | Animations |
-| **Three.js / R3F** | 3D graphics |
-| **Zustand** | State management |
-| **TanStack Query** | Server state |
-| **TanStack Router** | Routing |
+### 💻 1. Frontend (`frontend/`)
+A React 19 web application built with TypeScript and Vite.
+- **`src/components/`**: Modular UI components.
+  - `dashboard/`: Custom widgets (recent work, stands, calendar).
+  - `landing/`: Immersive landing page segments.
+  - `layout/`: Shared shell layouts and sidebar navigations.
+  - `loading/`: Cinematic spinners and state loading indicators.
+  - `onboarding/`: Onboarding wizard and favoriting modal.
+  - `predict/`: Prediction calendar grid and event configurations.
+  - `season2026/`: Specs and 2026 regulation previews.
+  - `simulation/`: Race playback views, grid formations, and weekend intros.
+  - `timing/`: Real-time race timing towers.
+  - `ui/`: Design-system primitive elements.
+- **`src/pages/`**: Routable page views (Dashboard, Predict, Simulate, Analyze sub-pages, Standings, Calendar).
+- **`src/store/`**: Zustand state management stores (app config, simulation state machine, dashboard stats).
+- **`src/services/`**: Network communication layers:
+  - `api.ts`: Fetch clients for REST API.
+  - `auth.ts`: Supabase authentication wrapper.
+  - `websocket.ts`: Real-time WebSocket connection client.
+  - `transformers.ts`: Data structure mapping between backend schemas and frontend types.
 
-## Backend Tech Stack
+### 🐍 2. Backend (`backend/`)
+An async FastAPI backend for predictions and physics-based simulations.
+- **`app/main.py`**: Uvicorn entry point.
+- **`app/api/`**: API endpoint routers (WS routes, predict, simulate, standings, telemetry, compare).
+- **`app/ml/`**: Machine Learning pipeline:
+  - `pace_model.py`: LightGBM ensemble predicting race lap times.
+  - `tyre_model.py`: Gradient-boosted compound degradation forecasting.
+- **`app/simulation/`**: Physics-based race simulation engine:
+  - `race_engine.py`: Core lap-by-lap simulation loop.
+  - `strategy_ai.py`: Autonomous pit-stop decision engine.
+  - `overtake_model.py`, `weather_model.py`, `crash_model.py`, `random_event_injector.py`.
+- **`app/db/`**: Connection config and SQLAlchemy models.
+- **`app/services/`**: Support services (database, prediction, config mapping).
 
-| Technology | Purpose |
-|------------|---------|
-| **FastAPI** | Web framework |
-| **Python 3.11+** | Language |
-| **Pydantic** | Data validation |
-| **Uvicorn** | ASGI server |
-| **SQLAlchemy** | ORM (if needed) |
+### 🤖 3. Developer Swarm (`src/`)
+A local multi-agent automation framework.
+- **Not a website feature.**
+- Used by AI assistants (like Antigravity) to run heavy background tasks, research, and coding operations.
+- Comprises specialized agents: Router (`src/agents/router_agent.py`), Researcher, Coder, Reviewer.
 
-## ML Stack
+### 📂 4. Shared Resources
+- **`docs/`**: Technical specs, PRDs, and UX plans.
+- **`ml_data/`**: Datasets for machine learning model training.
+- **`3D-model-and-references/`**: Visual assets and reference files.
 
-| Technology | Purpose |
-|------------|---------|
-| **scikit-learn** | Classical ML |
-| **XGBoost** | Gradient boosting |
-| **pandas** | Data processing |
-| **numpy** | Numerical ops |
-| **FastF1** | F1 telemetry data |
+---
 
-## Key API Endpoints
+## Tech Stack Overview
+- **Frontend:** React 19, Tailwind CSS 4, Framer Motion, GSAP, Zustand, D3.js, Recharts, React Router v7.
+- **Backend:** FastAPI, Python 3.11+, LightGBM, scikit-learn, Pandas, NumPy, Uvicorn, WebSockets.
+- **Database:** Supabase PostgreSQL + Auth (production), SQLite `f1_sim.db` (local development fallback).
 
-```
-GET  /api/predictions/race/{race_id}     # Race predictions
-GET  /api/predictions/qualifying/{race_id} # Quali predictions
-GET  /api/drivers                        # Driver data
-GET  /api/teams                          # Team data
-GET  /api/circuits                       # Circuit info
-POST /api/simulate                       # Run simulation
-GET  /api/telemetry/{session_id}        # Telemetry data
-```
+---
 
-## Performance Targets
+## Database Architecture & Fallback
+The backend connects to database storage using a hybrid approach:
+- **Supabase (PostgreSQL):** Used in production for persistency (saves simulation runs, driver standings, circuits metadata).
+- **SQLAlchemy (SQLite):** Local file-based fallback database. If Supabase is paused or environment credentials are missing, the backend disables cloud database writes and reads locally from `f1_sim.db` to keep the application fully functional.
 
-| Metric | Target |
-|--------|--------|
-| FPS | 60fps constant |
-| LCP | < 2.5s |
-| FID | < 100ms |
-| CLS | < 0.1 |
-| Bundle | < 500KB initial |
-| Images | WebP, lazy loaded |
-| Videos | WebM, poster image |
+---
 
-## Current Assets
-
-### Available in `/public/assets/`
-- Team logos (all 10 teams)
-- Driver portraits (placeholders)
-- Circuit maps (SVG)
-- F1 fonts (Formula1 family)
-
-### Needed
-- 4K hero images (racing action shots)
-- Background videos (60fps, WebM)
-- Car renders (high quality)
-- Circuit photography (aerial views)
+## Missing Backend Endpoints Roadmap
+To remove remaining frontend mock data, the following endpoints must be implemented in the FastAPI backend:
+1. `POST /api/newsletter`: Save waitlist email subscriptions.
+2. `GET /api/stats/2026`: Fetch regulation parameters (electric splits, aero profiles).
+3. `GET /api/rivalries`: Fetch calculated head-to-head driver statistics.
+4. `GET /api/momentum`: Calculate driver form indicators.

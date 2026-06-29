@@ -63,11 +63,6 @@ The goal is to go beyond simple statistics — offering predictive intelligence 
 - Pace prediction with feature-engineered ML pipeline
 - "What-if" scenario analysis
 
-### 🧠 AI Agent Swarm *(Experimental)*
-- Multi-agent system with specialized roles (Researcher, Coder, Reviewer, Router)
-- MCP (Model Context Protocol) client for external tool integration
-- Persistent agent memory system
-
 ---
 
 ## Tech Stack
@@ -303,7 +298,7 @@ f1-race-intelligence-system/
 │   ├── tests/                  # Backend test suite
 │   └── requirements.txt
 │
-├── src/                        # AI Agent Swarm (experimental)
+├── src/                        # Antigravity Swarm (Developer Automation)
 │   ├── agents/                 # Specialized AI agents
 │   ├── tools/                  # Agent tool definitions
 │   ├── swarm.py                # Multi-agent orchestrator
@@ -354,6 +349,12 @@ All Supabase tables enforce **Row Level Security (RLS)**:
 3. Commit your changes (`git commit -m 'feat: add amazing feature'`)
 4. Push to the branch (`git push origin feature/amazing-feature`)
 5. Open a Pull Request
+
+---
+
+## Antigravity Swarm (Developer Automation)
+
+The root `src/` directory contains an experimental multi-agent automation framework. This is **not a user-facing website feature** of the F1 Intelligence System. Instead, it is a developer tool used by AI coding assistants (like Antigravity) to coordinate specialized agents (Router, Researcher, Coder, Reviewer) using Gemini and MCP. It automates heavy development, refactoring, and test verification tasks in the workspace.
 
 ---
 
