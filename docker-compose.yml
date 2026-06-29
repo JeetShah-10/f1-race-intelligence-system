@@ -9,22 +9,40 @@ services:
       - "8000:8000"
     environment:
       - PORT=8000
-      - DATABASE_URL=sqlite:///./f1_sim.db
+      - DATABASE_URL=sqlite:///./data/f1_sim.db
       - SUPABASE_URL=${SUPABASE_URL}
       - SUPABASE_ANON_KEY=${SUPABASE_ANON_KEY}
     volumes:
-      - ./backend:/app
-      - /app/.venv
-      - /app/__pycache__
-      - /app/.pytest_cache
+      # Named volume for sqlite data persistence
+      - f1_data:/app/data
+    healthcheck:
+      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://localhost:8000/health')"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 10s
     restart: always
 
   frontend:
     build:
       context: ./frontend
       dockerfile: Dockerfile
+      args:
+        - VITE_SUPABASE_URL=${SUPABASE_URL}
+        - VITE_SUPABASE_ANON_KEY=${SUPABASE_ANON_KEY}
+        - VITE_API_BASE_URL=http://localhost:8000
     ports:
-      - "80:80"
+      - "80:8080" # Maps port 80 on host to 8080 in container
     depends_on:
-      - backend
+      backend:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "wget", "-q", "--spider", "http://localhost:8080/"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 5s
     restart: always
+
+volumes:
+  f1_data:
