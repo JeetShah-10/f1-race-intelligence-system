@@ -13,8 +13,10 @@ Replace with real SQLAlchemy setup when persistence is needed.
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker, Session, declarative_base
 
-# In-memory SQLite for development (no file needed)
-DATABASE_URL = "sqlite:///./f1_sim.db"
+import os
+
+# SQLite configuration (fallback to local dev file)
+DATABASE_URL = os.getenv("DATABASE_URL", "sqlite:///./f1_sim.db")
 
 engine = create_engine(DATABASE_URL, connect_args={"check_same_thread": False})
 SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
